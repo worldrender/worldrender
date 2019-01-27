@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1548627778 source:c:\users\ricardo\desktop\worldrender\quads.cpp
+	"quads.hpp"
+
+1548627760 c:\users\ricardo\desktop\worldrender\quads.hpp
+	<vector>
+	<iostream>
+	<glm/glm.hpp>
+	<GL/gl.h>
+

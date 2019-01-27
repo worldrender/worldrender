@@ -1,7 +1,7 @@
 #include "quads.hpp"
 
 std::vector<glm::vec3> Quadtree::vertices;
-std::vector<GLushort> indices;
+std::vector<GLushort> Quadtree::indices;
 
 Quadtree::Quadtree():
     nw{nullptr},
@@ -99,7 +99,7 @@ void Quadtree::split()
   this->quad.split = true;
 }
 
-void Quadtree::Triangulator(Quad quad){
+void Quadtree::triangulator(Quad quad){
     if(quad.split){
        return;
     }
