@@ -18,21 +18,22 @@ struct Quad
 class Quadtree
 {
   private:
-    Quad quad;
+    Quad* quad;
     Quadtree* nw;
     Quadtree* sw;
     Quadtree* ne;
     Quadtree* se;
+    GLuint index;
   public:
     static std::vector<glm::vec3> vertices;
     static std::vector<GLushort> indices;
-    static std::vector<Quad> quadTreeList;
+    static std::vector<Quadtree*> quadTreeList;
     Quadtree();
-    Quadtree(Quad quad);
+    Quadtree(Quad *quad);
 
     ~Quadtree();
     void split();
-    void triangulator(Quad quad);
+    void triangulator();
 };
 #endif
 
