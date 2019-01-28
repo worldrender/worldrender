@@ -100,10 +100,6 @@ void Quadtree::split()
   this->se = new Quadtree(&se);
 
   this->quad->split = true;
-  quadTreeList.push_back(this->nw);
-  quadTreeList.push_back(this->ne);
-  quadTreeList.push_back(this->se);
-  quadTreeList.push_back(this->sw);
 }
 
 void Quadtree::triangulator(){
