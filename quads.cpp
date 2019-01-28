@@ -4,6 +4,9 @@ std::vector<glm::vec3> Quadtree::vertices;
 std::vector<GLushort> Quadtree::indices;
 std::vector<Quadtree*> Quadtree::quadTreeList;
 
+/**
+ * Default constructor for the \class Quadtree class, it instantiates a quadtree without any children or quad coordinates
+ */
 Quadtree::Quadtree():
     nw{nullptr},
     ne{nullptr},
@@ -12,6 +15,11 @@ Quadtree::Quadtree():
     quad{}
 {
 }
+
+/**
+ * Constructor for the \class Quadtree class,
+ * @param a \struct Quad
+ */
 
 Quadtree::Quadtree(Quad *quad):
     nw{nullptr},
@@ -116,15 +124,11 @@ void Quadtree::triangulator(){
 }
 
 void Quadtree::verticalSplit(GLuint lod){
-  GLuint pos = 0;
-  for(auto &i : lod)
+  for(int i=0;i<lod;i++)
   {
     for(auto &quad : Quadtree::quadTreeList)
     {
       quad->split();
     }
-    i=pos;
-    pos++;
   }
-
 }
