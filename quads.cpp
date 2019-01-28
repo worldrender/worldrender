@@ -1,5 +1,20 @@
 #include "quads.hpp"
 
+/** This class is responsible for create quadtree struct and their elements.
+ *
+ *  This class does the creation of each quad and junction of them to create the quadtrees.
+ *  There are three methods more the constructor and destructor, and they are:
+ *  Split;
+ *  Triangulator;
+ *  VerticalSplit;
+ *
+ *  The first parameter is Quadtree::vertexes, and it is responsible to save all vertexes of each quad.
+ *  The second parameter is Quatree::indexes and it is saving three index to create a triangle.
+ *  The last is a list to save each quad.
+ * \param
+ * \return
+ *
+ */
 std::vector<glm::vec3> Quadtree::vertices;
 std::vector<GLushort> Quadtree::indices;
 std::vector<Quadtree*> Quadtree::quadTreeList;
@@ -7,11 +22,12 @@ std::vector<Quadtree*> Quadtree::quadTreeList;
 /**
  * Default constructor for the \class Quadtree class, it instantiates a quadtree without any children or quad coordinates
  */
+
 Quadtree::Quadtree():
     nw{nullptr},
     ne{nullptr},
-    sw{nullptr},
     se{nullptr},
+    sw{nullptr},
     quad{}
 {
 }
@@ -19,6 +35,8 @@ Quadtree::Quadtree():
 /**
  * Constructor for the \class Quadtree class,
  * @param a \struct Quad
+ *  This constructor receives a parameter called quad, and it is being a Quad type, and it defines a Quadtree.
+ *
  */
 
 Quadtree::Quadtree(Quad *quad):
@@ -32,6 +50,10 @@ Quadtree::Quadtree(Quad *quad):
   this->quadTreeList.push_back(this);
 }
 
+/**
+ *  This method is responsible to delete each vertex of this quad;
+ */
+
 Quadtree::~Quadtree()
 {
     delete nw;
@@ -40,10 +62,22 @@ Quadtree::~Quadtree()
     delete se;
 }
 
+/**
+ * This method is responsible to split a quad to create four new quads on quadtree.
+ *
+ * If that quad is splitted, that method finish it. If not, it is calculated for each side of quad to calculate each vertex.
+ * When it will finish, each calculated vertex is added on vertex list and is created four new quads and it will mark the parameter "quad->split" true;
+ */
+
 void Quadtree::split()
 {
+
+
+
   if(this->quad->split)
     return;
+
+
   glm::vec3 North  = {(Quadtree::vertices[this->quad->c0]+Quadtree::vertices[this->quad->c1])/2.f}, //nIndex
             East   = {(Quadtree::vertices[this->quad->c1]+Quadtree::vertices[this->quad->c2])/2.f}, //Quadtree::vertices.size()-4
             South  = {(Quadtree::vertices[this->quad->c2]+Quadtree::vertices[this->quad->c3])/2.f}, //Quadtree::vertices.size()-3
@@ -110,6 +144,10 @@ void Quadtree::split()
   this->quad->split = true;
 }
 
+/**
+ * This method creates two triangles for each quad. If the quad is not split,  it returns.
+ */
+
 void Quadtree::triangulator(){
     if(quad->split){
        return;
@@ -122,6 +160,9 @@ void Quadtree::triangulator(){
     indices.push_back(this->quad->c3);
     indices.push_back(this->quad->c2);
 }
+/**
+ * This method splits for each quad on quadtree list.
+ */
 
 void Quadtree::verticalSplit(GLuint lod){
   for(int i=0;i<lod;i++)
