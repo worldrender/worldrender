@@ -26,6 +26,7 @@ class Quadtree
   public:
     static std::vector<glm::vec3> vertices;
     static std::vector<GLushort> indices;
+    static std::vector<Quad> quadTreeList;
     Quadtree();
     Quadtree(Quad quad);
 

@@ -2,6 +2,7 @@
 
 std::vector<glm::vec3> Quadtree::vertices;
 std::vector<GLushort> Quadtree::indices;
+std::vector<Quad> quadTreeList;
 
 Quadtree::Quadtree():
     nw{nullptr},
@@ -33,6 +34,7 @@ void Quadtree::split()
 {
   if(this->quad.split)
     return;
+    quadTreeList.push_back()
   glm::vec3 North  = {(Quadtree::vertices[this->quad.c0]+Quadtree::vertices[this->quad.c1])/2.f}, //nIndex
             East   = {(Quadtree::vertices[this->quad.c1]+Quadtree::vertices[this->quad.c2])/2.f}, //Quadtree::vertices.size()-4
             South  = {(Quadtree::vertices[this->quad.c2]+Quadtree::vertices[this->quad.c3])/2.f}, //Quadtree::vertices.size()-3
@@ -97,6 +99,10 @@ void Quadtree::split()
   this->se = new Quadtree(se);
 
   this->quad.split = true;
+  quadTreeList.push_back(nw);
+  quadTreeList.push_back(ne);
+  quadTreeList.push_back(se);
+  quadTreeList.push_back(sw);
 }
 
 void Quadtree::triangulator(Quad quad){
