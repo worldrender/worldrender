@@ -114,3 +114,6 @@ void Quadtree::triangulator(){
     indices.push_back(this->quad->c3);
     indices.push_back(this->quad->c2);
 }
+
+void Quadtree::verticalSplit(){
+}
