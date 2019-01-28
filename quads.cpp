@@ -115,5 +115,16 @@ void Quadtree::triangulator(){
     indices.push_back(this->quad->c2);
 }
 
-void Quadtree::verticalSplit(){
+void Quadtree::verticalSplit(GLuint lod){
+  GLuint pos = 0;
+  for(auto &i : lod)
+  {
+    for(auto &quad : Quadtree::quadTreeList)
+    {
+      quad->split();
+    }
+    i=pos;
+    pos++;
+  }
+
 }

@@ -2,12 +2,13 @@
 1548627778 source:c:\users\ricardo\desktop\worldrender\quads.cpp
 	"quads.hpp"
 
-1548639554 c:\users\ricardo\desktop\worldrender\quads.hpp
+1548641267 c:\users\ricardo\desktop\worldrender\quads.hpp
 	<vector>
 	<iostream>
 	<glm/glm.hpp>
 	<GL/gl.h>
 
-1548627830 source:c:\users\ricardo\desktop\worldrender\main.cpp
+1548641280 source:c:\users\ricardo\desktop\worldrender\main.cpp
 	"quads.hpp"
+	<iostream>
 

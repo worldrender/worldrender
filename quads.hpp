@@ -34,7 +34,7 @@ class Quadtree
     ~Quadtree();
     void split();
     void triangulator();
-    void verticalSplit();
+    static void verticalSplit(GLuint lod);
 };
 #endif
 
