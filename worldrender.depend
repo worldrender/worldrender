@@ -12,3 +12,38 @@
 	"quads.hpp"
 	<iostream>
 
+1548901525 source:c:\users\iagop\documents\projetomz\worldrender\main.cpp
+	<vector>
+	<iostream>
+	<string>
+	<cstdlib>
+	<GL/glew.h>
+	<GLFW/glfw3.h>
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	"LoadShaders.hpp"
+	"controls.hpp"
+
+1545767594 c:\users\iagop\documents\projetomz\worldrender\loadshaders.hpp
+
+1545767570 c:\users\iagop\documents\projetomz\worldrender\controls.hpp
+
+1545767570 source:c:\users\iagop\documents\projetomz\worldrender\controls.cpp
+	<GLFW/glfw3.h>
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	<iostream>
+	"controls.hpp"
+
+1545767594 source:c:\users\iagop\documents\projetomz\worldrender\loadshaders.cpp
+	<stdio.h>
+	<string>
+	<vector>
+	<iostream>
+	<fstream>
+	<algorithm>
+	<stdlib.h>
+	<string.h>
+	<GL/glew.h>
+	"LoadShaders.hpp"
+

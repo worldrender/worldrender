@@ -23,9 +23,22 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Linker>
+			<Add library="glew32" />
+			<Add library="glfw3" />
+			<Add library="opengl32" />
+			<Add library="gdi32" />
+			<Add library="glu32" />
+		</Linker>
+		<Unit filename="LoadShaders.cpp" />
+		<Unit filename="LoadShaders.hpp" />
+		<Unit filename="controls.cpp" />
+		<Unit filename="controls.hpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="quads.cpp" />
 		<Unit filename="quads.hpp" />
+		<Unit filename="world.frag" />
+		<Unit filename="world.vert" />
 		<Extensions>
 			<code_completion />
 			<envvars />
