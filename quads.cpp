@@ -20,7 +20,7 @@ std::vector<GLushort> Quadtree::indices;
 std::vector<Quadtree*> Quadtree::quadTreeList;
 
 /**
- *  This class is a some constructor without parameter to instance.
+ * Default constructor for the \class Quadtree class, it instantiates a quadtree without any children or quad coordinates
  */
 
 Quadtree::Quadtree():
@@ -33,11 +33,10 @@ Quadtree::Quadtree():
 }
 
 /**
+ * Constructor for the \class Quadtree class,
+ * @param a \struct Quad
  *  This constructor receives a parameter called quad, and it is being a Quad type, and it defines a Quadtree.
  *
- *  Then, the first parameter receives a quad and it has a Quad type.
- *  The second parameter is a index of that quadtree and it receives the actual size of quadtree list. Then, it turns the index of quad.
- *  The last parameter adds that quad to quadtree list.
  */
 
 Quadtree::Quadtree(Quad *quad):
@@ -166,15 +165,11 @@ void Quadtree::triangulator(){
  */
 
 void Quadtree::verticalSplit(GLuint lod){
-  GLuint pos = 0;
-  for(auto &i : lod)
+  for(int i=0;i<lod;i++)
   {
     for(auto &quad : Quadtree::quadTreeList)
     {
       quad->split();
     }
-    i = pos;
-    pos++;
   }
-
 }
