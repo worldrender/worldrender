@@ -27,6 +27,7 @@ class Quadtree
   public:
     static std::vector<glm::vec3> vertices;
     static std::vector<GLushort> indices;
+    static std::vector<GLfloat> noises;
     static std::vector<Quadtree*> quadTreeList;
     Quadtree();
     Quadtree(Quad *quad);
@@ -35,6 +36,7 @@ class Quadtree
     void split();
     void triangulator();
     static void verticalSplit(GLuint lod);
+    static void instanceNoise();
 };
 #endif
 

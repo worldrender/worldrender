@@ -233,5 +233,9 @@ int main(int argv, char** argc){
     // Close OpenGL window and terminate GLFW
     glfwTerminate();
 
+    GLuint warn[] = {ampValue,octavesValue,lacunarityValue,LightID,TessLevelInnerID, TessLevelOuterID, (GLuint)camerapos.x};
+    if(warn);
+    if(IndexCount);
+
     return 0;
 }

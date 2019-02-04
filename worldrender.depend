@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1548627778 source:c:\users\ricardo\desktop\worldrender\quads.cpp
+1548686397 source:c:\users\ricardo\desktop\worldrender\quads.cpp
 	"quads.hpp"
 
 1548641267 c:\users\ricardo\desktop\worldrender\quads.hpp
@@ -8,9 +8,17 @@
 	<glm/glm.hpp>
 	<GL/gl.h>
 
-1548641280 source:c:\users\ricardo\desktop\worldrender\main.cpp
-	"quads.hpp"
+1549242776 source:c:\users\ricardo\desktop\worldrender\main.cpp
+	<vector>
 	<iostream>
+	<string>
+	<cstdlib>
+	<GL/glew.h>
+	<GLFW/glfw3.h>
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	"LoadShaders.hpp"
+	"controls.hpp"
 
 1548901525 source:c:\users\iagop\documents\projetomz\worldrender\main.cpp
 	<vector>
@@ -46,4 +54,27 @@
 	<string.h>
 	<GL/glew.h>
 	"LoadShaders.hpp"
+
+1549241491 source:c:\users\ricardo\desktop\worldrender\controls.cpp
+	<GLFW/glfw3.h>
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	<iostream>
+	"controls.hpp"
+
+1549241491 c:\users\ricardo\desktop\worldrender\controls.hpp
+
+1549241491 source:c:\users\ricardo\desktop\worldrender\loadshaders.cpp
+	<stdio.h>
+	<string>
+	<vector>
+	<iostream>
+	<fstream>
+	<algorithm>
+	<stdlib.h>
+	<string.h>
+	<GL/glew.h>
+	"LoadShaders.hpp"
+
+1549241491 c:\users\ricardo\desktop\worldrender\loadshaders.hpp
 

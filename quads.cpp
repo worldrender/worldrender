@@ -1,4 +1,5 @@
 #include "quads.hpp"
+#include "simplex.h"
 
 /** This class is responsible for create quadtree struct and their elements.
  *
@@ -16,6 +17,7 @@
  *
  */
 std::vector<glm::vec3> Quadtree::vertices;
+std::vector<GLfloat> Quadtree::noises;
 std::vector<GLushort> Quadtree::indices;
 std::vector<Quadtree*> Quadtree::quadTreeList;
 
@@ -149,16 +151,20 @@ void Quadtree::split()
  */
 
 void Quadtree::triangulator(){
-    if(quad->split){
-       return;
-    }
-    indices.push_back(this->quad->c0);
-    indices.push_back(this->quad->c1);
-    indices.push_back(this->quad->c2);
+  indices.clear();
+  for(auto &quad : Quadtree::quadTreeList)
+  {
+    if(!quad->split)
+    {
+      indices.push_back(quad->c0);
+      indices.push_back(quad->c1);
+      indices.push_back(quad->c2);
 
-    indices.push_back(this->quad->c1);
-    indices.push_back(this->quad->c3);
-    indices.push_back(this->quad->c2);
+      indices.push_back(quad->c1);
+      indices.push_back(quad->c3);
+      indices.push_back(quad->c2);
+    }
+  }
 }
 /**
  * This method splits for each quad on quadtree list.
@@ -171,5 +177,12 @@ void Quadtree::verticalSplit(GLuint lod){
     {
       quad->split();
     }
+  }
+}
+
+void Quadtree::instanceNoise(){
+  for(auto &vertex : Quadtree::vertices)
+  {
+    noises.push_back(Simplex::iqfBm(vertex));
   }
 }
