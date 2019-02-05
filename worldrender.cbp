@@ -34,11 +34,12 @@
 		<Unit filename="LoadShaders.hpp" />
 		<Unit filename="Planet.cpp" />
 		<Unit filename="Planet.hpp" />
+		<Unit filename="QuadTree.cpp" />
+		<Unit filename="QuadTree.hpp" />
 		<Unit filename="controls.cpp" />
 		<Unit filename="controls.hpp" />
 		<Unit filename="main.cpp" />
-		<Unit filename="quads.cpp" />
-		<Unit filename="quads.hpp" />
+		<Unit filename="simplex.h" />
 		<Unit filename="world.frag" />
 		<Unit filename="world.vert" />
 		<Extensions>

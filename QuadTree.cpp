@@ -1,4 +1,4 @@
-#include "quads.hpp"
+#include "QuadTree.hpp"
 #include "simplex.h"
 
 /** This class is responsible for create quadtree struct and their elements.
@@ -9,23 +9,23 @@
  *  Triangulator;
  *  VerticalSplit;
  *
- *  The first parameter is Quadtree::vertexes, and it is responsible to save all vertexes of each quad.
+ *  The first parameter is QuadTree::vertexes, and it is responsible to save all vertexes of each quad.
  *  The second parameter is Quatree::indexes and it is saving three index to create a triangle.
  *  The last is a list to save each quad.
  * \param
  * \return
  *
  */
-std::vector<glm::vec3> Quadtree::vertices;
-std::vector<GLfloat> Quadtree::noises;
-std::vector<GLushort> Quadtree::indices;
-std::vector<Quadtree*> Quadtree::quadTreeList;
+std::vector<glm::vec3> QuadTree::vertices;
+std::vector<GLfloat> QuadTree::noises;
+std::vector<GLushort> QuadTree::indices;
+std::vector<QuadTree*> QuadTree::quadTreeList;
 
 /**
- * Default constructor for the \class Quadtree class, it instantiates a quadtree without any children or quad coordinates
+ * Default constructor for the \class QuadTree class, it instantiates a quadtree without any children or quad coordinates
  */
 
-Quadtree::Quadtree():
+QuadTree::QuadTree():
     nw{nullptr},
     ne{nullptr},
     se{nullptr},
@@ -35,13 +35,13 @@ Quadtree::Quadtree():
 }
 
 /**
- * Constructor for the \class Quadtree class,
+ * Constructor for the \class QuadTree class,
  * @param a \struct Quad
- *  This constructor receives a parameter called quad, and it is being a Quad type, and it defines a Quadtree.
+ *  This constructor receives a parameter called quad, and it is being a Quad type, and it defines a QuadTree.
  *
  */
 
-Quadtree::Quadtree(Quad *quad):
+QuadTree::QuadTree(Quad *quad):
     nw{nullptr},
     ne{nullptr},
     sw{nullptr},
@@ -56,7 +56,7 @@ Quadtree::Quadtree(Quad *quad):
  *  This method is responsible to delete each vertex of this quad;
  */
 
-Quadtree::~Quadtree()
+QuadTree::~QuadTree()
 {
     delete nw;
     delete ne;
@@ -71,7 +71,7 @@ Quadtree::~Quadtree()
  * When it will finish, each calculated vertex is added on vertex list and is created four new quads and it will mark the parameter "quad->split" true;
  */
 
-void Quadtree::split()
+void QuadTree::split()
 {
 
 
@@ -80,18 +80,18 @@ void Quadtree::split()
     return;
 
 
-  glm::vec3 North  = {(Quadtree::vertices[this->quad->c0]+Quadtree::vertices[this->quad->c1])/2.f}, //nIndex
-            East   = {(Quadtree::vertices[this->quad->c1]+Quadtree::vertices[this->quad->c2])/2.f}, //Quadtree::vertices.size()-4
-            South  = {(Quadtree::vertices[this->quad->c2]+Quadtree::vertices[this->quad->c3])/2.f}, //Quadtree::vertices.size()-3
-            West   = {(Quadtree::vertices[this->quad->c3]+Quadtree::vertices[this->quad->c0])/2.f}, //wIndex
-            Center = {(Quadtree::vertices[this->quad->c0]+Quadtree::vertices[this->quad->c2])/2.f}; //Quadtree::vertices.size()-1
+  glm::vec3 North  = {(QuadTree::vertices[this->quad->c0]+QuadTree::vertices[this->quad->c1])/2.f}, //nIndex
+            East   = {(QuadTree::vertices[this->quad->c1]+QuadTree::vertices[this->quad->c2])/2.f}, //QuadTree::vertices.size()-4
+            South  = {(QuadTree::vertices[this->quad->c2]+QuadTree::vertices[this->quad->c3])/2.f}, //QuadTree::vertices.size()-3
+            West   = {(QuadTree::vertices[this->quad->c3]+QuadTree::vertices[this->quad->c0])/2.f}, //wIndex
+            Center = {(QuadTree::vertices[this->quad->c0]+QuadTree::vertices[this->quad->c2])/2.f}; //QuadTree::vertices.size()-1
   GLuint i = 0,
   nIndex = -1,
   eIndex = -1,
   sIndex = -1,
   wIndex = -1,
   cIndex = -1;
-  for(auto &vertex : Quadtree::vertices)
+  for(auto &vertex : QuadTree::vertices)
   {
     if(vertex == North)
       nIndex = i;
@@ -109,28 +109,28 @@ void Quadtree::split()
   }
   if(nIndex==-1u)
   {
-    Quadtree::vertices.push_back(North);
-    nIndex = (int)Quadtree::vertices.size() - 1;
+    QuadTree::vertices.push_back(North);
+    nIndex = (int)QuadTree::vertices.size() - 1;
   }
   if(eIndex==-1u)
   {
-    Quadtree::vertices.push_back(East);
-    eIndex = (int)Quadtree::vertices.size() - 1;
+    QuadTree::vertices.push_back(East);
+    eIndex = (int)QuadTree::vertices.size() - 1;
   }
   if(sIndex==-1u)
   {
-    Quadtree::vertices.push_back(South);
-    sIndex = (int)Quadtree::vertices.size() - 1;
+    QuadTree::vertices.push_back(South);
+    sIndex = (int)QuadTree::vertices.size() - 1;
   }
   if(wIndex==-1u)
   {
-    Quadtree::vertices.push_back(West);
-    wIndex = (int)Quadtree::vertices.size() - 1;
+    QuadTree::vertices.push_back(West);
+    wIndex = (int)QuadTree::vertices.size() - 1;
   }
   if(cIndex==-1u)
   {
-    Quadtree::vertices.push_back(Center);
-    cIndex = (int)Quadtree::vertices.size() - 1;
+    QuadTree::vertices.push_back(Center);
+    cIndex = (int)QuadTree::vertices.size() - 1;
   }
 
   Quad nw = {this->quad->c0,nIndex,cIndex,wIndex},
@@ -138,10 +138,10 @@ void Quadtree::split()
        se = {cIndex,eIndex,this->quad->c2,sIndex},
        sw = {wIndex,cIndex,sIndex,this->quad->c3};
 
-  this->nw = new Quadtree(&nw);
-  this->ne = new Quadtree(&ne);
-  this->sw = new Quadtree(&sw);
-  this->se = new Quadtree(&se);
+  this->nw = new QuadTree(&nw);
+  this->ne = new QuadTree(&ne);
+  this->sw = new QuadTree(&sw);
+  this->se = new QuadTree(&se);
 
   this->quad->split = true;
 }
@@ -150,9 +150,9 @@ void Quadtree::split()
  * This method creates two triangles for each quad. If the quad is not split,  it returns.
  */
 
-void Quadtree::triangulator(){
+void QuadTree::triangulator(){
   indices.clear();
-  for(auto &quad : Quadtree::quadTreeList)
+  for(auto &quad : QuadTree::quadTreeList)
   {
     if(!quad->quad->split)
     {
@@ -170,18 +170,18 @@ void Quadtree::triangulator(){
  * This method splits for each quad on quadtree list.
  */
 
-void Quadtree::verticalSplit(GLuint lod){
+void QuadTree::verticalSplit(GLuint lod){
   for(int i=0;i<lod;i++)
   {
-    for(auto &quad : Quadtree::quadTreeList)
+    for(auto &quad : QuadTree::quadTreeList)
     {
       quad->split();
     }
   }
 }
 
-void Quadtree::instanceNoise(){
-  for(auto &vertex : Quadtree::vertices)
+void QuadTree::instanceNoise(){
+  for(auto &vertex : QuadTree::vertices)
   {
     noises.push_back(Simplex::iqfBm(vertex));
   }

@@ -15,24 +15,24 @@ struct Quad
   bool split = false;
 };
 
-class Quadtree
+class QuadTree
 {
   private:
     Quad* quad;
-    Quadtree* nw;
-    Quadtree* sw;
-    Quadtree* ne;
-    Quadtree* se;
+    QuadTree* nw;
+    QuadTree* sw;
+    QuadTree* ne;
+    QuadTree* se;
     GLuint index;
   public:
     static std::vector<glm::vec3> vertices;
     static std::vector<GLushort> indices;
     static std::vector<GLfloat> noises;
-    static std::vector<Quadtree*> quadTreeList;
-    Quadtree();
-    Quadtree(Quad *quad);
+    static std::vector<QuadTree*> quadTreeList;
+    QuadTree();
+    QuadTree(Quad *quad);
 
-    ~Quadtree();
+    ~QuadTree();
     void split();
     void triangulator();
     static void verticalSplit(GLuint lod);
