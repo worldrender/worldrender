@@ -20,7 +20,7 @@
 	"LoadShaders.hpp"
 	"controls.hpp"
 
-1548901525 source:c:\users\iagop\documents\projetomz\worldrender\main.cpp
+1549319508 source:c:\users\iagop\documents\projetomz\worldrender\main.cpp
 	<vector>
 	<iostream>
 	<string>
@@ -77,4 +77,34 @@
 	"LoadShaders.hpp"
 
 1549241491 c:\users\ricardo\desktop\worldrender\loadshaders.hpp
+
+1549250646 source:c:\users\iagop\documents\projetomz\worldrender\quads.cpp
+	"quads.hpp"
+	"simplex.h"
+
+1549250066 c:\users\iagop\documents\projetomz\worldrender\quads.hpp
+	<vector>
+	<iostream>
+	<glm/glm.hpp>
+	<GL/gl.h>
+
+1549250066 c:\users\iagop\documents\projetomz\worldrender\simplex.h
+	<functional>
+	<array>
+	<random>
+	<math.h>
+	<stdlib.h>
+	<glm/geometric.hpp>
+	<glm/vec2.hpp>
+	<glm/vec3.hpp>
+	<glm/vec4.hpp>
+	<glm/mat2x2.hpp>
+
+1549313534 source:c:\users\iagop\documents\projetomz\worldrender\planet.cpp
+	"Planet.hpp"
+
+1549313125 c:\users\iagop\documents\projetomz\worldrender\planet.hpp
+	<iostream>
+	<glm/glm.hpp>
+	<GL/gl.h>
 
