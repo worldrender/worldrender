@@ -26,7 +26,9 @@ class QuadTree
     GLuint index;
   public:
     static std::vector<glm::vec3> vertices;
+    static std::vector<glm::vec3> normals;
     static std::vector<GLushort> indices;
+    static std::vector<GLushort> normalIndices;
     static std::vector<GLfloat> noises;
     static std::vector<QuadTree*> quadTreeList;
     QuadTree();

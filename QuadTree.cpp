@@ -17,8 +17,10 @@
  *
  */
 std::vector<glm::vec3> QuadTree::vertices;
+std::vector<glm::vec3> QuadTree::normals;
 std::vector<GLfloat> QuadTree::noises;
 std::vector<GLushort> QuadTree::indices;
+std::vector<GLushort> QuadTree::normalIndices;
 std::vector<QuadTree*> QuadTree::quadTreeList;
 
 /**
