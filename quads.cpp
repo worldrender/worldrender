@@ -154,15 +154,15 @@ void Quadtree::triangulator(){
   indices.clear();
   for(auto &quad : Quadtree::quadTreeList)
   {
-    if(!quad->split)
+    if(!quad->quad->split)
     {
-      indices.push_back(quad->c0);
-      indices.push_back(quad->c1);
-      indices.push_back(quad->c2);
+      indices.push_back(quad->quad->c0);
+      indices.push_back(quad->quad->c1);
+      indices.push_back(quad->quad->c2);
 
-      indices.push_back(quad->c1);
-      indices.push_back(quad->c3);
-      indices.push_back(quad->c2);
+      indices.push_back(quad->quad->c1);
+      indices.push_back(quad->quad->c3);
+      indices.push_back(quad->quad->c2);
     }
   }
 }
