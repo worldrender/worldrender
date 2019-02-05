@@ -32,10 +32,6 @@ const char* const filename = "C:\\Users\\iagop\\Documents\\Pesquisa2018-20190123
 
 
 int main(int argv, char** argc){
-    cout<<"Press J to get the Geometry Shader"<<endl;
-    cout<<"Press K to get the Adapt Tessellation Shader"<<endl;
-    cout<<"Press L to get the Uniform Tessellation Shader"<<endl;
-
     glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
