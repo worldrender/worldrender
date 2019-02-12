@@ -8,7 +8,7 @@
 	<glm/glm.hpp>
 	<GL/gl.h>
 
-1549329360 source:c:\users\ricardo\desktop\worldrender\main.cpp
+1549940959 source:c:\users\ricardo\desktop\worldrender\main.cpp
 	<vector>
 	<iostream>
 	<string>
@@ -19,6 +19,7 @@
 	<glm/gtc/matrix_transform.hpp>
 	"LoadShaders.hpp"
 	"controls.hpp"
+	"Planet.hpp"
 
 1549939870 source:c:\users\iagop\documents\projetomz\worldrender\main.cpp
 	<vector>
@@ -111,10 +112,11 @@
 	<GL/gl.h>
 	"QuadTree.hpp"
 
-1549331256 source:c:\users\ricardo\desktop\worldrender\planet.cpp
+1549940268 source:c:\users\ricardo\desktop\worldrender\planet.cpp
+	"QuadTree.hpp"
 	"Planet.hpp"
 
-1549331162 c:\users\ricardo\desktop\worldrender\planet.hpp
+1549930095 c:\users\ricardo\desktop\worldrender\planet.hpp
 	<iostream>
 	<glm/glm.hpp>
 	<GL/gl.h>
@@ -126,7 +128,7 @@
 	<glm/glm.hpp>
 	<GL/gl.h>
 
-1549331284 source:c:\users\ricardo\desktop\worldrender\quadtree.cpp
+1549940268 source:c:\users\ricardo\desktop\worldrender\quadtree.cpp
 	"QuadTree.hpp"
 	"simplex.h"
 
