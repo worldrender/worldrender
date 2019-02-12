@@ -36,7 +36,7 @@ class QuadTree
 
     ~QuadTree();
     void split();
-    void triangulator();
+    static void triangulator();
     static void verticalSplit(GLuint lod);
     static void instanceNoise();
 };

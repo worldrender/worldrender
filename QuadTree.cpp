@@ -1,5 +1,8 @@
 #include "QuadTree.hpp"
 #include "simplex.h"
+#include <iostream>
+
+using namespace std;
 
 /** This class is responsible for create quadtree struct and their elements.
  *
