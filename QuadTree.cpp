@@ -177,7 +177,7 @@ void QuadTree::verticalSplit(GLuint lod){
   {
     for(int j=0;i<QuadTree::quadTreeList.size();j++)
     {
-      QuadTree::quadTreeList[i]->split();
+      QuadTree::quadTreeList[j]->split();
     }
   }
 }
