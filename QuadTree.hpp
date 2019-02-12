@@ -8,6 +8,7 @@
 
 struct Quad
 {
+    GLuint id = 0;
   GLuint c0 = 0.f; //northWest
   GLuint c1 = 0.f; //northEast
   GLuint c2 = 0.f; //southEest
@@ -36,7 +37,7 @@ class QuadTree
 
     ~QuadTree();
     void split();
-    void triangulator();
+    static void triangulator();
     static void verticalSplit(GLuint lod);
     static void instanceNoise();
 };

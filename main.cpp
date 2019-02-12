@@ -1,4 +1,3 @@
-#include <vector>
 #include <iostream>
 #include <string>
 //#include "stb_image.h"
@@ -20,6 +19,7 @@ using namespace std;
 #include "LoadShaders.hpp"
 #include "controls.hpp"
 #include "Planet.hpp"
+#include "QuadTree.hpp"
 extern glm::vec3 position;
 
 bool adapt = true;
@@ -82,66 +82,42 @@ int main(int argv, char** argc){
     cameraPosIDX, cameraPosIDY, cameraPosIDZ, ampValue, octavesValue,
     lacunarityValue, LightID, TessLevelInnerID, TessLevelOuterID;
 
-
-    vector<GLushort> indices;
-    unsigned int aux1[36] = {
-        0, 1, 2, 2, 3, 0,   /** FRONT   **/
-        3, 2, 6, 6, 7, 3,   /** BOTTOM  **/
-        7, 6, 5, 5, 4, 7,   /** BACK    **/
-        4, 5, 1, 1, 0, 4,   /** TOP     **/
-        4, 0, 3, 3, 7, 4,   /** RIGHT   **/
-        1, 5, 6, 6, 2, 1,}; /** LEFT    **/
-
-
-    for(int i = 0; i< 36; i++){
-        indices.push_back(aux1[i]);
-    }
-
-    vector<GLfloat> vertices;
-
     float auxX, auxY, auxZ;
     auxX = -1; auxY = -1; auxZ = -1;
     glm::vec3 v0 = vec3(auxX, auxY, auxZ);
-    vertices.push_back(auxX); vertices.push_back(auxY); vertices.push_back(auxZ);   /** BLACK   **/
 
     auxX = 1; auxY = -1; auxZ = -1;
     glm::vec3 v1 = vec3(auxX, auxY, auxZ);
-    vertices.push_back(auxX); vertices.push_back(auxY); vertices.push_back(auxZ);   /** RED     **/
 
     auxX = 1; auxY = 1; auxZ = -1;
     glm::vec3 v2 = vec3(auxX, auxY, auxZ);
-    vertices.push_back(auxX); vertices.push_back(auxY); vertices.push_back(auxZ);   /** YELLOW  **/
 
     auxX = -1; auxY = 1; auxZ = -1;
     glm::vec3 v3 = vec3(auxX, auxY, auxZ);
-    vertices.push_back(auxX); vertices.push_back(auxY); vertices.push_back(auxZ);   /** GREEN   **/
 
     auxX = -1; auxY = -1; auxZ = 1;
     glm::vec3 v4 = vec3(auxX, auxY, auxZ);
-    vertices.push_back(auxX); vertices.push_back(auxY); vertices.push_back(auxZ);   /** BLUE    **/
 
     auxX = 1; auxY = -1; auxZ = 1;
     glm::vec3 v5 = vec3(auxX, auxY, auxZ);
-    vertices.push_back(auxX); vertices.push_back(auxY); vertices.push_back(auxZ);   /** PURPLE  **/
 
     auxX = 1; auxY = 1; auxZ = 1;
     glm::vec3 v6 = vec3(auxX, auxY, auxZ);
-    vertices.push_back(auxX); vertices.push_back(auxY); vertices.push_back(auxZ);   /** WHITE   **/
 
     auxX = -1; auxY = 1; auxZ = 1;
     glm::vec3 v7 = vec3(auxX, auxY, auxZ);
-    vertices.push_back(auxX); vertices.push_back(auxY); vertices.push_back(auxZ);   /** ACQUA   **/
 
-    cout<<"A"<<QuadTree::vertices.size()<<endl;
     Planet* planet = new Planet(v0, v1, v2, v3, v4, v5,v6,v7, 5.f);
-    cout<<"B"<<QuadTree::vertices.size()<<endl;
+//    QuadTree::verticalSplit(10);
+    QuadTree::triangulator();
+
     // Create the VBO for positions:
     GLuint vertexbuffer;
     //GLsizei stride = 2 * sizeof(float);
 
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glBufferData(GL_ARRAY_BUFFER, QuadTree::vertices.size() * sizeof(GLfloat), QuadTree::vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, QuadTree::vertices.size() * sizeof(glm::vec3), QuadTree::vertices.data(), GL_STATIC_DRAW);
 
     // Create the VBO for indices:
     GLuint elementbuffer;
@@ -221,7 +197,7 @@ int main(int argv, char** argc){
         // Index buffer
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, (void*)0);
+        glDrawElements(GL_TRIANGLES, QuadTree::indices.size(), GL_UNSIGNED_SHORT, (void*)0);
     //}
         glDisableVertexAttribArray(0);
 

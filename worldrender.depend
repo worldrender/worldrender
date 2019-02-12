@@ -21,8 +21,7 @@
 	"controls.hpp"
 	"Planet.hpp"
 
-1549939870 source:c:\users\iagop\documents\projetomz\worldrender\main.cpp
-	<vector>
+1549945773 source:c:\users\iagop\documents\projetomz\worldrender\main.cpp
 	<iostream>
 	<string>
 	<cstdlib>
@@ -33,6 +32,7 @@
 	"LoadShaders.hpp"
 	"controls.hpp"
 	"Planet.hpp"
+	"QuadTree.hpp"
 
 1545767594 c:\users\iagop\documents\projetomz\worldrender\loadshaders.hpp
 
@@ -102,9 +102,10 @@
 	<glm/vec4.hpp>
 	<glm/mat2x2.hpp>
 
-1549939310 source:c:\users\iagop\documents\projetomz\worldrender\planet.cpp
+1549945794 source:c:\users\iagop\documents\projetomz\worldrender\planet.cpp
 	"QuadTree.hpp"
 	"Planet.hpp"
+	<iostream>
 
 1549930229 c:\users\iagop\documents\projetomz\worldrender\planet.hpp
 	<iostream>
@@ -144,13 +145,14 @@
 	<glm/vec4.hpp>
 	<glm/mat2x2.hpp>
 
-1549331610 c:\users\iagop\documents\projetomz\worldrender\quadtree.hpp
+1549945043 c:\users\iagop\documents\projetomz\worldrender\quadtree.hpp
 	<vector>
 	<iostream>
 	<glm/glm.hpp>
 	<GL/gl.h>
 
-1549936113 source:c:\users\iagop\documents\projetomz\worldrender\quadtree.cpp
+1549945726 source:c:\users\iagop\documents\projetomz\worldrender\quadtree.cpp
 	"QuadTree.hpp"
 	"simplex.h"
+	<iostream>
 
