@@ -78,8 +78,9 @@ QuadTree::~QuadTree()
 
 void QuadTree::split()
 {
-  if(this->quad->split)
+  if(this->quad->split){
     return;
+  }
 
   glm::vec3 North  = {(QuadTree::vertices[this->quad->c0]+QuadTree::vertices[this->quad->c1])/2.f}, //nIndex
             East   = {(QuadTree::vertices[this->quad->c1]+QuadTree::vertices[this->quad->c2])/2.f}, //QuadTree::vertices.size()-4

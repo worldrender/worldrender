@@ -44,6 +44,9 @@ Planet::Planet(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3,
     quad4->c0 = 4; quad4->c1 = 5; quad4->c2 = 1; quad4->c3 = 0;
     quad5->c0 = 3; quad5->c1 = 2; quad5->c2 = 6; quad5->c3 = 7;
 
+    quad0->id = 0; quad1->id = 1;
+    quad2->id = 2; quad3->id = 3;
+    quad4->id = 4; quad5->id = 5;
     QuadTree* quadtree0 = new QuadTree(quad0);
     QuadTree* quadtree1 = new QuadTree(quad1);
     QuadTree* quadtree2 = new QuadTree(quad2);
