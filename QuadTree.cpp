@@ -158,9 +158,9 @@ void QuadTree::triangulator(){
       indices.push_back(quad->quad->c1);
       indices.push_back(quad->quad->c2);
 
-      indices.push_back(quad->quad->c1);
-      indices.push_back(quad->quad->c3);
       indices.push_back(quad->quad->c2);
+      indices.push_back(quad->quad->c3);
+      indices.push_back(quad->quad->c0);
     }
   }
 }
