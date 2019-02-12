@@ -175,7 +175,7 @@ void QuadTree::triangulator(){
 void QuadTree::verticalSplit(GLuint lod){
   for(GLuint i=0;i<lod;i++)
   {
-    for(int i=0;i<QuadTree::quadTreeList.size()-1;i++)
+    for(int i=0;i<QuadTree::quadTreeList.size();i++)
     {
       quad->split();
     }
