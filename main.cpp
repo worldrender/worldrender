@@ -19,6 +19,7 @@ using namespace std;
 
 #include "LoadShaders.hpp"
 #include "controls.hpp"
+#include "Planet.hpp"
 extern glm::vec3 position;
 
 bool adapt = true;
@@ -100,42 +101,53 @@ int main(int argv, char** argc){
 
     float auxX, auxY, auxZ;
     auxX = -1; auxY = -1; auxZ = -1;
+    glm::vec3 v0 = vec3(auxX, auxY, auxZ);
     vertices.push_back(auxX); vertices.push_back(auxY); vertices.push_back(auxZ);   /** BLACK   **/
 
     auxX = 1; auxY = -1; auxZ = -1;
+    glm::vec3 v1 = vec3(auxX, auxY, auxZ);
     vertices.push_back(auxX); vertices.push_back(auxY); vertices.push_back(auxZ);   /** RED     **/
 
     auxX = 1; auxY = 1; auxZ = -1;
+    glm::vec3 v2 = vec3(auxX, auxY, auxZ);
     vertices.push_back(auxX); vertices.push_back(auxY); vertices.push_back(auxZ);   /** YELLOW  **/
 
     auxX = -1; auxY = 1; auxZ = -1;
+    glm::vec3 v3 = vec3(auxX, auxY, auxZ);
     vertices.push_back(auxX); vertices.push_back(auxY); vertices.push_back(auxZ);   /** GREEN   **/
 
     auxX = -1; auxY = -1; auxZ = 1;
+    glm::vec3 v4 = vec3(auxX, auxY, auxZ);
     vertices.push_back(auxX); vertices.push_back(auxY); vertices.push_back(auxZ);   /** BLUE    **/
 
     auxX = 1; auxY = -1; auxZ = 1;
+    glm::vec3 v5 = vec3(auxX, auxY, auxZ);
     vertices.push_back(auxX); vertices.push_back(auxY); vertices.push_back(auxZ);   /** PURPLE  **/
 
     auxX = 1; auxY = 1; auxZ = 1;
+    glm::vec3 v6 = vec3(auxX, auxY, auxZ);
     vertices.push_back(auxX); vertices.push_back(auxY); vertices.push_back(auxZ);   /** WHITE   **/
 
     auxX = -1; auxY = 1; auxZ = 1;
+    glm::vec3 v7 = vec3(auxX, auxY, auxZ);
     vertices.push_back(auxX); vertices.push_back(auxY); vertices.push_back(auxZ);   /** ACQUA   **/
 
+    cout<<"A"<<QuadTree::vertices.size()<<endl;
+    Planet* planet = new Planet(v0, v1, v2, v3, v4, v5,v6,v7, 5.f);
+    cout<<"B"<<QuadTree::vertices.size()<<endl;
     // Create the VBO for positions:
     GLuint vertexbuffer;
     //GLsizei stride = 2 * sizeof(float);
 
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, QuadTree::vertices.size() * sizeof(GLfloat), QuadTree::vertices.data(), GL_STATIC_DRAW);
 
     // Create the VBO for indices:
     GLuint elementbuffer;
     glGenBuffers(1, &elementbuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLushort), &indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, QuadTree::indices.size() * sizeof(GLushort), &QuadTree::indices[0], GL_STATIC_DRAW);
 
     // For speed computation
     TessLevelInner = 1.0f;

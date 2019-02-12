@@ -47,7 +47,7 @@ Planet::Planet(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3,
     Cube *cube;
     cube->Front = quadtree0; cube->Back = quadtree2;
     cube->Left = quadtree1; cube->Right = quadtree3;
-    cube->Top = quadtree4; cube->Right = quadtree5;
+    cube->Top = quadtree4; cube->Bottom = quadtree5;
 
     this->cube = cube;
     this->radius = radius;
