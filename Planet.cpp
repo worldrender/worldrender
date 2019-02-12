@@ -58,3 +58,5 @@ Planet::Planet(Cube* cube, GLfloat radius)
     this->cube = cube;
     this->radius = radius;
 }
+
+
