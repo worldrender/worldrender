@@ -13,16 +13,24 @@ struct Quad
   GLuint c2 = 0.f; //southEest
   GLuint c3 = 0.f; //southWast
   bool split = false;
+  Quad(GLuint c0, GLuint c1, GLuint c2, GLuint c3)
+  {
+    this->c0 = c0;
+    this->c1 = c1;
+    this->c2 = c2;
+    this->c3 = c3;
+  }
+  Quad(){}
 };
 
 class QuadTree
 {
   private:
-    Quad* quad;
-    QuadTree* nw;
-    QuadTree* sw;
-    QuadTree* ne;
-    QuadTree* se;
+    Quad* quad   = nullptr;
+    QuadTree* nw = nullptr;
+    QuadTree* sw = nullptr;
+    QuadTree* ne = nullptr;
+    QuadTree* se = nullptr;
     GLuint index;
   public:
     static std::vector<glm::vec3> vertices;

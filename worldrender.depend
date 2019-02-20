@@ -10,7 +10,7 @@
 	<glm/glm.hpp>
 	<GL/gl.h>
 
-1549942201 
+1549942969 
 
 1549329360 source:c:\users\ricardo\desktop\worldrender\main.cpp
 	<vector>
@@ -116,8 +116,6 @@
 	"Planet.hpp"
 	<iostream>
 
-1549942969 
-
 1549930229 c:\users\iagop\documents\projetomz\worldrender\planet.hpp
 	<iostream>
 	<glm/glm.hpp>
@@ -210,7 +208,7 @@
 	<GL/gl.h>
 	"QuadTree.hpp"
 
-1550605020 /home/ricardo/worldrender/QuadTree.hpp
+1550608222 /home/ricardo/worldrender/QuadTree.hpp
 	<vector>
 	<iostream>
 	<glm/glm.hpp>
@@ -221,7 +219,7 @@
 	"Planet.hpp"
 	<iostream>
 
-1550605020 source:/home/ricardo/worldrender/QuadTree.cpp
+1550608172 source:/home/ricardo/worldrender/QuadTree.cpp
 	"QuadTree.hpp"
 	"simplex.h"
 	<iostream>

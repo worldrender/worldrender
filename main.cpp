@@ -108,6 +108,7 @@ int main(int argv, char** argc){
     glm::vec3 v7 = vec3(auxX, auxY, auxZ);
 
     Planet* planet = new Planet(v0, v1, v2, v3, v4, v5,v6,v7, 5.f);
+
     QuadTree::triangulator();
     // Create the VBO for positions:
     GLuint vertexbuffer;

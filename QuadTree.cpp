@@ -19,6 +19,7 @@ using namespace std;
  * \return
  *
  */
+
 std::vector<glm::vec3> QuadTree::vertices;
 std::vector<glm::vec3> QuadTree::normals;
 std::vector<GLfloat> QuadTree::noises;
@@ -78,14 +79,15 @@ QuadTree::~QuadTree()
 
 void QuadTree::split()
 {
+  using namespace glm;
   if(this->quad->split)
     return;
+  vec3 North  = (vertices[this->quad->c0]+vertices[this->quad->c1])/2.f;
+  vec3 East  = (vertices[this->quad->c1]+vertices[this->quad->c2])/2.f;
+  vec3 South  = (vertices[this->quad->c2]+vertices[this->quad->c3])/2.f;
+  vec3 West   = (vertices[this->quad->c3]+vertices[this->quad->c0])/2.f;
+  vec3 Center = (vertices[this->quad->c0]+vertices[this->quad->c2])/2.f;
 
-  glm::vec3 North  = {(QuadTree::vertices[this->quad->c0]+QuadTree::vertices[this->quad->c1])/2.f}, //nIndex
-            East   = {(QuadTree::vertices[this->quad->c1]+QuadTree::vertices[this->quad->c2])/2.f}, //QuadTree::vertices.size()-4
-            South  = {(QuadTree::vertices[this->quad->c2]+QuadTree::vertices[this->quad->c3])/2.f}, //QuadTree::vertices.size()-3
-            West   = {(QuadTree::vertices[this->quad->c3]+QuadTree::vertices[this->quad->c0])/2.f}, //wIndex
-            Center = {(QuadTree::vertices[this->quad->c0]+QuadTree::vertices[this->quad->c2])/2.f}; //QuadTree::vertices.size()-1
   GLuint i = 0,
   nIndex = -1,
   eIndex = -1,
@@ -111,33 +113,33 @@ void QuadTree::split()
   if(nIndex==-1u)
   {
     QuadTree::vertices.push_back(North);
-    nIndex = (int)QuadTree::vertices.size() - 1;
+    nIndex = (GLuint)QuadTree::vertices.size() - 1;
   }
   if(eIndex==-1u)
   {
     QuadTree::vertices.push_back(East);
-    eIndex = (int)QuadTree::vertices.size() - 1;
+    eIndex = (GLuint)QuadTree::vertices.size() - 1;
   }
   if(sIndex==-1u)
   {
     QuadTree::vertices.push_back(South);
-    sIndex = (int)QuadTree::vertices.size() - 1;
+    sIndex = (GLuint)QuadTree::vertices.size() - 1;
   }
   if(wIndex==-1u)
   {
     QuadTree::vertices.push_back(West);
-    wIndex = (int)QuadTree::vertices.size() - 1;
+    wIndex = (GLuint)QuadTree::vertices.size() - 1;
   }
   if(cIndex==-1u)
   {
     QuadTree::vertices.push_back(Center);
-    cIndex = (int)QuadTree::vertices.size() - 1;
+    cIndex = (GLuint)QuadTree::vertices.size() - 1;
   }
 
-  Quad nw = {this->quad->c0,nIndex,cIndex,wIndex},
-       ne = {nIndex,this->quad->c1,eIndex,cIndex},
-       se = {cIndex,eIndex,this->quad->c2,sIndex},
-       sw = {wIndex,cIndex,sIndex,this->quad->c3};
+  Quad nw = Quad(this->quad->c0,nIndex,cIndex,wIndex),
+       ne = Quad(nIndex,this->quad->c1,eIndex,cIndex),
+       se = Quad(cIndex,eIndex,this->quad->c2,sIndex),
+       sw = Quad(wIndex,cIndex,sIndex,this->quad->c3);
 
   this->nw = new QuadTree(&nw);
   this->ne = new QuadTree(&ne);
