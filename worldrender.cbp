@@ -41,6 +41,8 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="simplex.h" />
 		<Unit filename="world.frag" />
+		<Unit filename="world.tesc" />
+		<Unit filename="world.tese" />
 		<Unit filename="world.vert" />
 		<Extensions>
 			<code_completion />

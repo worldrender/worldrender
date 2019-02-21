@@ -27,6 +27,7 @@ class Planet
        glm::vec3 v4, glm::vec3 v5, glm::vec3 v6, glm::vec3 v7,
        GLfloat radius);
     Planet(Cube* cube, GLfloat radius);
+    getRadius();
 };
 
 #endif
