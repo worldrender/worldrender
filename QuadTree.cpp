@@ -76,16 +76,32 @@ QuadTree::~QuadTree()
  * When it will finish, each calculated vertex is added on vertex list and is created four new quads and it will mark the parameter "quad->split" true;
  */
 
+//void quadTL(vec3 c0, vec3 vN, vec3 vC, vec3 vO){
+//    QuadTree::vertices.push_back(vN);
+//}
+//
+//void quadTR(vec3 vN, vec3 c1, vec3 vL, vec3 vC){
+//    QuadTree::vertices.push_back(vL);
+//}
+//
+//void quadBR(vec3 vC, vec3 vL, vec3 c3, vec3 vS){
+//    QuadTree::vertices.push_back(vS);
+//}
+//
+//void quadBL(vec3 vO, vec3 vC, vec3 vS, vec3 c4){
+//    QuadTree::vertices.push_back(vO);
+//}
+
 void QuadTree::split()
 {
   if(this->quad->split)
     return;
 
-  glm::vec3 North  = {(QuadTree::vertices[this->quad->c0]+QuadTree::vertices[this->quad->c1])/2.f}, //nIndex
-            East   = {(QuadTree::vertices[this->quad->c1]+QuadTree::vertices[this->quad->c2])/2.f}, //QuadTree::vertices.size()-4
-            South  = {(QuadTree::vertices[this->quad->c2]+QuadTree::vertices[this->quad->c3])/2.f}, //QuadTree::vertices.size()-3
-            West   = {(QuadTree::vertices[this->quad->c3]+QuadTree::vertices[this->quad->c0])/2.f}, //wIndex
-            Center = {(QuadTree::vertices[this->quad->c0]+QuadTree::vertices[this->quad->c2])/2.f}; //QuadTree::vertices.size()-1
+  glm::vec3 North  = {(QuadTree::vertices[this->quad->c0] + QuadTree::vertices[this->quad->c1])/2.f}, //nIndex
+            East   = {(QuadTree::vertices[this->quad->c1] + QuadTree::vertices[this->quad->c2])/2.f}, //QuadTree::vertices.size()-4
+            South  = {(QuadTree::vertices[this->quad->c2] + QuadTree::vertices[this->quad->c3])/2.f}, //QuadTree::vertices.size()-3
+            West   = {(QuadTree::vertices[this->quad->c3] + QuadTree::vertices[this->quad->c0])/2.f}, //wIndex
+            Center = {(QuadTree::vertices[this->quad->c0] + QuadTree::vertices[this->quad->c2])/2.f}; //QuadTree::vertices.size()-1
   GLuint i = 0,
   nIndex = -1,
   eIndex = -1,
@@ -94,18 +110,19 @@ void QuadTree::split()
   cIndex = -1;
   for(auto &vertex : QuadTree::vertices)
   {
-    if(vertex == North)
+    if(vertex == North){
       nIndex = i;
-    if(vertex == East)
+    }if(vertex == East){
       eIndex = i;
-    if(vertex == South)
+    }if(vertex == South){
       sIndex = i;
-    if(vertex == West)
+    }if(vertex == West){
       wIndex = i;
-    if(vertex == Center)
+    }if(vertex == Center){
       cIndex = i;
-    if(nIndex>-1u&&eIndex>-1u&&sIndex>-1u&&wIndex>-1u&&cIndex>-1u)
+    }if(nIndex>-1u&&eIndex>-1u&&sIndex>-1u&&wIndex>-1u&&cIndex>-1u){
       break;
+    }
     i++;
   }
   if(nIndex==-1u)
@@ -134,15 +151,15 @@ void QuadTree::split()
     cIndex = (int)QuadTree::vertices.size() - 1;
   }
 
-  Quad nw = {this->quad->c0,nIndex,cIndex,wIndex},
-       ne = {nIndex,this->quad->c1,eIndex,cIndex},
-       se = {cIndex,eIndex,this->quad->c2,sIndex},
-       sw = {wIndex,cIndex,sIndex,this->quad->c3};
+  Quad *nw = new Quad;  nw->c0 = this->quad->c0;    nw->c1 = nIndex;            nw->c2 = cIndex;                nw->c3 = wIndex;
+  Quad *ne = new Quad;  ne->c0 = nIndex;            ne->c1 = this->quad->c1;    ne->c2 = eIndex;                ne->c3 = cIndex;
+  Quad *se = new Quad;  se->c0 = cIndex;            se->c1 = eIndex;            se->c2 = this->quad->c2;        se->c3 = sIndex;
+  Quad *sw = new Quad;  sw->c0 = wIndex;            sw->c1 = cIndex;            sw->c2 = sIndex;                sw->c3 = this->quad->c3;
 
-  this->nw = new QuadTree(&nw);
-  this->ne = new QuadTree(&ne);
-  this->sw = new QuadTree(&sw);
-  this->se = new QuadTree(&se);
+  this->nw = new QuadTree(nw);
+  this->ne = new QuadTree(ne);
+  this->sw = new QuadTree(sw);
+  this->se = new QuadTree(se);
 
   this->quad->split = true;
 }
@@ -172,11 +189,13 @@ void QuadTree::triangulator(){
  */
 
 void QuadTree::verticalSplit(GLuint lod){
+  GLuint leftover=0;
   for(GLuint i=0;i<lod;i++)
   {
-    for(auto &quad : QuadTree::quadTreeList)
+    GLuint boundary=QuadTree::quadTreeList.size();
+    for(;leftover<boundary;leftover++)
     {
-      quad->split();
+      QuadTree::quadTreeList[leftover]->split();
     }
   }
 }
