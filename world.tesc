@@ -16,6 +16,12 @@ uniform float px;
 uniform float py;
 uniform float pz;
 
+uniform float dx;
+uniform float dy;
+uniform float dz;
+uniform float radius;
+
+
 float TessLevelInner;
 float TessLevelOuter;
 
@@ -33,6 +39,15 @@ float LOD(vec3 posV, float posCX, float posCY, float posCZ){
   else if(dist>40) return 1.0;
 }
 
+float dirLOD(vec3 posV, float posCX, float posCY, float posCZ){
+    float param = radius*100/4;
+    vec3 direction = vec3(posCX, posCY, posCZ);
+    float normal = dot(direction, posV);
+    if(normal > param) return 8.0;
+    else if(normal >= -param && normal <= param) return 4.0;
+    else if(normal < -param) return 1.0;
+}
+
 void main(){
 
    // tcTexCoord[ID]  = TexCoord[ID];
@@ -43,12 +58,15 @@ void main(){
 
     if (ID == 0) {
         vec3 vPos = vPosition[0];
-        TessLevelInner = LOD(vPos, px, py, pz);
-        TessLevelOuter = LOD(vPos, px, py, pz);
+        TessLevelInner = dirLOD(vPos, px, py, pz);
+        TessLevelOuter = TessLevelInner;//dirLOD(vPos, px, py, pz);
         gl_TessLevelInner[0] = TessLevelInner;
         gl_TessLevelOuter[0] = TessLevelOuter;
         gl_TessLevelOuter[1] = TessLevelOuter;
         gl_TessLevelOuter[2] = TessLevelOuter;
+    }
+    if(TessLevelInner == 8.0 || TessLevelOuter == 8.0){
+        tcColor[ID] == vec4(1.0, 1.0, 1.0, 1.0);
     }
 
 }

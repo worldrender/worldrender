@@ -20,7 +20,7 @@
 	"LoadShaders.hpp"
 	"controls.hpp"
 
-1550766888 source:c:\users\iagop\documents\projetomz\worldrender\main.cpp
+1550952650 source:c:\users\iagop\documents\projetomz\worldrender\main.cpp
 	<iostream>
 	<string>
 	<cstdlib>
@@ -37,7 +37,7 @@
 
 1545767570 c:\users\iagop\documents\projetomz\worldrender\controls.hpp
 
-1545767570 source:c:\users\iagop\documents\projetomz\worldrender\controls.cpp
+1550952420 source:c:\users\iagop\documents\projetomz\worldrender\controls.cpp
 	<GLFW/glfw3.h>
 	<glm/glm.hpp>
 	<glm/gtc/matrix_transform.hpp>

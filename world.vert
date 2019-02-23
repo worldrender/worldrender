@@ -11,7 +11,7 @@ out vec4 vColor;
 
 void main() {
     vec3 sphereCoord = normalize(position);
-	vPosition = mix(position, sphereCoord*radius, 1);
+	vPosition = mix(position, sphereCoord*radius, 1)*10;
 
 	vNormal.x = vPosition.x;
 	vNormal.y = vPosition.y;

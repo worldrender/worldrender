@@ -10,6 +10,7 @@ uniform mat4 V;
 uniform mat4 MVP;
 uniform int oct;
 uniform float lac;
+uniform float radius;
 
 in vec3 tcPosition[];
 in vec3 tcNormal[];
@@ -233,14 +234,15 @@ float iqfBm(vec3 v, int octaves, float lacunarity, float gain )
 }
 
 void main(){
-    vec3 newTcPosition0 = (tcPosition[0]);// newTcPosition0.y = iqfBm(newTcPosition0, 3, 8, 8);
-    vec3 newTcPosition1 = (tcPosition[1]);// newTcPosition1.y = iqfBm(newTcPosition1, 3, 8, 8);
-    vec3 newTcPosition2 = (tcPosition[2]);// newTcPosition2.y = iqfBm(newTcPosition2, 3, 8, 8);
+    vec3 tcPos0 = (tcPosition[0]);// tcPos0.y = iqfBm(tcPos0, 3, 8, 8)*radius;
+    vec3 tcPos1 = (tcPosition[1]);// tcPos1.y = iqfBm(tcPos1, 3, 8, 8)*radius;
+    vec3 tcPos2 = (tcPosition[2]);// tcPos2.y = iqfBm(tcPos2, 3, 8, 8)*radius;
 
-    vec3 p0 = gl_TessCoord.x * newTcPosition0;
-    vec3 p1 = gl_TessCoord.y * newTcPosition1;
-    vec3 p2 = gl_TessCoord.z * newTcPosition2;
+    vec3 p0 = gl_TessCoord.x * tcPos0;
+    vec3 p1 = gl_TessCoord.y * tcPos1;
+    vec3 p2 = gl_TessCoord.z * tcPos2;
     tePosition = (p0 + p1 + p2);
+    //tePosition*= radius;
     //tePosition.y = iqfBm(tePosition, 1,2,0.5);
 
     vec3 n0 = gl_TessCoord.x * tcNormal[0];
