@@ -20,7 +20,11 @@ using namespace std;
 #include "controls.hpp"
 #include "Planet.hpp"
 #include "QuadTree.hpp"
+
+#define radius 3.14
+#define lodValue 4
 extern glm::vec3 position;
+extern glm::vec3 direction;
 
 bool adapt = true;
 bool unif  = false;
@@ -29,8 +33,6 @@ static GLsizei IndexCount;
 static const GLuint PositionSlot = 0;
 static float TessLevelInner;
 static float TessLevelOuter;
-const char* const filename = "C:\\Users\\iagop\\Documents\\Pesquisa2018-20190123T160530Z-001\\Pesquisa2018\\text.bmp";
-
 
 int main(int argv, char** argc){
     glfwInit();
@@ -76,11 +78,12 @@ int main(int argv, char** argc){
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 
-	GLuint programAdaptID = LoadShaders( "world.vert", "world.frag");
+	GLuint programAdaptID = LoadShaders( "world.vert", "world.tesc", "world.tese", "world.frag");
+	//GLuint programAdaptID = LoadShaders( "world.vert", "world.frag");
 
     GLuint MatrixID, ModelMatrixID, ViewMatrixID, ProjectionMatrixID,
     cameraPosIDX, cameraPosIDY, cameraPosIDZ, ampValue, octavesValue,
-    lacunarityValue, LightID, TessLevelInnerID, TessLevelOuterID;
+    lacunarityValue, LightID, TessLevelInnerID, TessLevelOuterID, radiusID, dirIDX, dirIDY, dirIDZ;
 
     float auxX, auxY, auxZ;
     auxX = -1; auxY = -1; auxZ = -1;
@@ -107,8 +110,9 @@ int main(int argv, char** argc){
     auxX = -1; auxY = 1; auxZ = 1;
     glm::vec3 v7 = vec3(auxX, auxY, auxZ);
 
-    Planet* planet = new Planet(v0, v1, v2, v3, v4, v5,v6,v7, 5.f);
+    Planet* planet = new Planet(v0, v1, v2, v3, v4, v5,v6,v7, radius);
 
+    QuadTree::verticalSplit(lodValue);
     QuadTree::triangulator();
     // Create the VBO for positions:
     GLuint vertexbuffer;
@@ -128,6 +132,7 @@ int main(int argv, char** argc){
     TessLevelInner = 1.0f;
     TessLevelOuter = 4.0f;
     glm::vec3 camerapos = position;
+    glm::vec3 dir = direction;
 
     do{
 
@@ -147,6 +152,11 @@ int main(int argv, char** argc){
         octavesValue         = glGetUniformLocation(programAdaptID, "oct");
         lacunarityValue      = glGetUniformLocation(programAdaptID, "lac");
         LightID              = glGetUniformLocation(programAdaptID, "LightPosition_worldspace");
+        radiusID            = glGetUniformLocation(programAdaptID, "radius");
+
+        dirIDX         = glGetUniformLocation(programAdaptID, "dx");
+        dirIDY         = glGetUniformLocation(programAdaptID, "dy");
+        dirIDZ         = glGetUniformLocation(programAdaptID, "dz");
 
         // Compute the MVP matrix from keyboard and mouse input
         computeMatricesFromInputs(window);
@@ -158,6 +168,7 @@ int main(int argv, char** argc){
         // Send our transformation to the currently bound shader,
         // in the "MVP" uniform
         float px = position.x; float py = position.y; float pz = position.z;
+        float dx = dir.x; float dy = dir.y; float dz = dir.z;
 
                //cout<<"     min = "<<minnn<<" e max = "<<maxxx<<endl;
         if (glfwGetKey( window, GLFW_KEY_U ) == GLFW_PRESS){
@@ -188,6 +199,10 @@ int main(int argv, char** argc){
         glUniform1f(cameraPosIDX, px);
         glUniform1f(cameraPosIDY, py);
         glUniform1f(cameraPosIDZ, pz);
+        glUniform1f(radiusID, planet->getRadius());
+        glUniform1f(dirIDX, dx);
+        glUniform1f(dirIDY, dy);
+        glUniform1f(dirIDZ, dz);
 
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -196,7 +211,9 @@ int main(int argv, char** argc){
         // Index buffer
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
-        glDrawElements(GL_TRIANGLES, QuadTree::indices.size(), GL_UNSIGNED_SHORT, (void*)0);
+        glPatchParameteri(GL_PATCH_VERTICES, 3);
+
+        glDrawElements(GL_PATCHES, QuadTree::indices.size(), GL_UNSIGNED_SHORT, (void*)0);
     //}
         glDisableVertexAttribArray(0);
 

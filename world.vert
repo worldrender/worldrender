@@ -2,14 +2,23 @@
 
 in vec3 position;
 
+uniform float radius;
 uniform mat4 MVP;
 
+out vec3 vPosition;
+out vec3 vNormal;
 out vec4 vColor;
 
 void main() {
+    vec3 sphereCoord = normalize(position);
+	vPosition = mix(position, sphereCoord*radius, 1)*10;
 
-	vColor = vec4(position, 1.0);
+	vNormal.x = vPosition.x;
+	vNormal.y = vPosition.y;
+	vNormal.z = vPosition.z;
 
-    gl_Position = MVP * vec4(position, 1.0);
+	vNormal = normalize(vNormal);
 
+    vColor = vec4(position, 1.0);
+    //gl_Position = MVP * vec4(mix(position, sphereCoord*radius, 1), 1.0);
 }
