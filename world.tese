@@ -1,5 +1,5 @@
 #version 430 core
-#extension GL_EXT_gpu_shader4 : enable
+//#extension GL_EXT_gpu_shader4 : enable
 #define F3 0.333333333
 #define G3 0.166666667
 
@@ -215,7 +215,7 @@ vec4 dnoise(vec3 v){
 float iqfBm(vec3 v, int octaves, float lacunarity, float gain )
 {
 	float sum	= 0.0;
-	float amp	= 1f;
+	float amp	= 1.f;
 	float dx	= 0.0;
 	float dy	= 0.0;
 	float dz    = 0.0; //
