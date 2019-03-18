@@ -63,6 +63,8 @@
 		</Compiler>
 		<Unit filename="LoadShaders.cpp" />
 		<Unit filename="LoadShaders.hpp" />
+		<Unit filename="NoiseFeedback.cpp" />
+		<Unit filename="NoiseFeedback.hpp" />
 		<Unit filename="Planet.cpp" />
 		<Unit filename="Planet.hpp" />
 		<Unit filename="QuadTree.cpp" />

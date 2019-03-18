@@ -1,5 +1,4 @@
 #version 430 core
-//#extension GL_EXT_gpu_shader4 : enable
 #define F3 0.333333333
 #define G3 0.166666667
 
