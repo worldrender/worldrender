@@ -8,7 +8,7 @@ using namespace glm;
 struct InstancedNoise
 {
   vec3 vertex;
-  GLshort index;
+  GLuint index;
   GLfloat noiseValue;
 };
 
