@@ -51,7 +51,7 @@ Planet::Planet(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3,
     QuadTree* quadtree4 = new QuadTree(quad4);
     QuadTree* quadtree5 = new QuadTree(quad5);
 
-    Cube *cube;
+    Cube *cube = new Cube();
     cube->Front = quadtree0; cube->Back = quadtree2;
     cube->Left = quadtree1; cube->Right = quadtree3;
     cube->Top = quadtree4; cube->Bottom = quadtree5;
@@ -66,6 +66,6 @@ Planet::Planet(Cube* cube, GLfloat radius)
     this->radius = radius;
 }
 
-Planet::getRadius(){
+GLfloat Planet::getRadius(){
     return this->radius;
 }

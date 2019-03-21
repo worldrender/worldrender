@@ -32,3 +32,6 @@
 *.app
 
 *.cscope_file_list
+
+/bin
+/obj
