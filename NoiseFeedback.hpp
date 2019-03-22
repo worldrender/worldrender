@@ -14,6 +14,6 @@ struct InstancedNoise
   GLfloat noiseValue;
 };
 
-extern std::vector<InstancedNoise> instancedNoise;
+extern std::vector<InstancedNoise> transformedData;
 void instanceNoise(GLuint shader);
 #endif

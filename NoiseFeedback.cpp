@@ -6,7 +6,7 @@
 #include <vector>
 #include <numeric>
 
-std::vector<InstancedNoise> instancedNoise;
+std::vector<InstancedNoise> transformedData;
 
 void instanceNoise(GLuint shader)
 {
@@ -19,7 +19,6 @@ void instanceNoise(GLuint shader)
   std::vector<GLuint> quadIndex(quadVecSize);
 
   std::iota (std::begin(quadIndex), std::end(quadIndex), 0);
-
 
 	printf("Linking program\n");
   glLinkProgram(program);
@@ -63,8 +62,8 @@ void instanceNoise(GLuint shader)
 
   glEndTransformFeedback();
   glFlush();
-  instancedNoise.resize(quadVecSize);
-  glGetBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, 0, quadVecSize*sizeof(InstancedNoise), instancedNoise.data());
+  transformedData.resize(quadVecSize);
+  glGetBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, 0, quadVecSize*sizeof(InstancedNoise), transformedData.data());
 
   glDisable(GL_RASTERIZER_DISCARD);
 
@@ -75,4 +74,5 @@ void instanceNoise(GLuint shader)
   glDeleteBuffers(1, &feedbackBuffer);
 
   glDeleteVertexArrays(1,&vao);
+
 }
