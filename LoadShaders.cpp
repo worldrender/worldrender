@@ -14,17 +14,80 @@ using namespace std;
 
 #include "LoadShaders.hpp"
 
+void shaderInfo(GLuint ProgramID)
+{
+	GLint Result = GL_FALSE;
+	int InfoLogLength;
+
+	glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
+	glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+	if ( InfoLogLength > 0 ){
+		std::vector<char> ProgramErrorMessage(InfoLogLength+1);
+		glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+		printf("%s\n", &ProgramErrorMessage[0]);
+	}
+}
+
+GLuint attachShader(GLuint shaderId)
+{
+	// Link the program
+	GLuint programID = glCreateProgram();
+	glAttachShader(programID, shaderId);
+	return programID;
+}
+
+void dettachShader(GLuint programID, GLuint shaderId)
+{
+	//Dettaching and deleting unuseful references
+	glDetachShader(programID, shaderId);
+	glDeleteShader(shaderId);
+}
+
+GLuint LoadShader(const char * shader_file_path)
+{
+  GLuint shaderId = glCreateShader(GL_VERTEX_SHADER);
+  std::string shaderCode;
+
+	std::ifstream shaderStream(shader_file_path, std::ios::in);
+	if(shaderStream.is_open()){
+		std::string Line = "";
+		while(getline(shaderStream, Line))
+			shaderCode += "\n" + Line;
+		shaderStream.close();
+	}else{
+		printf("Impossible to open %s. Are you in the right directory ? Don't forget to read the FAQ !\n", shader_file_path);
+		//getchar();
+		exit(-1);
+	}
+
+	GLint Result = GL_FALSE;
+	int InfoLogLength;
+
+	// Compile Vertex Shader
+	printf("Compiling shader : %s\n", shader_file_path);
+	char const * shaderSourcePoint = shaderCode.c_str();
+	glShaderSource(shaderId, 1, &shaderSourcePoint , NULL);
+	glCompileShader(shaderId);
+
+	// Check Vertex Shader
+	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &Result);
+	glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &InfoLogLength);
+	if ( InfoLogLength > 0 ){
+		std::vector<char> shaderErrorMessage(InfoLogLength+1);
+		glGetShaderInfoLog(shaderId, InfoLogLength, NULL, &shaderErrorMessage[0]);
+		printf("%s\n", &shaderErrorMessage[0]);
+	}
+
+	return shaderId;
+}
+
+
 
 GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path){
 //GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path){
 	// Create the shaders
 	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-//	GLuint ControlShaderID = glCreateShader(GL_TESS_CONTROL_SHADER);
-//	GLuint EvaluationShaderID = glCreateShader(GL_TESS_EVALUATION_SHADER);
- //   GLuint GeometryShaderID = glCreateShader(GL_GEOMETRY_SHADER);
-   	GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-
-
+  GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
 
 	// Read the Vertex Shader code from the file
@@ -37,55 +100,8 @@ GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_pat
 		VertexShaderStream.close();
 	}else{
 		printf("Impossible to open %s. Are you in the right directory ? Don't forget to read the FAQ !\n", vertex_file_path);
-		//getchar();
 		exit(-1);
 	}
-
-
-	/*std::string TessControlShaderCode;
-	std::ifstream TessControlStream(control_file_path, std::ios::in);
-	if(TessControlStream.is_open()){
-		std::string Line = "";
-		while(getline(TessControlStream, Line))
-			TessControlShaderCode += "\n" + Line;
-		TessControlStream.close();
-	}else{
-		printf("Impossible to open %s. Are you in the right directory ? Don't forget to read the FAQ !\n", control_file_path);
-		//getchar();
-		exit(-1);
-	}
-
-
-    std::string TessEvaluationShaderCode;
-	std::ifstream TessEvaluationStream(evaluation_file_path, std::ios::in);
-	if(TessEvaluationStream.is_open()){
-		std::string Line = "";
-		while(getline(TessEvaluationStream, Line))
-			TessEvaluationShaderCode += "\n" + Line;
-		TessEvaluationStream.close();
-	}else{
-		printf("Impossible to open %s. Are you in the right directory ? Don't forget to read the FAQ !\n", evaluation_file_path);
-		//getchar();
-		exit(-1);
-	}
-
-*/
-/*
-
-//    // Read the Geometry Shader code from the file
-	std::string GeometryShaderCode;
-	std::ifstream GeometryShaderStream(geometry_file_path, std::ios::in);
-	if(GeometryShaderStream.is_open()){
-		std::string Line = "";
-		while(getline(GeometryShaderStream, Line))
-			GeometryShaderCode += "\n" + Line;
-		GeometryShaderStream.close();
-	}else{
-		printf("Impossible to open %s. Are you in the right directory ? Don't forget to read the FAQ !\n", geometry_file_path);
-		getchar();
-		return 0;
-	}
-*/
 
 	// Read the Fragment Shader code from the file
 	std::string FragmentShaderCode;
@@ -119,58 +135,6 @@ GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_pat
 		glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
 		printf("%s\n", &VertexShaderErrorMessage[0]);
 	}
-
-/*
-
-// Compile Tesselation Control Shader
-	printf("Compiling shader : %s\n", control_file_path);
-	char const * TessControlSourcePointer = TessControlShaderCode.c_str();
-	glShaderSource(ControlShaderID, 1, &TessControlSourcePointer , NULL);
-	glCompileShader(ControlShaderID);
-
-	// Check Vertex Shader
-	glGetShaderiv(ControlShaderID, GL_COMPILE_STATUS, &Result);
-	glGetShaderiv(ControlShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	if ( InfoLogLength > 0 ){
-		std::vector<char> TessControlErrorMessage(InfoLogLength+1);
-		glGetShaderInfoLog(ControlShaderID, InfoLogLength, NULL, &TessControlErrorMessage[0]);
-		printf("%s\n", &TessControlErrorMessage[0]);
-	}
-
-// Compile Tesselation Evaluation Shader
-	printf("Compiling shader : %s\n", evaluation_file_path);
-	char const * EvaluationSourcePointer = TessEvaluationShaderCode.c_str();
-	glShaderSource(EvaluationShaderID, 1, &EvaluationSourcePointer , NULL);
-	glCompileShader(EvaluationShaderID);
-
-	// Check Vertex Shader
-	glGetShaderiv(EvaluationShaderID, GL_COMPILE_STATUS, &Result);
-	glGetShaderiv(EvaluationShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	if ( InfoLogLength > 0 ){
-		std::vector<char> EvaluationShaderErrorMessage(InfoLogLength+1);
-		glGetShaderInfoLog(EvaluationShaderID, InfoLogLength, NULL, &EvaluationShaderErrorMessage[0]);
-		printf("%s\n", &EvaluationShaderErrorMessage[0]);
-	}
-
-	*/
-
-
-/*
-// Compile Geometry Shader
-	printf("Compiling shader : %s\n", geometry_file_path);
-	char const * GeometrySourcePointer = GeometryShaderCode.c_str();
-	glShaderSource(GeometryShaderID, 1, &GeometrySourcePointer , NULL);
-	glCompileShader(GeometryShaderID);
-
-	// Check Geometry Shader
-	glGetShaderiv(GeometryShaderID, GL_COMPILE_STATUS, &Result);
-	glGetShaderiv(GeometryShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	if ( InfoLogLength > 0 ){
-		std::vector<char> GeometryShaderErrorMessage(InfoLogLength+1);
-		glGetShaderInfoLog(GeometryShaderID, InfoLogLength, NULL, &GeometryShaderErrorMessage[0]);
-		printf("%s\n", &GeometryShaderErrorMessage[0]);
-	}
-*/
 
 
 // Compile Fragment Shader

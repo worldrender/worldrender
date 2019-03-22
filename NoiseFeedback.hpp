@@ -3,6 +3,8 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <GL/gl.h>
+#include <vector>
+
 using namespace glm;
 
 struct InstancedNoise
@@ -12,5 +14,6 @@ struct InstancedNoise
   GLfloat noiseValue;
 };
 
-void instanceNoise(GLuint program);
+extern std::vector<InstancedNoise> instancedNoise;
+void instanceNoise(GLuint shader);
 #endif

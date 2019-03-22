@@ -1,20 +1,31 @@
 
 #include "NoiseFeedback.hpp"
 #include "QuadTree.hpp"
+#include "LoadShaders.hpp"
 #include <iostream>
 #include <vector>
 #include <numeric>
 
-void instanceNoise(GLuint program)
+std::vector<InstancedNoise> instancedNoise;
+
+void instanceNoise(GLuint shader)
 {
-  const GLchar* feedbackOutput[] = { "output" };
+  GLuint program;
+  program = attachShader(shader);
+  const GLchar* feedbackOutput[] = { "outValue" };
   glTransformFeedbackVaryings(program, 1, feedbackOutput, GL_INTERLEAVED_ATTRIBS);
 
   GLuint quadVecSize = QuadTree::vertices.size();
   std::vector<GLuint> quadIndex(quadVecSize);
+
   std::iota (std::begin(quadIndex), std::end(quadIndex), 0);
 
+
+	printf("Linking program\n");
   glLinkProgram(program);
+
+  dettachShader(program,shader);
+
   glUseProgram(program);
 
   GLuint vao;
@@ -52,8 +63,16 @@ void instanceNoise(GLuint program)
 
   glEndTransformFeedback();
   glFlush();
-  QuadTree::noises.resize(quadVecSize);
-  glGetBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, 0, quadVecSize*sizeof(QuadTree::noises), QuadTree::noises.data());
+  instancedNoise.resize(quadVecSize);
+  glGetBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, 0, quadVecSize*sizeof(InstancedNoise), instancedNoise.data());
 
   glDisable(GL_RASTERIZER_DISCARD);
+
+  glUseProgram(0);
+
+  glDeleteBuffers(1, &indexBuffer);
+  glDeleteBuffers(1, &tbo);
+  glDeleteBuffers(1, &feedbackBuffer);
+
+  glDeleteVertexArrays(1,&vao);
 }
