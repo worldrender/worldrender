@@ -74,10 +74,11 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="shader.hpp" />
 		<Unit filename="simplex.h" />
-		<Unit filename="world.frag" />
-		<Unit filename="world.tesc" />
-		<Unit filename="world.tese" />
-		<Unit filename="world.vert" />
+		<Unit filename="transform.glsl" />
+		<Unit filename="worldfrag.glsl" />
+		<Unit filename="worldtesc.glsl" />
+		<Unit filename="worldtese.glsl" />
+		<Unit filename="worldvert.glsl" />
 		<Extensions>
 			<code_completion />
 			<envvars />
