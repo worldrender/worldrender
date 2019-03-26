@@ -16,14 +16,13 @@ GLFWwindow* window;
 using namespace glm;
 using namespace std;
 
+#include "Utils.hpp"
 #include "LoadShaders.hpp"
 #include "controls.hpp"
 #include "Planet.hpp"
 #include "QuadTree.hpp"
 #include "NoiseFeedback.hpp"
 
-#define radius 3.14
-#define lodValue 4
 extern glm::vec3 position;
 extern glm::vec3 direction;
 
@@ -73,15 +72,32 @@ int main(int argv, char** argc){
 	// Cull triangles which normal is not towards the camera
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
-    //	if()
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	GLuint VertexArrayID;
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
+	GLuint planetVAO, feedbackVAO;
+	glGenVertexArrays(1, &planetVAO);
+
+  // Create the VBO for positions:
+  glBindVertexArray(planetVAO);
+	GLuint vertexbuffer;
+  glGenBuffers(1, &vertexbuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+  glBufferData(GL_ARRAY_BUFFER, QuadTree::vertices.size() * sizeof(glm::vec3), QuadTree::vertices.data(), GL_STATIC_DRAW);
+
+  // Create the VBO for indices:
+  GLuint elementbuffer;
+  glGenBuffers(1, &elementbuffer);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, QuadTree::indices.size() * sizeof(GLushort), &QuadTree::indices[0], GL_STATIC_DRAW);
+
+  glBindVertexArray(0);
 
 	GLuint programAdaptID = LoadShaders( "worldvert.glsl", "worldtesc.glsl", "worldtese.glsl", "worldfrag.glsl");
+
+  glGenVertexArrays(1, &feedbackVAO);
+  glBindVertexArray(feedbackVAO);
 	GLuint transformFeedbackShader = LoadShader("transform.glsl");
+	glBindVertexArray(0);
+
 	//GLuint programAdaptID = LoadShaders( "world.vert", "world.frag");
 
   GLuint MatrixID, ModelMatrixID, ViewMatrixID, ProjectionMatrixID,
@@ -116,26 +132,13 @@ int main(int argv, char** argc){
   auxX = -1; auxY = 1; auxZ = 1;
   glm::vec3 v7 = vec3(auxX, auxY, auxZ);
 
-  Planet* planet = new Planet(v0, v1, v2, v3, v4, v5,v6,v7, radius);
+  Planet* planet = new Planet(v0, v1, v2, v3, v4, v5,v6,v7, RADIUS);
 
-  QuadTree::verticalSplit(lodValue);
+  QuadTree::verticalSplit(LODVALUE);
   instanceNoise(transformFeedbackShader);
   QuadTree::triangulator();
-  // Create the VBO for positions:
-  GLuint vertexbuffer;
-  //GLsizei stride = 2 * sizeof(float);
 
-  glGenBuffers(1, &vertexbuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-  glBufferData(GL_ARRAY_BUFFER, QuadTree::vertices.size() * sizeof(glm::vec3), QuadTree::vertices.data(), GL_STATIC_DRAW);
-
-  // Create the VBO for indices:
-  GLuint elementbuffer;
-  glGenBuffers(1, &elementbuffer);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, QuadTree::indices.size() * sizeof(GLushort), &QuadTree::indices[0], GL_STATIC_DRAW);
-
-  // For speed computation
+  // To speed up computations
   TessLevelInner = 1.0f;
   TessLevelOuter = 4.0f;
   glm::vec3 camerapos = position;
@@ -147,6 +150,7 @@ int main(int argv, char** argc){
 
     // Use our shader
     glUseProgram(programAdaptID);
+    glBindVertexArray(planetVAO);
     MatrixID             = glGetUniformLocation(programAdaptID, "MVP");
     ModelMatrixID        = glGetUniformLocation(programAdaptID, "M");
     ViewMatrixID         = glGetUniformLocation(programAdaptID, "V");
@@ -233,7 +237,8 @@ int main(int argv, char** argc){
       // Cleanup VBO and shader
   glDeleteBuffers(1, &vertexbuffer);
   glDeleteBuffers(1, &elementbuffer);
-  glDeleteVertexArrays(1, &VertexArrayID);
+  glDeleteVertexArrays(1, &planetVAO);
+  glDeleteVertexArrays(1, &feedbackVAO);
 
   // Close OpenGL window and terminate GLFW
   glfwTerminate();

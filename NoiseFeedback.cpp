@@ -1,4 +1,4 @@
-
+#include "Utils.hpp"
 #include "NoiseFeedback.hpp"
 #include "QuadTree.hpp"
 #include "LoadShaders.hpp"
@@ -12,42 +12,39 @@ void instanceNoise(GLuint shader)
 {
   GLuint program;
   program = attachShader(shader);
-  const GLchar* feedbackOutput[] = { "outValue" };
-  glTransformFeedbackVaryings(program, 1, feedbackOutput, GL_INTERLEAVED_ATTRIBS);
+  const GLchar* feedbackOutput[] = { "outValue.vertex", "outValue.index", "outValue.noiseValue"};
+  glTransformFeedbackVaryings(program, 3, feedbackOutput, GL_INTERLEAVED_ATTRIBS);
 
   GLuint quadVecSize = QuadTree::vertices.size();
   std::vector<GLuint> quadIndex(quadVecSize);
 
   std::iota (std::begin(quadIndex), std::end(quadIndex), 0);
 
-	printf("Linking program\n");
+	std::cout << "Linking program" << std::endl;
   glLinkProgram(program);
 
   dettachShader(program,shader);
-
+  shaderInfo(program);
   glUseProgram(program);
 
-  GLuint vao;
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao);
+  GLuint radiusID = glGetUniformLocation(program, "radius");
+  glUniform1f(radiusID, RADIUS);
 
   GLuint feedbackBuffer;
   glGenBuffers(1, &feedbackBuffer);
   glBindBuffer(GL_ARRAY_BUFFER, feedbackBuffer);
   glBufferData(GL_ARRAY_BUFFER, quadVecSize * sizeof(glm::vec3), QuadTree::vertices.data(), GL_STATIC_DRAW);
 
-  GLint vertexAttrib = glGetAttribLocation(program, "vertex");
-  glEnableVertexAttribArray(vertexAttrib);
-  glVertexAttribPointer(vertexAttrib, 1, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
   GLuint indexBuffer;
   glGenBuffers(1, &indexBuffer);
   glBindBuffer(GL_ARRAY_BUFFER, indexBuffer);
   glBufferData(GL_ARRAY_BUFFER, quadVecSize * sizeof(GLuint), quadIndex.data(), GL_STATIC_DRAW);
 
-  GLint indexAttrib = glGetAttribLocation(program, "index");
-  glEnableVertexAttribArray(indexAttrib);
-  glVertexAttribPointer(indexAttrib, 1, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 1, GL_INT, GL_FALSE, 0, (void*)0);
 
   GLuint tbo;
   glGenBuffers(1, &tbo);
@@ -72,7 +69,5 @@ void instanceNoise(GLuint shader)
   glDeleteBuffers(1, &indexBuffer);
   glDeleteBuffers(1, &tbo);
   glDeleteBuffers(1, &feedbackBuffer);
-
-  glDeleteVertexArrays(1,&vao);
 
 }

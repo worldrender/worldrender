@@ -45,8 +45,8 @@ float dirLOD(vec3 posV, float posCX, float posCY, float posCZ){
 }
 
 void main(){
-  float TessLevelInner;
-  float TessLevelOuter;
+  float TessLevelInner = 0;
+  float TessLevelOuter = 0;
   // tcTexCoord[ID]  = TexCoord[ID];
   tcPosition[ID]  = vPosition[ID];
   tcNormal[ID]    = vNormal[ID];

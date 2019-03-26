@@ -1,5 +1,13 @@
 #version 430 core
 
+struct InstancedNoise
+{
+  vec3 vertex;
+  uint index;
+  float noiseValue;
+};
+out InstancedNoise outValue;
+
 float hash(float n) { return fract(sin(n) * 1e4); }
 float hash(vec2 p) { return fract(1e4 * sin(17.0 * p.x + p.y * 0.1) * (0.1 + abs(sin(p.y * 13.0 + p.x)))); }
 
@@ -34,19 +42,9 @@ float fbm( in vec3 p ){
     return f/0.9375;
 }
 
-
-struct InstancedNoise
-{
-  vec3 vertex;
-  uint index;
-  float noiseValue;
-};
-
 uniform float radius;
 in vec3 vertex;
 in uint index;
-
-out InstancedNoise outValue;
 
 void main() {
   vec3 sphereCoord = normalize(vertex);
