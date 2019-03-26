@@ -63,6 +63,7 @@ void instanceNoise(GLuint shader)
   glGetBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, 0, quadVecSize*sizeof(InstancedNoise), transformedData.data());
 
   glDisable(GL_RASTERIZER_DISCARD);
+  glDisableVertexAttribArray(0);
 
   glUseProgram(0);
 

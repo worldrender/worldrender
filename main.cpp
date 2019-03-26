@@ -72,12 +72,21 @@ int main(int argv, char** argc){
 	// Cull triangles which normal is not towards the camera
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
+//	glCullFace(GL_FRONT_AND_BACK);
 
-	GLuint planetVAO, feedbackVAO;
+  GLuint feedbackVAO;
+  glGenVertexArrays(1, &feedbackVAO);
+  glBindVertexArray(feedbackVAO);
+	GLuint transformFeedbackShader = LoadShader("transform.glsl");
+	glBindVertexArray(0);
+
+  GLuint programAdaptID = LoadShaders( "worldvert.glsl", "worldtesc.glsl", "worldtese.glsl", "worldfrag.glsl");
+  //GLuint programAdaptID = LoadShaders( "worldvert.glsl", "worldfrag.glsl");
+
+  GLuint planetVAO;
 	glGenVertexArrays(1, &planetVAO);
 
   // Create the VBO for positions:
-  glBindVertexArray(planetVAO);
 	GLuint vertexbuffer;
   glGenBuffers(1, &vertexbuffer);
   glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -88,17 +97,6 @@ int main(int argv, char** argc){
   glGenBuffers(1, &elementbuffer);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, QuadTree::indices.size() * sizeof(GLushort), &QuadTree::indices[0], GL_STATIC_DRAW);
-
-  glBindVertexArray(0);
-
-	GLuint programAdaptID = LoadShaders( "worldvert.glsl", "worldtesc.glsl", "worldtese.glsl", "worldfrag.glsl");
-
-  glGenVertexArrays(1, &feedbackVAO);
-  glBindVertexArray(feedbackVAO);
-	GLuint transformFeedbackShader = LoadShader("transform.glsl");
-	glBindVertexArray(0);
-
-	//GLuint programAdaptID = LoadShaders( "world.vert", "world.frag");
 
   GLuint MatrixID, ModelMatrixID, ViewMatrixID, ProjectionMatrixID,
                    cameraPosIDX, cameraPosIDY, cameraPosIDZ,
@@ -224,7 +222,6 @@ int main(int argv, char** argc){
     glPatchParameteri(GL_PATCH_VERTICES, 3);
 
     glDrawElements(GL_PATCHES, QuadTree::indices.size(), GL_UNSIGNED_SHORT, (void*)0);
-//}
     glDisableVertexAttribArray(0);
 
     // Swap buffers
