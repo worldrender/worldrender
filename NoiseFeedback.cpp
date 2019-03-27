@@ -30,9 +30,9 @@ void instanceNoise(GLuint shader)
   GLuint radiusID = glGetUniformLocation(program, "radius");
   glUniform1f(radiusID, RADIUS);
 
-  GLuint feedbackBuffer;
-  glGenBuffers(1, &feedbackBuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, feedbackBuffer);
+  GLuint vertexBuffer;
+  glGenBuffers(1, &vertexBuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
   glBufferData(GL_ARRAY_BUFFER, quadVecSize * sizeof(glm::vec3), QuadTree::vertices.data(), GL_STATIC_DRAW);
 
   glEnableVertexAttribArray(0);
@@ -44,16 +44,16 @@ void instanceNoise(GLuint shader)
   glBufferData(GL_ARRAY_BUFFER, quadVecSize * sizeof(GLuint), quadIndex.data(), GL_STATIC_DRAW);
 
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 1, GL_INT, GL_FALSE, 0, (void*)0);
+  glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, 0, (void*)0);
 
-  GLuint tbo;
-  glGenBuffers(1, &tbo);
-  glBindBuffer(GL_ARRAY_BUFFER, tbo);
+  GLuint feedbackBuffer;
+  glGenBuffers(1, &feedbackBuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, feedbackBuffer);
   glBufferData(GL_ARRAY_BUFFER, quadVecSize*sizeof(InstancedNoise), nullptr, GL_STATIC_READ);
 
   glEnable(GL_RASTERIZER_DISCARD);
 
-  glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, tbo);
+  glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, feedbackBuffer);
   glBeginTransformFeedback(GL_POINTS);
   glDrawArrays(GL_POINTS, 0, quadVecSize);
 
@@ -68,7 +68,7 @@ void instanceNoise(GLuint shader)
   glUseProgram(0);
 
   glDeleteBuffers(1, &indexBuffer);
-  glDeleteBuffers(1, &tbo);
   glDeleteBuffers(1, &feedbackBuffer);
+  glDeleteBuffers(1, &vertexBuffer);
 
 }

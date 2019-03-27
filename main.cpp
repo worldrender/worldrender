@@ -22,6 +22,7 @@ using namespace std;
 #include "Planet.hpp"
 #include "QuadTree.hpp"
 #include "NoiseFeedback.hpp"
+#include <chrono>
 
 extern glm::vec3 position;
 extern glm::vec3 direction;
@@ -75,11 +76,13 @@ int main(int argv, char** argc){
     //	if()
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	GLuint VertexArrayID;
+	GLuint VertexArrayID,
+	       feedbackVAO;
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 
 	GLuint programAdaptID = LoadShaders( "worldvert.glsl", "worldtesc.glsl", "worldtese.glsl", "worldfrag.glsl");
+  GLuint transformFeedbackShader = LoadShader("transform.glsl");
 	//GLuint programAdaptID = LoadShaders( "world.vert", "world.frag");
 
     GLuint MatrixID, ModelMatrixID, ViewMatrixID, ProjectionMatrixID,
@@ -115,12 +118,14 @@ int main(int argv, char** argc){
 
     QuadTree::verticalSplit(LODVALUE);
 
-//    GLuint feedbackVAO;
-//    glGenVertexArrays(1, &feedbackVAO);
-//    glBindVertexArray(feedbackVAO);
-//    GLuint transformFeedbackShader = LoadShader("transform.glsl");
-//    instanceNoise(transformFeedbackShader);
-//    glBindVertexArray(0);
+    glGenVertexArrays(1, &feedbackVAO);
+    glBindVertexArray(feedbackVAO);
+    auto start = std::chrono::high_resolution_clock::now();
+    instanceNoise(transformFeedbackShader);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> diff = end-start;
+    std::cout << "Feedback throttle: " << diff.count() << "s\n";
+    glBindVertexArray(0);
 
     QuadTree::triangulator();
     // Create the VBO for positions:
@@ -142,9 +147,8 @@ int main(int argv, char** argc){
     TessLevelOuter = 4.0f;
     glm::vec3 camerapos = position;
     glm::vec3 dir = direction;
-
+    glBindVertexArray(feedbackVAO);
     do{
-
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -180,26 +184,18 @@ int main(int argv, char** argc){
         float dx = dir.x; float dy = dir.y; float dz = dir.z;
 
                //cout<<"     min = "<<minnn<<" e max = "<<maxxx<<endl;
-        if (glfwGetKey( window, GLFW_KEY_U ) == GLFW_PRESS){
+        if (glfwGetKey( window, GLFW_KEY_U ) == GLFW_PRESS)
            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        }
-        if (glfwGetKey( window, GLFW_KEY_I ) == GLFW_PRESS){
+
+        if (glfwGetKey( window, GLFW_KEY_I ) == GLFW_PRESS)
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        }
-        if (glfwGetKey( window, GLFW_KEY_O ) == GLFW_PRESS){
+
+        if (glfwGetKey( window, GLFW_KEY_O ) == GLFW_PRESS)
             glEnable(GL_CULL_FACE);
-        }
-        if (glfwGetKey( window, GLFW_KEY_P ) == GLFW_PRESS){
+
+        if (glfwGetKey( window, GLFW_KEY_P ) == GLFW_PRESS)
             glDisable(GL_CULL_FACE);
-        }
-        if (glfwGetKey( window, GLFW_KEY_M ) == GLFW_PRESS){
-//            oct = rand() % 7;
-  //          cout<<oct<<endl;
-        }
-        if (glfwGetKey( window, GLFW_KEY_N ) == GLFW_PRESS){
-          //  lac = rand() % 11;
-    //        cout<<lac<<endl;
-        }
+
 
         glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
         glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
@@ -238,6 +234,7 @@ int main(int argv, char** argc){
     glDeleteBuffers(1, &vertexbuffer);
     glDeleteBuffers(1, &elementbuffer);
     glDeleteVertexArrays(1, &VertexArrayID);
+    glDeleteVertexArrays(1, &feedbackVAO);
 
     // Close OpenGL window and terminate GLFW
     glfwTerminate();
