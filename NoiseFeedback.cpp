@@ -7,6 +7,7 @@
 #include <numeric>
 
 std::vector<InstancedNoise> transformedData;
+std::vector<glm::vec3> transformedVertices;
 
 void instanceNoise(GLuint shader)
 {
@@ -17,6 +18,7 @@ void instanceNoise(GLuint shader)
 
   GLuint quadVecSize = QuadTree::vertices.size();
   std::vector<GLuint> quadIndex(quadVecSize);
+  auto quadBegin = QuadTree::vertices.begin();
 
   std::iota (std::begin(quadIndex), std::end(quadIndex), 0);
 
@@ -71,4 +73,9 @@ void instanceNoise(GLuint shader)
   glDeleteBuffers(1, &feedbackBuffer);
   glDeleteBuffers(1, &vertexBuffer);
 
+
+  for(InstancedNoise &elem : transformedData)
+  {
+    transformedVertices.push_back(elem.vertex);
+  }
 }

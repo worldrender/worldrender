@@ -134,13 +134,14 @@ int main(int argv, char** argc){
 
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glBufferData(GL_ARRAY_BUFFER, QuadTree::vertices.size() * sizeof(glm::vec3), QuadTree::vertices.data(), GL_STATIC_DRAW);
+//    glBufferData(GL_ARRAY_BUFFER, QuadTree::vertices.size() * sizeof(glm::vec3), QuadTree::vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, transformedVertices.size() * sizeof(glm::vec3), transformedVertices.data(), GL_STATIC_DRAW);
 
     // Create the VBO for indices:
     GLuint elementbuffer;
     glGenBuffers(1, &elementbuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, QuadTree::indices.size() * sizeof(GLushort), &QuadTree::indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, QuadTree::indices.size() * sizeof(GLushort), QuadTree::indices.data(), GL_STATIC_DRAW);
 
     // For speed computation
     TessLevelInner = 1.0f;
@@ -148,6 +149,7 @@ int main(int argv, char** argc){
     glm::vec3 camerapos = position;
     glm::vec3 dir = direction;
     glBindVertexArray(feedbackVAO);
+
     do{
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -196,7 +198,6 @@ int main(int argv, char** argc){
         if (glfwGetKey( window, GLFW_KEY_P ) == GLFW_PRESS)
             glDisable(GL_CULL_FACE);
 
-
         glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
         glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
         glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
@@ -228,7 +229,7 @@ int main(int argv, char** argc){
 
     } // Check if the ESC key was pressed or the window was closed
     while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-        glfwWindowShouldClose(window) == 0 );
+           glfwWindowShouldClose(window) == 0 );
 
         // Cleanup VBO and shader
     glDeleteBuffers(1, &vertexbuffer);

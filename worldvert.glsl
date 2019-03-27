@@ -10,12 +10,12 @@ out vec3 vNormal;
 out vec4 vColor;
 
 void main() {
-    vec3 sphereCoord = normalize(position);
-	vPosition = mix(position, sphereCoord*radius, 1)*10;
+
+	vPosition = position;
 
 	vNormal = normalize(vPosition);
 	vNormal = -vNormal;
 
-    vColor = vec4(position, 1.0);
+    vColor = vec4(vNormal, 1.0);
     //gl_Position = MVP * vec4(mix(position, sphereCoord*radius, 1), 1.0);
 }
