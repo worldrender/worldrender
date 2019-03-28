@@ -13,14 +13,10 @@ void instanceNoise(GLuint shader)
 {
   GLuint program;
   program = attachShader(shader);
-  const GLchar* feedbackOutput[] = { "outValue.vertex", "outValue.index", "outValue.noiseValue"};
-  glTransformFeedbackVaryings(program, 3, feedbackOutput, GL_INTERLEAVED_ATTRIBS);
+  const GLchar* feedbackOutput[] = { "outValue.vertex", "outValue.noiseValue"};
+  glTransformFeedbackVaryings(program, 2, feedbackOutput, GL_INTERLEAVED_ATTRIBS);
 
   GLuint quadVecSize = QuadTree::vertices.size();
-  std::vector<GLuint> quadIndex(quadVecSize);
-  auto quadBegin = QuadTree::vertices.begin();
-
-  std::iota (std::begin(quadIndex), std::end(quadIndex), 0);
 
 	std::cout << "Linking program" << std::endl;
   glLinkProgram(program);
@@ -39,14 +35,6 @@ void instanceNoise(GLuint shader)
 
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-  GLuint indexBuffer;
-  glGenBuffers(1, &indexBuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, indexBuffer);
-  glBufferData(GL_ARRAY_BUFFER, quadVecSize * sizeof(GLuint), quadIndex.data(), GL_STATIC_DRAW);
-
-  glEnableVertexAttribArray(1);
-  glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, 0, (void*)0);
 
   GLuint feedbackBuffer;
   glGenBuffers(1, &feedbackBuffer);
@@ -69,7 +57,6 @@ void instanceNoise(GLuint shader)
 
   glUseProgram(0);
 
-  glDeleteBuffers(1, &indexBuffer);
   glDeleteBuffers(1, &feedbackBuffer);
   glDeleteBuffers(1, &vertexBuffer);
 
@@ -77,6 +64,7 @@ void instanceNoise(GLuint shader)
   for(InstancedNoise &elem : transformedData)
   {
     transformedVertices.push_back(elem.vertex);
+    QuadTree::noises.push_back(elem.noiseValue);
   }
   std::cout << "Vertex Size: " << quadVecSize << std::endl;
 }

@@ -1,6 +1,7 @@
 #version 430 core
 
 layout(location = 0) in vec3 position;
+layout(location = 1) in float noise;
 
 uniform float radius;
 uniform mat4 MVP;
@@ -14,7 +15,8 @@ void main() {
 	vPosition = position*10;
 
 	vNormal = normalize(vPosition);
-	vNormal = -vNormal;
+
+	vPosition = vPosition + vNormal*noise*4;
 
     vColor = vec4(vNormal, 1.0);
     //gl_Position = MVP * vec4(mix(position, sphereCoord*radius, 1), 1.0);

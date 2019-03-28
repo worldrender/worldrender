@@ -58,10 +58,10 @@ int main(int argv, char** argc){
 
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    glfwPollEvents();
-    glfwSetCursorPos(window, 1280/2, 1024/2);
+  glfwPollEvents();
+  glfwSetCursorPos(window, 1280/2, 1024/2);
 
 	glClearColor(0.5f, 0.5f, 0.8f, 1.0f);
 
@@ -73,8 +73,6 @@ int main(int argv, char** argc){
 	// Cull triangles which normal is not towards the camera
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
-    //	if()
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	GLuint VertexArrayID,
 	       feedbackVAO;
@@ -83,7 +81,6 @@ int main(int argv, char** argc){
 
 	GLuint programAdaptID = LoadShaders( "worldvert.glsl", "worldtesc.glsl", "worldtese.glsl", "worldfrag.glsl");
   GLuint transformFeedbackShader = LoadShader("transform.glsl");
-	//GLuint programAdaptID = LoadShaders( "world.vert", "world.frag");
 
     GLuint MatrixID, ModelMatrixID, ViewMatrixID, ProjectionMatrixID,
     cameraPosIDX, cameraPosIDY, cameraPosIDZ, ampValue, octavesValue,
@@ -128,14 +125,17 @@ int main(int argv, char** argc){
     glBindVertexArray(0);
 
     QuadTree::triangulator();
+
     // Create the VBO for positions:
     GLuint vertexbuffer;
-    //GLsizei stride = 2 * sizeof(float);
-
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-//    glBufferData(GL_ARRAY_BUFFER, QuadTree::vertices.size() * sizeof(glm::vec3), QuadTree::vertices.data(), GL_STATIC_DRAW);
     glBufferData(GL_ARRAY_BUFFER, transformedVertices.size() * sizeof(glm::vec3), transformedVertices.data(), GL_STATIC_DRAW);
+
+    GLuint noiseBuffer;
+    glGenBuffers(1, &noiseBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, noiseBuffer);
+    glBufferData(GL_ARRAY_BUFFER, transformedVertices.size() * sizeof(GLfloat), QuadTree::noises.data(), GL_STATIC_DRAW);
 
     // Create the VBO for indices:
     GLuint elementbuffer;
@@ -190,8 +190,6 @@ int main(int argv, char** argc){
         float px = position.x; float py = position.y; float pz = position.z;
         float dx = dir.x; float dy = dir.y; float dz = dir.z;
 
-
-               //cout<<"     min = "<<minnn<<" e max = "<<maxxx<<endl;
         if (glfwGetKey( window, GLFW_KEY_U ) == GLFW_PRESS)
            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -204,13 +202,11 @@ int main(int argv, char** argc){
         if (glfwGetKey( window, GLFW_KEY_P ) == GLFW_PRESS)
             glDisable(GL_CULL_FACE);
 
-
         bool tIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_T ) == GLFW_PRESS);
         if (!tIsPressed && tIsCurrentlyPressed){
             enableTess = !enableTess;
         }
         tIsPressed = tIsCurrentlyPressed;
-
 
         glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
         glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
@@ -228,6 +224,10 @@ int main(int argv, char** argc){
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, noiseBuffer);
+        glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
         // Index buffer
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
@@ -255,7 +255,7 @@ int main(int argv, char** argc){
     // Close OpenGL window and terminate GLFW
     glfwTerminate();
 
-    GLuint warn[] = {ampValue,octavesValue,lacunarityValue,LightID,TessLevelInnerID, TessLevelOuterID, (GLuint)camerapos.x};
+    GLuint warn[] = {ampValue, octavesValue, lacunarityValue, LightID, TessLevelInnerID, TessLevelOuterID, (GLuint)camerapos.x};
     if(warn);
     if(IndexCount);
 

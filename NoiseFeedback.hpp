@@ -10,7 +10,6 @@ using namespace glm;
 struct InstancedNoise
 {
   vec3 vertex;
-  GLuint index;
   GLfloat noiseValue;
 };
 

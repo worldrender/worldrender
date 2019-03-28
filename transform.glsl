@@ -3,7 +3,6 @@
 struct InstancedNoise
 {
   vec3 vertex;
-  uint index;
   float noiseValue;
 };
 out InstancedNoise outValue;
@@ -44,13 +43,11 @@ float fbm( in vec3 p ){
 
 uniform float radius;
 in vec3 vertex;
-in uint index;
 
 void main() {
   vec3 sphereCoord = normalize(vertex);
 	sphereCoord = mix(vertex, sphereCoord*radius, 1)*10;
 
   outValue.vertex = sphereCoord;
-  outValue.index = index;
   outValue.noiseValue = fbm(sphereCoord);
 }
