@@ -13,6 +13,7 @@ struct Quad
   GLuint c2 = 0.f; //southEest
   GLuint c3 = 0.f; //southWast
   bool split = false;
+  bool isCollapsed = false;
   Quad(GLuint c0, GLuint c1, GLuint c2, GLuint c3)
   {
     this->c0 = c0;
