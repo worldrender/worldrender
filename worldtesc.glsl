@@ -15,6 +15,7 @@ out vec4 tcColor[];
 uniform float px;
 uniform float py;
 uniform float pz;
+uniform bool tess;
 
 uniform float dx;
 uniform float dy;
@@ -55,8 +56,14 @@ void main(){
 
   if (ID == 0) {
     vec3 vPos = vPosition[0];
-    TessLevelInner = dirLOD(vPos, px, py, pz);
+    if(tess){
+      TessLevelInner = dirLOD(vPos, px, py, pz);
+    }
+    else{
+      TessLevelInner = 1;
+    }
     TessLevelOuter = TessLevelInner;//dirLOD(vPos, px, py, pz);
+
     gl_TessLevelInner[0] = TessLevelInner;
     gl_TessLevelOuter[0] = TessLevelOuter;
     gl_TessLevelOuter[1] = TessLevelOuter;

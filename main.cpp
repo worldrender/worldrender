@@ -87,7 +87,7 @@ int main(int argv, char** argc){
 
     GLuint MatrixID, ModelMatrixID, ViewMatrixID, ProjectionMatrixID,
     cameraPosIDX, cameraPosIDY, cameraPosIDZ, ampValue, octavesValue,
-    lacunarityValue, LightID, TessLevelInnerID, TessLevelOuterID, radiusID, dirIDX, dirIDY, dirIDZ;
+    lacunarityValue, LightID, TessLevelInnerID, TessLevelOuterID, radiusID, dirIDX, dirIDY, dirIDZ, enableTessID;
 
     float auxX, auxY, auxZ;
     auxX = -1; auxY = -1; auxZ = -1;
@@ -146,9 +146,12 @@ int main(int argv, char** argc){
     // For speed computation
     TessLevelInner = 1.0f;
     TessLevelOuter = 4.0f;
+    bool enableTess = true;
     glm::vec3 camerapos = position;
     glm::vec3 dir = direction;
     glBindVertexArray(feedbackVAO);
+
+    bool tIsPressed;
 
     do{
         // Clear the screen
@@ -167,7 +170,9 @@ int main(int argv, char** argc){
         octavesValue         = glGetUniformLocation(programAdaptID, "oct");
         lacunarityValue      = glGetUniformLocation(programAdaptID, "lac");
         LightID              = glGetUniformLocation(programAdaptID, "LightPosition_worldspace");
-        radiusID            = glGetUniformLocation(programAdaptID, "radius");
+        radiusID             = glGetUniformLocation(programAdaptID, "radius");
+        enableTessID         = glGetUniformLocation(programAdaptID, "tess");
+        TessLevelInnerID     = glGetUniformLocation(programAdaptID, "TessLevelInner");
 
         dirIDX         = glGetUniformLocation(programAdaptID, "dx");
         dirIDY         = glGetUniformLocation(programAdaptID, "dy");
@@ -185,6 +190,7 @@ int main(int argv, char** argc){
         float px = position.x; float py = position.y; float pz = position.z;
         float dx = dir.x; float dy = dir.y; float dz = dir.z;
 
+
                //cout<<"     min = "<<minnn<<" e max = "<<maxxx<<endl;
         if (glfwGetKey( window, GLFW_KEY_U ) == GLFW_PRESS)
            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -198,6 +204,14 @@ int main(int argv, char** argc){
         if (glfwGetKey( window, GLFW_KEY_P ) == GLFW_PRESS)
             glDisable(GL_CULL_FACE);
 
+
+        bool tIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_T ) == GLFW_PRESS);
+        if (!tIsPressed && tIsCurrentlyPressed){
+            enableTess = !enableTess;
+        }
+        tIsPressed = tIsCurrentlyPressed;
+
+
         glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
         glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
         glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
@@ -209,6 +223,7 @@ int main(int argv, char** argc){
         glUniform1f(dirIDX, dx);
         glUniform1f(dirIDY, dy);
         glUniform1f(dirIDZ, dz);
+        glUniform1i(enableTessID, enableTess);
 
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);

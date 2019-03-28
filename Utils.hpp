@@ -2,6 +2,6 @@
 #define UTILS_HPP
 
 #define RADIUS 3.14
-#define LODVALUE 4
+#define LODVALUE 6
 
 #endif
