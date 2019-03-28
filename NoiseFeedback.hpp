@@ -14,6 +14,5 @@ struct InstancedNoise
 };
 
 extern std::vector<InstancedNoise> transformedData;
-extern std::vector<glm::vec3> transformedVertices;
 void instanceNoise(GLuint shader);
 #endif

@@ -8,10 +8,10 @@
 
 struct Quad
 {
-  GLuint c0 = 0.f; //northWest
-  GLuint c1 = 0.f; //northEast
-  GLuint c2 = 0.f; //southEest
-  GLuint c3 = 0.f; //southWast
+  GLuint c0 = 0u; //northWest
+  GLuint c1 = 0u; //northEast
+  GLuint c2 = 0u; //southEest
+  GLuint c3 = 0u; //southWast
   bool split = false;
   bool isCollapsed = false;
   Quad(GLuint c0, GLuint c1, GLuint c2, GLuint c3)

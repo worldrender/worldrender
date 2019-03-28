@@ -151,7 +151,7 @@ int main(int argv, char** argc){
     glm::vec3 dir = direction;
     glBindVertexArray(feedbackVAO);
 
-    bool tIsPressed;
+    bool tIsPressed=0;
 
     do{
         // Clear the screen
@@ -251,6 +251,8 @@ int main(int argv, char** argc){
     glDeleteBuffers(1, &elementbuffer);
     glDeleteVertexArrays(1, &VertexArrayID);
     glDeleteVertexArrays(1, &feedbackVAO);
+
+    QuadTree::instanceNoise();
 
     // Close OpenGL window and terminate GLFW
     glfwTerminate();

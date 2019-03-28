@@ -1,6 +1,10 @@
 #include "QuadTree.hpp"
 #include "simplex.h"
 #include <iostream>
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/hash.hpp"
+
+#include <chrono>
 
 using namespace std;
 
@@ -201,8 +205,14 @@ void QuadTree::verticalSplit(GLuint lod){
 }
 
 void QuadTree::instanceNoise(){
+  vector<float> testNoise;
+
+  auto start = std::chrono::high_resolution_clock::now();
   for(auto &vertex : QuadTree::vertices)
   {
-    noises.push_back(Simplex::iqfBm(vertex));
+    testNoise.push_back(Simplex::iqfBm(vertex));
   }
+  auto end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> diff = end-start;
+  std::cout << "CPU fBm: " << diff.count() << "s\n";
 }
