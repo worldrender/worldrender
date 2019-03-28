@@ -78,4 +78,5 @@ void instanceNoise(GLuint shader)
   {
     transformedVertices.push_back(elem.vertex);
   }
+  std::cout << "Vertex Size: " << quadVecSize << std::endl;
 }

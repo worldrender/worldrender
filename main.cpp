@@ -41,7 +41,7 @@ int main(int argv, char** argc){
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	window = glfwCreateWindow( 1280, 1024, "IPSinewave_v6", NULL, NULL);
+	window = glfwCreateWindow( 1280, 1024, "World Renderer", NULL, NULL);
 	if( window == NULL ){
     cout << "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n";
 		glfwTerminate();
