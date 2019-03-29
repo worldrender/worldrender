@@ -252,7 +252,14 @@ int main(int argv, char** argc){
     glDeleteVertexArrays(1, &VertexArrayID);
     glDeleteVertexArrays(1, &feedbackVAO);
 
-    QuadTree::instanceNoise();
+    start = std::chrono::high_resolution_clock::now();
+    QuadTree::threadedInstanceNoise();
+    end = std::chrono::high_resolution_clock::now();
+    diff = end-start;
+    std::cout << "CPU fBm: " << diff.count() << "s\n";
+
+    QuadTree::hashSplit();
+
 
     // Close OpenGL window and terminate GLFW
     glfwTerminate();

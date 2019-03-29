@@ -5,6 +5,10 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <GL/gl.h>
+#include <unordered_set>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/hash.hpp"
 
 struct Quad
 {
@@ -40,6 +44,8 @@ class QuadTree
     static std::vector<GLushort> normalIndices;
     static std::vector<GLfloat> noises;
     static std::vector<QuadTree*> quadTreeList;
+    static std::unordered_set<glm::vec3> vertexSet;
+
     QuadTree();
     QuadTree(Quad *quad);
 
@@ -48,6 +54,9 @@ class QuadTree
     static void triangulator();
     static void verticalSplit(GLuint lod);
     static void instanceNoise();
+    static void instanceNoiseR(int start, int end);
+    static void hashSplit();
+    static void threadedInstanceNoise();
 };
 #endif
 

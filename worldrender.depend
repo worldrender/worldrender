@@ -374,11 +374,13 @@
 	"Planet.hpp"
 	<iostream>
 
-1553780325 /home/ricardo/worldrender/QuadTree.hpp
+1553816315 /home/ricardo/worldrender/QuadTree.hpp
 	<vector>
 	<iostream>
 	<glm/glm.hpp>
 	<GL/gl.h>
+	<unordered_set>
+	"glm/gtx/hash.hpp"
 
 1553552562 /home/ricardo/worldrender/Planet.hpp
 	<iostream>
@@ -386,11 +388,11 @@
 	<GL/gl.h>
 	"QuadTree.hpp"
 
-1553784674 source:/home/ricardo/worldrender/QuadTree.cpp
+1553807269 source:/home/ricardo/worldrender/QuadTree.cpp
 	"QuadTree.hpp"
 	"simplex.h"
 	<iostream>
-	"glm/gtx/hash.hpp"
+	<thread>
 	<chrono>
 
 1550605020 /home/ricardo/worldrender/simplex.h
@@ -424,7 +426,7 @@
 	<GL/gl.h>
 	<vector>
 
-1553780402 source:/home/ricardo/worldrender/main.cpp
+1553806149 source:/home/ricardo/worldrender/main.cpp
 	<iostream>
 	<string>
 	<cstdlib>
