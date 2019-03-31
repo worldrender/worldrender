@@ -1,9 +1,12 @@
 #include "QuadTree.hpp"
+#include "Utils.hpp"
 #include "simplex.h"
 #include <iostream>
 #include <thread>
 
 #include <chrono>
+
+
 
 using namespace std;
 
@@ -188,10 +191,10 @@ void QuadTree::triangulator(){
     }
   }
 }
+
 /**
  * This method splits for each quad on quadtree list.
  */
-
 void QuadTree::verticalSplit(GLuint lod){
   GLuint leftover=0;
   for(GLuint i=0;i<lod;i++)
@@ -203,6 +206,7 @@ void QuadTree::verticalSplit(GLuint lod){
     }
   }
 }
+
 
 void QuadTree::instanceNoise() {
   vector<float> testNoise;
@@ -219,25 +223,21 @@ void QuadTree::instanceNoise() {
 
 void QuadTree::instanceNoiseR(int start, int end) {
   vector<float> testNoise;
-
+  std::vector<glm::vec3> transformed;
 
   for(int i=start;i<end;i++)
-    testNoise.push_back(Simplex::iqfBm(QuadTree::vertices.at(i)));
+  {
+    glm::vec3 tmp = QuadTree::vertices.at(i);
+    glm::vec3 sphere = glm::normalize(tmp);
+    sphere = glm::mix(tmp, sphere*(float)RADIUS,1.f)*10.f;
+    testNoise.push_back(Simplex::iqfBm(sphere));
+    transformed.push_back(sphere);
+  }
 }
+
 
 void QuadTree::threadedInstanceNoise(){
   int sizeT = QuadTree::vertices.size();
-
-//  std::thread fst (instanceNoise,0,sizeT/4);     // spawn new thread that calls foo()
-//  std::thread snd (instanceNoise,sizeT/4+1,sizeT/2);
-//  std::thread trd (instanceNoise,sizeT/2+1,sizeT*3/4);     // spawn new thread that calls foo()
-//  std::thread fth (instanceNoise,sizeT*3/4+1,sizeT-1);
-//
-//  fst.join();
-//  snd.join();
-//  trd.join();
-//  fth.join();
-
 
   std::thread fst (instanceNoiseR,0,sizeT/8);     // spawn new thread that calls foo()
   std::thread snd (instanceNoiseR,sizeT/8+1,sizeT/4);
@@ -256,12 +256,4 @@ void QuadTree::threadedInstanceNoise(){
   sth.join();
   svt.join();
   eth.join();
-}
-
-void QuadTree::hashSplit()
-{
-
-
-  QuadTree::vertexSet.insert(glm::vec3(1.f,1.f,1.f));
-  QuadTree::vertexSet.insert(glm::vec3(1.f,1.f,1.f));
 }
