@@ -1,6 +1,12 @@
 #include "QuadTree.hpp"
+#include "Utils.hpp"
 #include "simplex.h"
 #include <iostream>
+#include <thread>
+
+#include <chrono>
+
+
 
 using namespace std;
 
@@ -25,6 +31,7 @@ std::vector<GLfloat> QuadTree::noises;
 std::vector<GLushort> QuadTree::indices;
 std::vector<GLushort> QuadTree::normalIndices;
 std::vector<QuadTree*> QuadTree::quadTreeList;
+std::unordered_set<glm::vec3> QuadTree::vertexSet;
 
 /**
  * Default constructor for the \class QuadTree class, it instantiates a quadtree without any children or quad coordinates
@@ -184,10 +191,10 @@ void QuadTree::triangulator(){
     }
   }
 }
+
 /**
  * This method splits for each quad on quadtree list.
  */
-
 void QuadTree::verticalSplit(GLuint lod){
   GLuint leftover=0;
   for(GLuint i=0;i<lod;i++)
@@ -200,9 +207,53 @@ void QuadTree::verticalSplit(GLuint lod){
   }
 }
 
-void QuadTree::instanceNoise(){
+
+void QuadTree::instanceNoise() {
+  vector<float> testNoise;
+
+  auto start = std::chrono::high_resolution_clock::now();
   for(auto &vertex : QuadTree::vertices)
   {
-    noises.push_back(Simplex::iqfBm(vertex));
+    testNoise.push_back(Simplex::iqfBm(vertex));
   }
+  auto end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> diff = end-start;
+  std::cout << "CPU fBm: " << diff.count() << "s\n";
+}
+
+void QuadTree::instanceNoiseR(int start, int end) {
+  vector<float> testNoise;
+  std::vector<glm::vec3> transformed;
+
+  for(int i=start;i<end;i++)
+  {
+    glm::vec3 tmp = QuadTree::vertices.at(i);
+    glm::vec3 sphere = glm::normalize(tmp);
+    sphere = glm::mix(tmp, sphere*(float)RADIUS,1.f)*10.f;
+    testNoise.push_back(Simplex::iqfBm(sphere));
+    transformed.push_back(sphere);
+  }
+}
+
+
+void QuadTree::threadedInstanceNoise(){
+  int sizeT = QuadTree::vertices.size();
+
+  std::thread fst (instanceNoiseR,0,sizeT/8);     // spawn new thread that calls foo()
+  std::thread snd (instanceNoiseR,sizeT/8+1,sizeT/4);
+  std::thread trd (instanceNoiseR,sizeT/4+1,sizeT*3/8);
+  std::thread fth (instanceNoiseR,sizeT*3/8+1,sizeT/2);     // spawn new thread that calls foo()
+  std::thread ftt (instanceNoiseR,sizeT/2+1,sizeT*5/8);
+  std::thread sth (instanceNoiseR,sizeT*5/8+1,sizeT*3/4);     // spawn new thread that calls foo()
+  std::thread svt (instanceNoiseR,sizeT*3/4+1,sizeT*7/8);
+  std::thread eth (instanceNoiseR,sizeT*7/8+1,sizeT-1);
+
+  fst.join();
+  snd.join();
+  trd.join();
+  fth.join();
+  ftt.join();
+  sth.join();
+  svt.join();
+  eth.join();
 }

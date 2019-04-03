@@ -5,14 +5,17 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <GL/gl.h>
+#include <unordered_set>
+#include <utility>
 
 struct Quad
 {
-  GLuint c0 = 0.f; //northWest
-  GLuint c1 = 0.f; //northEast
-  GLuint c2 = 0.f; //southEest
-  GLuint c3 = 0.f; //southWast
+  GLuint c0 = 0u; //northWest
+  GLuint c1 = 0u; //northEast
+  GLuint c2 = 0u; //southEest
+  GLuint c3 = 0u; //southWast
   bool split = false;
+  bool isCollapsed = false;
   Quad(GLuint c0, GLuint c1, GLuint c2, GLuint c3)
   {
     this->c0 = c0;
@@ -31,6 +34,12 @@ class QuadTree
     QuadTree* sw = nullptr;
     QuadTree* ne = nullptr;
     QuadTree* se = nullptr;
+
+    QuadTree* parent = nullptr;
+    std::pair<QuadTree,QuadTree> North;
+    std::pair<QuadTree,QuadTree> South;
+    std::pair<QuadTree,QuadTree> East;
+    std::pair<QuadTree,QuadTree> West;
     GLuint index;
   public:
     static std::vector<glm::vec3> vertices;
@@ -39,6 +48,7 @@ class QuadTree
     static std::vector<GLushort> normalIndices;
     static std::vector<GLfloat> noises;
     static std::vector<QuadTree*> quadTreeList;
+
     QuadTree();
     QuadTree(Quad *quad);
 
@@ -47,6 +57,9 @@ class QuadTree
     static void triangulator();
     static void verticalSplit(GLuint lod);
     static void instanceNoise();
+    static void instanceNoiseR(int start, int end);
+    static void hashSplit();
+    static void threadedInstanceNoise();
 };
 #endif
 

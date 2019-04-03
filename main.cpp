@@ -16,13 +16,14 @@ GLFWwindow* window;
 using namespace glm;
 using namespace std;
 
+#include "Utils.hpp"
 #include "LoadShaders.hpp"
 #include "controls.hpp"
 #include "Planet.hpp"
 #include "QuadTree.hpp"
+#include "NoiseFeedback.hpp"
+#include <chrono>
 
-#define radius 3.14
-#define lodValue 4
 extern glm::vec3 position;
 extern glm::vec3 direction;
 
@@ -40,7 +41,7 @@ int main(int argv, char** argc){
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	window = glfwCreateWindow( 1280, 1024, "World Render", NULL, NULL);
+	window = glfwCreateWindow( 1280, 1024, "World Renderer", NULL, NULL);
 	if( window == NULL ){
     cout << "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n";
 		glfwTerminate();
@@ -57,10 +58,10 @@ int main(int argv, char** argc){
 
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    glfwPollEvents();
-    glfwSetCursorPos(window, 1280/2, 1024/2);
+  glfwPollEvents();
+  glfwSetCursorPos(window, 1280/2, 1024/2);
 
 	glClearColor(0.5f, 0.5f, 0.8f, 1.0f);
 
@@ -70,20 +71,20 @@ int main(int argv, char** argc){
 	glDepthFunc(GL_LESS);
 
 	// Cull triangles which normal is not towards the camera
-	//glEnable(GL_CULL_FACE);
-    //	if()
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
 
-	GLuint VertexArrayID;
+	GLuint VertexArrayID,
+	       feedbackVAO;
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 
-	GLuint programAdaptID = LoadShaders( "world.vert", "world.tesc", "world.tese", "world.frag");
-	//GLuint programAdaptID = LoadShaders( "world.vert", "world.frag");
+	GLuint programAdaptID = LoadShaders( "worldvert.glsl", "worldtesc.glsl", "worldtese.glsl", "worldfrag.glsl");
+  GLuint transformFeedbackShader = LoadShader("transform.glsl");
 
     GLuint MatrixID, ModelMatrixID, ViewMatrixID, ProjectionMatrixID,
     cameraPosIDX, cameraPosIDY, cameraPosIDZ, ampValue, octavesValue,
-    lacunarityValue, LightID, TessLevelInnerID, TessLevelOuterID, radiusID, dirIDX, dirIDY, dirIDZ;
+    lacunarityValue, LightID, TessLevelInnerID, TessLevelOuterID, radiusID, dirIDX, dirIDY, dirIDZ, enableTessID;
 
     float auxX, auxY, auxZ;
     auxX = -1; auxY = -1; auxZ = -1;
@@ -110,32 +111,49 @@ int main(int argv, char** argc){
     auxX = -1; auxY = 1; auxZ = 1;
     glm::vec3 v7 = vec3(auxX, auxY, auxZ);
 
-    Planet* planet = new Planet(v0, v1, v2, v3, v4, v5,v6,v7, radius);
+    Planet* planet = new Planet(v0, v1, v2, v3, v4, v5,v6,v7, RADIUS);
 
-    QuadTree::verticalSplit(lodValue);
+    QuadTree::verticalSplit(LODVALUE);
+
+    glGenVertexArrays(1, &feedbackVAO);
+    glBindVertexArray(feedbackVAO);
+    auto start = std::chrono::high_resolution_clock::now();
+    instanceNoise(transformFeedbackShader);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> diff = end-start;
+    std::cout << "Feedback throttle: " << diff.count() << "s\n";
+    glBindVertexArray(0);
+
     QuadTree::triangulator();
+
     // Create the VBO for positions:
     GLuint vertexbuffer;
-    //GLsizei stride = 2 * sizeof(float);
-
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glBufferData(GL_ARRAY_BUFFER, QuadTree::vertices.size() * sizeof(glm::vec3), QuadTree::vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, transformedVertices.size() * sizeof(glm::vec3), transformedVertices.data(), GL_STATIC_DRAW);
+
+    GLuint noiseBuffer;
+    glGenBuffers(1, &noiseBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, noiseBuffer);
+    glBufferData(GL_ARRAY_BUFFER, transformedVertices.size() * sizeof(GLfloat), QuadTree::noises.data(), GL_STATIC_DRAW);
 
     // Create the VBO for indices:
     GLuint elementbuffer;
     glGenBuffers(1, &elementbuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, QuadTree::indices.size() * sizeof(GLushort), &QuadTree::indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, QuadTree::indices.size() * sizeof(GLushort), QuadTree::indices.data(), GL_STATIC_DRAW);
 
     // For speed computation
     TessLevelInner = 1.0f;
     TessLevelOuter = 4.0f;
+    bool enableTess = true;
     glm::vec3 camerapos = position;
     glm::vec3 dir = direction;
+    glBindVertexArray(feedbackVAO);
+
+    bool tIsPressed=0;
 
     do{
-
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -152,7 +170,9 @@ int main(int argv, char** argc){
         octavesValue         = glGetUniformLocation(programAdaptID, "oct");
         lacunarityValue      = glGetUniformLocation(programAdaptID, "lac");
         LightID              = glGetUniformLocation(programAdaptID, "LightPosition_worldspace");
-        radiusID            = glGetUniformLocation(programAdaptID, "radius");
+        radiusID             = glGetUniformLocation(programAdaptID, "radius");
+        enableTessID         = glGetUniformLocation(programAdaptID, "tess");
+        TessLevelInnerID     = glGetUniformLocation(programAdaptID, "TessLevelInner");
 
         dirIDX         = glGetUniformLocation(programAdaptID, "dx");
         dirIDY         = glGetUniformLocation(programAdaptID, "dy");
@@ -170,27 +190,23 @@ int main(int argv, char** argc){
         float px = position.x; float py = position.y; float pz = position.z;
         float dx = dir.x; float dy = dir.y; float dz = dir.z;
 
-               //cout<<"     min = "<<minnn<<" e max = "<<maxxx<<endl;
-        if (glfwGetKey( window, GLFW_KEY_U ) == GLFW_PRESS){
+        if (glfwGetKey( window, GLFW_KEY_U ) == GLFW_PRESS)
            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        }
-        if (glfwGetKey( window, GLFW_KEY_I ) == GLFW_PRESS){
+
+        if (glfwGetKey( window, GLFW_KEY_I ) == GLFW_PRESS)
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        }
-        if (glfwGetKey( window, GLFW_KEY_O ) == GLFW_PRESS){
+
+        if (glfwGetKey( window, GLFW_KEY_O ) == GLFW_PRESS)
             glEnable(GL_CULL_FACE);
-        }
-        if (glfwGetKey( window, GLFW_KEY_P ) == GLFW_PRESS){
+
+        if (glfwGetKey( window, GLFW_KEY_P ) == GLFW_PRESS)
             glDisable(GL_CULL_FACE);
+
+        bool tIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_T ) == GLFW_PRESS);
+        if (!tIsPressed && tIsCurrentlyPressed){
+            enableTess = !enableTess;
         }
-        if (glfwGetKey( window, GLFW_KEY_M ) == GLFW_PRESS){
-//            oct = rand() % 7;
-  //          cout<<oct<<endl;
-        }
-        if (glfwGetKey( window, GLFW_KEY_N ) == GLFW_PRESS){
-          //  lac = rand() % 11;
-    //        cout<<lac<<endl;
-        }
+        tIsPressed = tIsCurrentlyPressed;
 
         glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
         glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
@@ -203,10 +219,15 @@ int main(int argv, char** argc){
         glUniform1f(dirIDX, dx);
         glUniform1f(dirIDY, dy);
         glUniform1f(dirIDZ, dz);
+        glUniform1i(enableTessID, enableTess);
 
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, noiseBuffer);
+        glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
         // Index buffer
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
@@ -223,17 +244,27 @@ int main(int argv, char** argc){
 
     } // Check if the ESC key was pressed or the window was closed
     while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-        glfwWindowShouldClose(window) == 0 );
+           glfwWindowShouldClose(window) == 0 );
 
         // Cleanup VBO and shader
     glDeleteBuffers(1, &vertexbuffer);
     glDeleteBuffers(1, &elementbuffer);
     glDeleteVertexArrays(1, &VertexArrayID);
+    glDeleteVertexArrays(1, &feedbackVAO);
+
+    start = std::chrono::high_resolution_clock::now();
+    QuadTree::threadedInstanceNoise();
+    end = std::chrono::high_resolution_clock::now();
+    diff = end-start;
+    std::cout << "CPU fBm: " << diff.count() << "s\n";
+
+    QuadTree::hashSplit();
+
 
     // Close OpenGL window and terminate GLFW
     glfwTerminate();
 
-    GLuint warn[] = {ampValue,octavesValue,lacunarityValue,LightID,TessLevelInnerID, TessLevelOuterID, (GLuint)camerapos.x};
+    GLuint warn[] = {ampValue, octavesValue, lacunarityValue, LightID, TessLevelInnerID, TessLevelOuterID, (GLuint)camerapos.x};
     if(warn);
     if(IndexCount);
 
