@@ -5,8 +5,13 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <GL/gl.h>
-#include <unordered_set>
-#include <utility>
+class QuadTree;
+
+struct Neighbor
+{
+  QuadTree* first;
+  QuadTree* second;
+};
 
 struct Quad
 {
@@ -36,10 +41,12 @@ class QuadTree
     QuadTree* se = nullptr;
 
     QuadTree* parent = nullptr;
-    std::pair<QuadTree,QuadTree> North;
-    std::pair<QuadTree,QuadTree> South;
-    std::pair<QuadTree,QuadTree> East;
-    std::pair<QuadTree,QuadTree> West;
+
+    Neighbor North = {nullptr,nullptr};
+    Neighbor South = {nullptr,nullptr};
+    Neighbor East  = {nullptr,nullptr};
+    Neighbor West  = {nullptr,nullptr};
+
     GLuint index;
   public:
     static std::vector<glm::vec3> vertices;
@@ -53,12 +60,14 @@ class QuadTree
     QuadTree(Quad *quad);
 
     ~QuadTree();
+
     void split();
+    void nSplit();
+
     static void triangulator();
     static void verticalSplit(GLuint lod);
     static void instanceNoise();
     static void instanceNoiseR(int start, int end);
-    static void hashSplit();
     static void threadedInstanceNoise();
 };
 #endif

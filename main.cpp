@@ -258,7 +258,6 @@ int main(int argv, char** argc){
     diff = end-start;
     std::cout << "CPU fBm: " << diff.count() << "s\n";
 
-    QuadTree::hashSplit();
 
 
     // Close OpenGL window and terminate GLFW
