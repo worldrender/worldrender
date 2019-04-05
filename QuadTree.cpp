@@ -345,11 +345,11 @@ void QuadTree::nSplit(){
 
   if(this->North.second == nullptr)
     this->North.first->South = {this->nw,this->ne};
-  if(!this->East.second == nullptr)
+  if(this->East.second == nullptr)
     this->East.first->West = {this->ne,this->se};
-  if(!this->South.second == nullptr)
+  if(this->South.second == nullptr)
     this->South.first->North = {this->sw,this->se};
-  if(!this->West.first->quad->split)
+  if(this->West.second == nullptr)
     this->West.first->East = {this->nw,this->sw};
 
   this->quad->split = true;
