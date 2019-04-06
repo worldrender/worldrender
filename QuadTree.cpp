@@ -3,9 +3,11 @@
 #include "simplex.h"
 #include <iostream>
 #include <thread>
-
 #include <chrono>
+#include <unordered_map>
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/hash.hpp>
 
 
 using namespace std;
@@ -52,13 +54,13 @@ QuadTree::QuadTree():
  *
  */
 
-QuadTree::QuadTree(Quad *quad):
+QuadTree::QuadTree(std::unique_ptr<Quad> quad):
     nw{nullptr},
     ne{nullptr},
     sw{nullptr},
     se{nullptr}
 {
-  this->quad = quad;
+  this->quad = std::move(quad);
   this->index = this->quadTreeList.size();
   this->quadTreeList.push_back(this);
 }
@@ -67,36 +69,13 @@ QuadTree::QuadTree(Quad *quad):
  *  This method is responsible to delete each vertex of this quad;
  */
 
-QuadTree::~QuadTree()
-{
-    delete nw;
-    delete ne;
-    delete sw;
-    delete se;
-}
-
+QuadTree::~QuadTree() = default;
 /**
  * This method is responsible to split a quad to create four new quads on quadtree.
  *
  * If that quad is splitted, that method finish it. If not, it is calculated for each side of quad to calculate each vertex.
  * When it will finish, each calculated vertex is added on vertex list and is created four new quads and it will mark the parameter "quad->split" true;
  */
-
-//void quadTL(vec3 c0, vec3 vN, vec3 vC, vec3 vO){
-//    QuadTree::vertices.push_back(vN);
-//}
-//
-//void quadTR(vec3 vN, vec3 c1, vec3 vL, vec3 vC){
-//    QuadTree::vertices.push_back(vL);
-//}
-//
-//void quadBR(vec3 vC, vec3 vL, vec3 c3, vec3 vS){
-//    QuadTree::vertices.push_back(vS);
-//}
-//
-//void quadBL(vec3 vO, vec3 vC, vec3 vS, vec3 c4){
-//    QuadTree::vertices.push_back(vO);
-//}
 
 void QuadTree::split()
 {
@@ -157,15 +136,15 @@ void QuadTree::split()
     cIndex = (int)QuadTree::vertices.size() - 1;
   }
 
-  Quad *nw = new Quad;  nw->c0 = this->quad->c0;    nw->c1 = nIndex;            nw->c2 = cIndex;                nw->c3 = wIndex;
-  Quad *ne = new Quad;  ne->c0 = nIndex;            ne->c1 = this->quad->c1;    ne->c2 = eIndex;                ne->c3 = cIndex;
-  Quad *se = new Quad;  se->c0 = cIndex;            se->c1 = eIndex;            se->c2 = this->quad->c2;        se->c3 = sIndex;
-  Quad *sw = new Quad;  sw->c0 = wIndex;            sw->c1 = cIndex;            sw->c2 = sIndex;                sw->c3 = this->quad->c3;
+  //Quad *nw = new Quad;  nw->c0 = this->quad->c0;    nw->c1 = nIndex;            nw->c2 = cIndex;                nw->c3 = wIndex;
+  //Quad *ne = new Quad;  ne->c0 = nIndex;            ne->c1 = this->quad->c1;    ne->c2 = eIndex;                ne->c3 = cIndex;
+  //Quad *se = new Quad;  se->c0 = cIndex;            se->c1 = eIndex;            se->c2 = this->quad->c2;        se->c3 = sIndex;
+  //Quad *sw = new Quad;  sw->c0 = wIndex;            sw->c1 = cIndex;            sw->c2 = sIndex;                sw->c3 = this->quad->c3;
 
-  this->nw = new QuadTree(nw);
-  this->ne = new QuadTree(ne);
-  this->sw = new QuadTree(sw);
-  this->se = new QuadTree(se);
+  this->nw = std::make_unique<QuadTree>(std::make_unique<Quad>(this->quad->c0, nIndex, cIndex, wIndex));
+  this->ne = std::make_unique<QuadTree>(std::make_unique<Quad>(nIndex,this->quad->c1,eIndex,cIndex));
+  this->sw = std::make_unique<QuadTree>(std::make_unique<Quad>(cIndex,eIndex,this->quad->c2,sIndex));
+  this->se = std::make_unique<QuadTree>(std::make_unique<Quad>(wIndex,cIndex,sIndex,this->quad->c3));
 
   this->quad->split = true;
 }
@@ -255,7 +234,7 @@ void QuadTree::threadedInstanceNoise(){
   svt.join();
   eth.join();
 }
-
+/*
 void QuadTree::nSplit(){
 
   if(this->quad->split)
@@ -312,15 +291,10 @@ void QuadTree::nSplit(){
   QuadTree::vertices.push_back(center);
   cIndex = (int)QuadTree::vertices.size() - 1;
 
-  Quad *nw = new Quad;  nw->c0 = this->quad->c0;    nw->c1 = nIndex;            nw->c2 = cIndex;                nw->c3 = wIndex;
-  Quad *ne = new Quad;  ne->c0 = nIndex;            ne->c1 = this->quad->c1;    ne->c2 = eIndex;                ne->c3 = cIndex;
-  Quad *se = new Quad;  se->c0 = cIndex;            se->c1 = eIndex;            se->c2 = this->quad->c2;        se->c3 = sIndex;
-  Quad *sw = new Quad;  sw->c0 = wIndex;            sw->c1 = cIndex;            sw->c2 = sIndex;                sw->c3 = this->quad->c3;
-
-  this->nw = new QuadTree(nw);
-  this->ne = new QuadTree(ne);
-  this->sw = new QuadTree(sw);
-  this->se = new QuadTree(se);
+  this->nw = std::make_unique<QuadTree>(std::make_unique<Quad>(this->quad->c0, nIndex, cIndex, wIndex));
+  this->ne = std::make_unique<QuadTree>(std::make_unique<Quad>(nIndex,this->quad->c1,eIndex,cIndex));
+  this->sw = std::make_unique<QuadTree>(std::make_unique<Quad>(cIndex,eIndex,this->quad->c2,sIndex));
+  this->se = std::make_unique<QuadTree>(std::make_unique<Quad>(wIndex,cIndex,sIndex,this->quad->c3));
 
   this->nw->parent =   this->ne->parent =   this->sw->parent =   this->se->parent = this;
 
@@ -330,27 +304,28 @@ void QuadTree::nSplit(){
   QuadTree* tes = this->East.second;
 
   if(tns == nullptr)
-    tns = this->North.first;
+    tns = this->North.second;
   if(tss == nullptr)
-    tss = this->South.first;
+    tss = this->South.second;
   if(tws == nullptr)
-    tws = this->West.first;
+    tws = this->West.second;
   if(tes == nullptr)
-    tes = this->East.first;
+    tes = this->East.second;
 
-  this->nw->East = {this->ne,nullptr}; this->nw->South = {this->sw,nullptr}; this->nw->West = {this->West.first,nullptr}; this->nw->North = {this->North.first,nullptr};
-  this->ne->East = {this->East.first,nullptr};this->ne->South = {this->se,nullptr};this->ne->West = {this->nw,nullptr};this->ne->North = {tns,nullptr};
-  this->sw->East = {this->se,nullptr}; this->sw->South = {this->South.first,nullptr}; this->sw->West = {tws,nullptr}; this->sw->North = {this->nw,nullptr};
+  this->nw->East = Neighbor(*ne,nullptr); this->nw->South = {this->sw,nullptr}; this->nw->West = {this->West.second,nullptr}; this->nw->North = {this->North.second,nullptr};
+  this->ne->East = {this->East.second,nullptr};this->ne->South = {this->se,nullptr};this->ne->West = {this->nw,nullptr};this->ne->North = {tns,nullptr};
+  this->sw->East = {this->se,nullptr}; this->sw->South = {this->South.second,nullptr}; this->sw->West = {tws,nullptr}; this->sw->North = {this->nw,nullptr};
   this->se->East = {tes,nullptr}; this->se->South = {tss,nullptr}; this->se->West = {this->sw,nullptr}; this->se->North = {this->ne,nullptr};
 
   if(this->North.second == nullptr)
-    this->North.first->South = {this->nw,this->ne};
+    this->North.second->South = {this->nw,this->ne};
   if(this->East.second == nullptr)
-    this->East.first->West = {this->ne,this->se};
+    this->East.second->West = {this->ne,this->se};
   if(this->South.second == nullptr)
-    this->South.first->North = {this->sw,this->se};
+    this->South.second->North = {this->sw,this->se};
   if(this->West.second == nullptr)
-    this->West.first->East = {this->nw,this->sw};
+    this->West.second->East = {this->nw,this->sw};
 
   this->quad->split = true;
 }
+*/

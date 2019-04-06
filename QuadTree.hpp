@@ -5,10 +5,13 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <GL/gl.h>
+#include <memory>
+
 class QuadTree;
 
 struct Neighbor
 {
+  Neighbor(QuadTree* first, QuadTree* second):first(first),second(second){}
   QuadTree* first;
   QuadTree* second;
 };
@@ -34,18 +37,18 @@ struct Quad
 class QuadTree
 {
   private:
-    Quad* quad   = nullptr;
-    QuadTree* nw = nullptr;
-    QuadTree* sw = nullptr;
-    QuadTree* ne = nullptr;
-    QuadTree* se = nullptr;
+    std::unique_ptr<Quad> quad   = nullptr;
+    std::unique_ptr<QuadTree> nw = nullptr;
+    std::unique_ptr<QuadTree> sw = nullptr;
+    std::unique_ptr<QuadTree> ne = nullptr;
+    std::unique_ptr<QuadTree> se = nullptr;
 
     QuadTree* parent = nullptr;
 
-    Neighbor North = {nullptr,nullptr};
-    Neighbor South = {nullptr,nullptr};
-    Neighbor East  = {nullptr,nullptr};
-    Neighbor West  = {nullptr,nullptr};
+    std::unique_ptr<Neighbor> North = nullptr;
+    std::unique_ptr<Neighbor> South = nullptr;
+    std::unique_ptr<Neighbor> East  = nullptr;
+    std::unique_ptr<Neighbor> West  = nullptr;
 
     GLuint index;
   public:
@@ -57,7 +60,7 @@ class QuadTree
     static std::vector<QuadTree*> quadTreeList;
 
     QuadTree();
-    QuadTree(Quad *quad);
+    QuadTree(std::unique_ptr<Quad> quad);
 
     ~QuadTree();
 
