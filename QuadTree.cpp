@@ -144,7 +144,6 @@ void QuadTree::verticalSplit(GLuint lod){
   }
 }
 
-
 void QuadTree::instanceNoise() {
   vector<float> testNoise;
 
