@@ -13,10 +13,10 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add option="-std=c++14" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="-std=c++17" />
 					<Add library="glew32" />
 					<Add library="glfw3" />
 					<Add library="opengl32" />
@@ -30,10 +30,10 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-std=c++14" />
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
+					<Add option="-std=c++17" />
 					<Add library="glew32" />
 					<Add library="glfw3" />
 					<Add library="opengl32" />
@@ -48,10 +48,10 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add option="-std=c++14" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="-std=c++17" />
 					<Add library="GLEW" />
 					<Add library="glfw" />
 					<Add library="GL" />
