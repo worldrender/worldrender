@@ -7,14 +7,9 @@
 #include <GL/gl.h>
 #include <memory>
 
-class QuadTree;
+#include "Verts.hpp"
 
-struct Neighbor
-{
-  Neighbor(QuadTree* first, QuadTree* second):first(first),second(second){}
-  QuadTree* first;
-  QuadTree* second;
-};
+class QuadTree;
 
 struct Quad
 {
@@ -45,14 +40,9 @@ class QuadTree
 
     QuadTree* parent = nullptr;
 
-    std::unique_ptr<Neighbor> North = nullptr;
-    std::unique_ptr<Neighbor> South = nullptr;
-    std::unique_ptr<Neighbor> East  = nullptr;
-    std::unique_ptr<Neighbor> West  = nullptr;
-
     GLuint index;
   public:
-    static std::vector<glm::vec3> vertices;
+    static Verts verts;
     static std::vector<glm::vec3> normals;
     static std::vector<GLushort> indices;
     static std::vector<GLushort> normalIndices;

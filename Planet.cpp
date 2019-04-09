@@ -26,10 +26,8 @@ Planet::Planet(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3,
        glm::vec3 v4, glm::vec3 v5, glm::vec3 v6, glm::vec3 v7,
        GLfloat radius)
 {
-    QuadTree::vertices.push_back(v0); QuadTree::vertices.push_back(v1);
-    QuadTree::vertices.push_back(v2); QuadTree::vertices.push_back(v3);
-    QuadTree::vertices.push_back(v4); QuadTree::vertices.push_back(v5);
-    QuadTree::vertices.push_back(v6); QuadTree::vertices.push_back(v7);
+    for (auto v : {v0, v1, v2, v3, v4, v5, v6, v7})
+      QuadTree::verts.addVertex(v);
 
     QuadTree* quadtree0 = new QuadTree(std::make_unique<Quad>(0,1,2,3));
     QuadTree* quadtree1 = new QuadTree(std::make_unique<Quad>(1,5,6,2));

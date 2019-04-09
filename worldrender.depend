@@ -126,7 +126,7 @@
 	<GL/gl.h>
 	"QuadTree.hpp"
 
-1554500646 source:c:\users\ricardo\desktop\worldrender\planet.cpp
+1554769686 source:c:\users\ricardo\desktop\worldrender\planet.cpp
 	"QuadTree.hpp"
 	"Planet.hpp"
 	<iostream>
@@ -139,20 +139,23 @@
 	<GL/gl.h>
 	"QuadTree.hpp"
 
-1554502545 c:\users\ricardo\desktop\worldrender\quadtree.hpp
+1554770426 c:\users\ricardo\desktop\worldrender\quadtree.hpp
 	<vector>
 	<iostream>
 	<glm/glm.hpp>
 	<GL/gl.h>
 	<memory>
+	"Verts.hpp"
 
-1554262906 source:c:\users\ricardo\desktop\worldrender\quadtree.cpp
+1554770380 source:c:\users\ricardo\desktop\worldrender\quadtree.cpp
 	"QuadTree.hpp"
 	"Utils.hpp"
 	"simplex.h"
 	<iostream>
 	<thread>
 	<chrono>
+	<unordered_map>
+	<glm/gtx/hash.hpp>
 
 1549243625 c:\users\ricardo\desktop\worldrender\simplex.h
 	<functional>
@@ -428,7 +431,7 @@
 	"QuadTree.hpp"
 	"NoiseFeedback.hpp"
 
-1554259729 c:\users\ricardo\desktop\worldrender\utils.hpp
+1554770536 c:\users\ricardo\desktop\worldrender\utils.hpp
 	<vector>
 	<glm/glm.hpp>
 
@@ -438,7 +441,7 @@
 	<GL/gl.h>
 	<vector>
 
-1554259729 source:c:\users\ricardo\desktop\worldrender\noisefeedback.cpp
+1554770441 source:c:\users\ricardo\desktop\worldrender\noisefeedback.cpp
 	"Utils.hpp"
 	"NoiseFeedback.hpp"
 	"QuadTree.hpp"
@@ -446,4 +449,28 @@
 	<iostream>
 	<vector>
 	<numeric>
+
+1554769050 source:c:\users\ricardo\desktop\worldrender\verts.cpp
+	<cstring>
+	<unordered_map>
+	<vector>
+	<experimental/optional>
+	<glm/glm.hpp>
+	<glm/gtx/hash.hpp>
+
+1554769050 c:\users\ricardo\desktop\worldrender\verts.hpp
+	<cstring>
+	<unordered_map>
+	<vector>
+	<experimental/optional>
+	<glm/glm.hpp>
+	<glm/gtx/hash.hpp>
+
+1554769050 source:c:\users\ricardo\desktop\worldrender\verts.hpp
+	<cstring>
+	<unordered_map>
+	<vector>
+	<experimental/optional>
+	<glm/glm.hpp>
+	<glm/gtx/hash.hpp>
 
