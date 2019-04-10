@@ -22,7 +22,11 @@ using namespace std;
 #include "Planet.hpp"
 #include "QuadTree.hpp"
 #include "NoiseFeedback.hpp"
+
 #include <chrono>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.hpp"
 
 extern glm::vec3 position;
 extern glm::vec3 direction;
@@ -83,8 +87,7 @@ int main(int argv, char** argc){
   GLuint transformFeedbackShader = LoadShader("transform.glsl");
 
     GLuint MatrixID, ModelMatrixID, ViewMatrixID, ProjectionMatrixID,
-    cameraPosIDX, cameraPosIDY, cameraPosIDZ, ampValue, octavesValue,
-    lacunarityValue, LightID, TessLevelInnerID, TessLevelOuterID, radiusID, dirIDX, dirIDY, dirIDZ, enableTessID;
+     TessLevelInnerID, TessLevelOuterID, radiusID, viewPosID, enableTessID;
 
     float auxX, auxY, auxZ;
     auxX = -1; auxY = -1; auxZ = -1;
@@ -126,6 +129,7 @@ int main(int argv, char** argc){
 
     QuadTree::triangulator();
 
+    glBindVertexArray(VertexArrayID);
     // Create the VBO for positions:
     GLuint vertexbuffer;
     glGenBuffers(1, &vertexbuffer);
@@ -143,40 +147,77 @@ int main(int argv, char** argc){
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, QuadTree::indices.size() * sizeof(GLushort), QuadTree::indices.data(), GL_STATIC_DRAW);
 
+    int width, height, nrChannels;
+    unsigned char *data;
+
+    GLuint textures[3];
+    glGenTextures(3, textures);
+
+    glUseProgram(programAdaptID);
+
+    glActiveTexture(GL_TEXTURE0);
+
+    glBindTexture(GL_TEXTURE_2D, textures[0]);
+    data = stbi_load("texture.png", &width, &height, &nrChannels, STBI_rgb_alpha);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    stbi_image_free(data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glUniform1i(glGetUniformLocation(programAdaptID, "pTexture"), 0);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, textures[1]);
+    data = stbi_load("detail.png", &width, &height, &nrChannels, STBI_rgb_alpha);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    stbi_image_free(data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glUniform1i(glGetUniformLocation(programAdaptID, "dTexture"), 1);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, textures[2]);
+    data = stbi_load("normalmap.png", &width, &height, &nrChannels, STBI_rgb_alpha);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    stbi_image_free(data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glUniform1i(glGetUniformLocation(programAdaptID, "nTexture"), 2);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     // For speed computation
     TessLevelInner = 1.0f;
     TessLevelOuter = 4.0f;
     bool enableTess = true;
-    glm::vec3 camerapos = position;
-    glm::vec3 dir = direction;
-    glBindVertexArray(feedbackVAO);
 
     bool tIsPressed=0;
 
     do{
         // Clear the screen
+        glBindVertexArray(VertexArrayID);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Use our shader
         glUseProgram(programAdaptID);
         MatrixID             = glGetUniformLocation(programAdaptID, "MVP");
-        ModelMatrixID        = glGetUniformLocation(programAdaptID, "M");
-        ViewMatrixID         = glGetUniformLocation(programAdaptID, "V");
-        ProjectionMatrixID   = glGetUniformLocation(programAdaptID, "P");
-        cameraPosIDX         = glGetUniformLocation(programAdaptID, "px");
-        cameraPosIDY         = glGetUniformLocation(programAdaptID, "py");
-        cameraPosIDZ         = glGetUniformLocation(programAdaptID, "pz");
-        ampValue             = glGetUniformLocation(programAdaptID, "amp");
-        octavesValue         = glGetUniformLocation(programAdaptID, "oct");
-        lacunarityValue      = glGetUniformLocation(programAdaptID, "lac");
-        LightID              = glGetUniformLocation(programAdaptID, "LightPosition_worldspace");
+        ModelMatrixID        = glGetUniformLocation(programAdaptID, "model");
+        ViewMatrixID         = glGetUniformLocation(programAdaptID, "view");
+        ProjectionMatrixID   = glGetUniformLocation(programAdaptID, "projection");
         radiusID             = glGetUniformLocation(programAdaptID, "radius");
         enableTessID         = glGetUniformLocation(programAdaptID, "tess");
         TessLevelInnerID     = glGetUniformLocation(programAdaptID, "TessLevelInner");
+        viewPosID            = glGetUniformLocation(programAdaptID, "viewPos");
 
-        dirIDX         = glGetUniformLocation(programAdaptID, "dx");
-        dirIDY         = glGetUniformLocation(programAdaptID, "dy");
-        dirIDZ         = glGetUniformLocation(programAdaptID, "dz");
 
         // Compute the MVP matrix from keyboard and mouse input
         computeMatricesFromInputs(window);
@@ -187,8 +228,6 @@ int main(int argv, char** argc){
 
         // Send our transformation to the currently bound shader,
         // in the "MVP" uniform
-        float px = position.x; float py = position.y; float pz = position.z;
-        float dx = dir.x; float dy = dir.y; float dz = dir.z;
 
         if (glfwGetKey( window, GLFW_KEY_U ) == GLFW_PRESS)
            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -212,14 +251,9 @@ int main(int argv, char** argc){
         glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
         glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
         glUniformMatrix4fv(ProjectionMatrixID, 1, GL_FALSE, &ProjectionMatrix[0][0]);
-        glUniform1f(cameraPosIDX, px);
-        glUniform1f(cameraPosIDY, py);
-        glUniform1f(cameraPosIDZ, pz);
         glUniform1f(radiusID, planet->getRadius());
-        glUniform1f(dirIDX, dx);
-        glUniform1f(dirIDY, dy);
-        glUniform1f(dirIDZ, dz);
         glUniform1i(enableTessID, enableTess);
+        glUniform3f(viewPosID,position.x,position.y,position.z);
 
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -237,6 +271,7 @@ int main(int argv, char** argc){
         glDrawElements(GL_PATCHES, QuadTree::indices.size(), GL_UNSIGNED_SHORT, (void*)0);
     //}
         glDisableVertexAttribArray(0);
+        glBindVertexArray(0);
 
         // Swap buffers
         glfwSwapBuffers(window);
@@ -247,6 +282,8 @@ int main(int argv, char** argc){
            glfwWindowShouldClose(window) == 0 );
 
         // Cleanup VBO and shader
+
+    glDeleteTextures(2, textures);
     glDeleteBuffers(1, &vertexbuffer);
     glDeleteBuffers(1, &elementbuffer);
     glDeleteVertexArrays(1, &VertexArrayID);
@@ -263,7 +300,7 @@ int main(int argv, char** argc){
     // Close OpenGL window and terminate GLFW
     glfwTerminate();
 
-    GLuint warn[] = {ampValue, octavesValue, lacunarityValue, LightID, TessLevelInnerID, TessLevelOuterID, (GLuint)camerapos.x};
+    GLuint warn[] = {TessLevelInnerID, TessLevelOuterID};
     if(warn);
     if(IndexCount);
 
