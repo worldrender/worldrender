@@ -19,5 +19,5 @@ void main() {
 	vPosition = vPosition + vNormal*noise*4;
 
     vColor = vec4(vNormal, 1.0);
-    //gl_Position = MVP * vec4(mix(position, sphereCoord*radius, 1), 1.0);
+    gl_Position = vec4(vPosition, 1.0);
 }

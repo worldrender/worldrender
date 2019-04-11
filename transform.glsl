@@ -49,5 +49,5 @@ void main() {
 	sphereCoord = mix(vertex, sphereCoord*radius, 1)*10;
 
   outValue.vertex = sphereCoord;
-  outValue.noiseValue = fbm(sphereCoord);
+  outValue.noiseValue = fbm(sphereCoord)*5;
 }

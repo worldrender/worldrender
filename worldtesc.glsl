@@ -1,6 +1,6 @@
 #version 430 core
 
-layout(vertices = 3) out;
+layout(vertices = 4) out;
 
 in vec3 vPosition[];
 in vec3 vNormal[];
@@ -24,16 +24,14 @@ uniform float radius;
 
 #define ID gl_InvocationID
 
-float LOD(vec3 posV, float posCX, float posCY, float posCZ){
-  float dist = sqrt((posV.x - posCX)*(posV.x - posCX)
-                  + (posV.y - posCY)*(posV.y - posCY)
-                  + (posV.z - posCZ)*(posV.z - posCZ));
-  if(dist<=5) return 32.0;
-  else if(dist>5 && dist<=15) return 16.0;
-  else if(dist>15 && dist<=20) return 8.0;
-  else if(dist>20 && dist<=30) return 4.0;
-  else if(dist>30 && dist<=40) return 2.0;
-  else if(dist>40) return 1.0;
+float LOD(vec3 posV, vec3 cam){
+  float dist = distance(posV, cam);
+  if(dist<=25) return 32.0;
+  else if(dist>25 && dist<=75) return 16.0;
+  else if(dist>75 && dist<=100) return 8.0;
+  else if(dist>100 && dist<=150) return 4.0;
+  else if(dist>150 && dist<=200) return 2.0;
+  else if(dist>200) return 1.0;
 }
 
 float dirLOD(vec3 posV, float posCX, float posCY, float posCZ){
@@ -46,8 +44,8 @@ float dirLOD(vec3 posV, float posCX, float posCY, float posCZ){
 }
 
 void main(){
-  float TessLevelInner = 0;
-  float TessLevelOuter = 0;
+  float TessLevelInner = 1;
+  float TessLevelOuter = 1;
   // tcTexCoord[ID]  = TexCoord[ID];
   tcPosition[ID]  = vPosition[ID];
   tcNormal[ID]    = vNormal[ID];
@@ -55,13 +53,11 @@ void main(){
 
 
   if (ID == 0) {
-    vec3 vPos = vPosition[0];
-    if(tess){
-      TessLevelInner = dirLOD(vPos, px, py, pz);
-    }
-    else{
-      TessLevelInner = 1;
-    }
+    vec3 cam = vec3(px, py, pz);
+    vec3 bTriangulo = (gl_in[0].gl_Position.xyz + gl_in[1].gl_Position.xyz
+                       + gl_in[2].gl_Position.xyz)/3;
+
+    TessLevelInner = LOD(bTriangulo, cam);
     TessLevelOuter = TessLevelInner;//dirLOD(vPos, px, py, pz);
 
     gl_TessLevelInner[0] = TessLevelInner;
@@ -74,5 +70,4 @@ void main(){
   }
 
 }
-
 

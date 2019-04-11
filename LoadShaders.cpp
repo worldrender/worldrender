@@ -1,18 +1,15 @@
+#include <stdlib.h>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <stdio.h>
 #include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include "LoadShaders.hpp"
 
 using namespace std;
-
-#include <stdlib.h>
-#include <string.h>
-
-#include <GL/glew.h>
-
-#include "LoadShaders.hpp"
 
 void fileNotFound(const char * filename)
 {
