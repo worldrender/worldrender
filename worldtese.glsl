@@ -21,8 +21,7 @@ out vec3 vcNormal;
 out vec4 vcColor;
 //out vec2 vcTexCoord;
 
-
-out vec3 tePosition;
+out vec3 vcPos;
 
 float gx0, gy0, gz0, gx1, gy1, gz1, gx2, gy2, gz2, gx3, gy3, gz3;
 
@@ -240,7 +239,7 @@ void main(){
     vec3 p0 = gl_TessCoord.x * tcPos0;
     vec3 p1 = gl_TessCoord.y * tcPos1;
     vec3 p2 = gl_TessCoord.z * tcPos2;
-    tePosition = (p0 + p1 + p2);
+    vcPos = (p0 + p1 + p2);
     //tePosition*= radius;
     //tePosition.y = iqfBm(tePosition, 1,2,0.5);
 
@@ -259,7 +258,7 @@ void main(){
     vec2 t2 = gl_TessCoord.z * tcTexCoord[2];
     vcTexCoord = (t0 + t1 + t2);
 */
-    p = tePosition.y;
-    gl_Position = MVP * vec4(tePosition, 1.0);
+    p = vcPos.y;
+    gl_Position = MVP * vec4(vcPos, 1.0);
 }
 

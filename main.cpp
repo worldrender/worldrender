@@ -71,6 +71,8 @@ int main(int argv, char** argc){
 
 	glEnable(GL_DEPTH_TEST);
 
+  glfwWindowHint(GLFW_SAMPLES, 4);
+  glEnable(GL_MULTISAMPLE);
 	// Accept fragment if it closer to the camera than the former one
 	glDepthFunc(GL_LESS);
 
