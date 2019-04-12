@@ -43,27 +43,28 @@
 	"Planet.hpp"
 	"QuadTree.hpp"
 
-1545767594 c:\users\iagop\documents\projetomz\worldrender\loadshaders.hpp
+1555091952 c:\users\iagop\documents\projetomz\worldrender\loadshaders.hpp
 
 1545767570 c:\users\iagop\documents\projetomz\worldrender\controls.hpp
 
-1550952420 source:c:\users\iagop\documents\projetomz\worldrender\controls.cpp
+1554944332 source:c:\users\iagop\documents\projetomz\worldrender\controls.cpp
 	<GLFW/glfw3.h>
 	<glm/glm.hpp>
 	<glm/gtc/matrix_transform.hpp>
 	<iostream>
 	"controls.hpp"
+	"Utils.hpp"
 
-1545767594 source:c:\users\iagop\documents\projetomz\worldrender\loadshaders.cpp
+1555091952 source:c:\users\iagop\documents\projetomz\worldrender\loadshaders.cpp
+	<stdlib.h>
+	<GL/glew.h>
+	<GLFW/glfw3.h>
 	<stdio.h>
 	<string>
 	<vector>
 	<iostream>
 	<fstream>
 	<algorithm>
-	<stdlib.h>
-	<string.h>
-	<GL/glew.h>
 	"LoadShaders.hpp"
 
 1553551677 rs.hpp"
@@ -116,12 +117,12 @@
 
 1551134935 2.hpp>
 
-1550723081 source:c:\users\iagop\documents\projetomz\worldrender\planet.cpp
+1554944332 source:c:\users\iagop\documents\projetomz\worldrender\planet.cpp
 	"QuadTree.hpp"
 	"Planet.hpp"
 	<iostream>
 
-1550723031 c:\users\iagop\documents\projetomz\worldrender\planet.hpp
+1553141226 c:\users\iagop\documents\projetomz\worldrender\planet.hpp
 	<iostream>
 	<glm/glm.hpp>
 	<GL/gl.h>
@@ -172,16 +173,23 @@
 	<glm/vec4.hpp>
 	<glm/mat2x2.hpp>
 
-1549951119 c:\users\iagop\documents\projetomz\worldrender\quadtree.hpp
+1554944332 c:\users\iagop\documents\projetomz\worldrender\quadtree.hpp
 	<vector>
 	<iostream>
 	<glm/glm.hpp>
 	<GL/gl.h>
+	<memory>
+	"Verts.hpp"
 
-1550721697 source:c:\users\iagop\documents\projetomz\worldrender\quadtree.cpp
+1554944332 source:c:\users\iagop\documents\projetomz\worldrender\quadtree.cpp
 	"QuadTree.hpp"
+	"Utils.hpp"
 	"simplex.h"
 	<iostream>
+	<thread>
+	<chrono>
+	<unordered_map>
+	<glm/gtx/hash.hpp>
 
 1553641606 source:/home/ricardo/worldrender/LoadShaders.cpp
 	<stdio.h>
@@ -621,4 +629,31 @@
 
 1555012659 c:\users\iago.labcg-pc\documents\worldrender\textures.h
 	<stdlib.h>
+
+1554944332 c:\users\iagop\documents\projetomz\worldrender\utils.hpp
+	<vector>
+	<glm/glm.hpp>
+
+1554944332 source:c:\users\iagop\documents\projetomz\worldrender\noisefeedback.cpp
+	"Utils.hpp"
+	"NoiseFeedback.hpp"
+	"QuadTree.hpp"
+	"LoadShaders.hpp"
+	<iostream>
+	<vector>
+	<numeric>
+
+1553886897 c:\users\iagop\documents\projetomz\worldrender\noisefeedback.hpp
+	<GL/glew.h>
+	<glm/glm.hpp>
+	<GL/gl.h>
+	<vector>
+
+1554944332 c:\users\iagop\documents\projetomz\worldrender\verts.hpp
+	<cstring>
+	<unordered_map>
+	<vector>
+	<experimental/optional>
+	<glm/glm.hpp>
+	<glm/gtx/hash.hpp>
 

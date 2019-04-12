@@ -123,7 +123,7 @@ int main(int argv, char** argc){
 }
 
 int initGL(){
-glfwInit();
+    glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -172,6 +172,7 @@ void init(){
 void createProgram(){
 	tessShader = LoadShaders( "worldvert.glsl", "worldtesc.glsl", "worldtese.glsl", "worldfrag.glsl");
     transformFeedbackShader = LoadShader("transform.glsl");
+    activeShader = tessShader;
 }
 
 void createPlanet(){
