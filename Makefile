@@ -6,26 +6,21 @@ CC		= gcc
 
 # flags for C++ compiler:
 
-GLAD_INC_DIR	=	-I/home/alopesajr/SourceCode/Libs/glad/build/include 
-GLAD_LIB_DIR	=	-L/home/alopesajr/SourceCode/Libs/glad/build
-GLAD_LIBS		= 	-lglad -ldl
+OPENGL_LIBS	=	-lGL -lGLU -lGLEW
+GLFW_LIBS 	=	-lglfw
+THREAD_LIBS	= 	-lpthread
 
-SDL_INC_DIR		=
-SDL_LIB_DIR		= 	-L/usr/lib/x86_64-linux-gnu
-SDL_LIBS		= 	-lSDL2main -lSDL2
-
-OPENGL_LIBS		= 	 -lGL -lGLU
-
-CFLAGS		= -g -Wno-deprecated $(GLAD_INC_DIR) $(SDL_INC_DIR)
-CXXFLAGS	= -g -Wno-deprecated $(GLAD_INC_DIR) $(SDL_INC_DIR)
+CFLAGS		= 	-g -Wno-deprecated
+CXXFLAGS	= 	-g -Wno-deprecated
 
 # libraries to link with:
 
-LIBPATH =   $(SDL_LIB_DIR) $(GLAD_LIB_DIR)
+LIBPATH =   
 
-LDFLAGS =	$(GLAD_LIBS) $(SDL_LIBS) $(OPENGL_LIBS)
+LDFLAGS =	$(THREAD_LIBS) $(GLFW_LIBS) $(OPENGL_LIBS)
 
-OBJFILES = Main.o Shader.o
+OBJFILES = controls.o Main.o Planet.o LoadShaders.o NoiseFeedback.o QuadTree.o
+
 
 # ***********************************************************************************
 all:	planet
