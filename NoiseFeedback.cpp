@@ -1,10 +1,10 @@
-#include "Utils.hpp"
 #include "NoiseFeedback.hpp"
 #include "QuadTree.hpp"
 #include "LoadShaders.hpp"
 #include <iostream>
 #include <vector>
 #include <numeric>
+#include "Utils.hpp"
 
 std::vector<InstancedNoise> transformedData;
 std::vector<glm::vec3> transformedVertices;

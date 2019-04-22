@@ -45,11 +45,11 @@ static glm::vec3 lookup(GLuint idx)
  */
 
 QuadTree::QuadTree():
+    quad{},
     nw{nullptr},
-    ne{nullptr},
-    se{nullptr},
     sw{nullptr},
-    quad{}
+    ne{nullptr},
+    se{nullptr}
 {
 }
 
@@ -62,8 +62,8 @@ QuadTree::QuadTree():
 
 QuadTree::QuadTree(std::unique_ptr<Quad> quad):
     nw{nullptr},
-    ne{nullptr},
     sw{nullptr},
+    ne{nullptr},
     se{nullptr}
 {
   this->quad = std::move(quad);
@@ -148,7 +148,7 @@ void QuadTree::instanceNoise() {
   vector<float> testNoise;
 
   auto start = std::chrono::high_resolution_clock::now();
-  for(int i=0;i<QuadTree::verts.size();i++)
+  for(GLuint i=0;i<QuadTree::verts.size();i++)
   {
     glm::vec3 tmp = lookup(static_cast<GLuint>(i));
     testNoise.push_back(Simplex::iqfBm(tmp));
