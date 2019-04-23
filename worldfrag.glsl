@@ -68,13 +68,28 @@ void main() {
   mat3 TBN = transpose(mat3(tang, biTan, norm));
   vec3 viewDir = normalize((viewPos*TBN)-(fragPos*TBN));
   uv = ParallaxMapping(uv,  viewDir);
-
+//  if(uv.x > 1.0 || uv.y > 1.0 || uv.x < 0.0 || uv.y < 0.0)
+//        discard;
+  vec3 parallax = texture(nTexture,uv).rgb;
   vec3 light = dirLighting(detail, norm);
   light*=0.8f;
         // processing of the texture coordinates;
         // this is unnecessary if correct texture coordinates are specified by the application
 
   fColor = vec4(light+ambient*detail, 1.0f);
+
+  float diffP = max(dot(light, parallax), 0.0);
+  vec3 diffuse = diffP*ambient;
+
+  vec3 reflectDir = reflect(-light, parallax);
+  vec3 halfwayDir = normalize(light + viewDir);
+  float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+  vec3 specular = vec3(0.2) * spec;
+
+  vec4 difSpe = vec4(diffuse+spec,1.0f);
+
+  fColor = mix(fColor,difSpe,0.3333f);
+
 
   //fColor = vcColor;
 }
