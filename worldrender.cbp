@@ -79,8 +79,6 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="Camera.hpp" />
-		<Unit filename="Controls.cpp" />
-		<Unit filename="Controls.hpp" />
 		<Unit filename="LoadShaders.cpp" />
 		<Unit filename="LoadShaders.hpp" />
 		<Unit filename="Main.cpp" />
