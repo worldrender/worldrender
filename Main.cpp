@@ -7,7 +7,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "LoadShaders.hpp"
-#include "controls.hpp"
+//#include "Controls.hpp"
+#include "Camera.hpp"
 #include "Planet.hpp"
 #include "QuadTree.hpp"
 #include "NoiseFeedback.hpp"
@@ -31,7 +32,6 @@ bool adapt = true;
 bool unif = false;
 bool geom = false;
 //static GLsizei IndexCount;
-static const GLuint PositionSlot = 0;
 //static float TessLevelInner;
 //static float TessLevelOuter;
 vec4 color = vec4(0.5f, 0.5f, 0.8f, 1.0f);
@@ -42,6 +42,9 @@ GLuint VertexArrayID, feedbackVAO, vertexbuffer, noiseBuffer, elementbuffer;
 GLuint planetShader, geomShader, activeShader, transformFeedbackShader;
 bool enableTess = true;
 
+
+Camera camera(glm::vec3(-120.f, 780.f, 0.0f));
+
 int main(int argv, char ** argc) {
   init();
 
@@ -49,33 +52,16 @@ int main(int argv, char ** argc) {
   createPlanet();
   createBuffer();
   applyingTextures();
-  bool enableTess = true;
-
-  bool tIsPressed = 0;
 
   do {
     // Clear the screen
     glBindVertexArray(VertexArrayID);
 
-    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
-      gl::polygonModeFBLine();
+    float currentFrame = glfwGetTime();
+    deltaTime = currentFrame - lastFrame;
+    lastFrame = currentFrame;
 
-    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
-      gl::polygonModeFBFill();
-
-    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
-      gl::enableCullFace();
-
-    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
-      gl::disableCullFace();
-
-    bool tIsCurrentlyPressed = (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS);
-    if (!tIsPressed && tIsCurrentlyPressed) {
-      enableTess = !enableTess;
-      if (enableTess)
-        activeShader = planetShader;
-    }
-    tIsPressed = tIsCurrentlyPressed;
+    camera.pressButtons();
 
     setUniforms();
 
@@ -111,7 +97,7 @@ void initGL() {
   glfwWindowHint(GLFW_SAMPLES, 4);
   glEnable(GL_MULTISAMPLE);
 
-  window = glfwCreateWindow(1280, 1024, "World Renderer", NULL, NULL);
+  window = glfwCreateWindow(WIDTH, HEIGHT, "World Renderer", NULL, NULL);
   if (window == NULL) {
     cout << "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n";
     glfwTerminate();
@@ -131,11 +117,14 @@ void initGL() {
 void init() {
   initGL();
 
-  glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+  glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+  glfwSetCursorPosCallback(window, mouse_callback);
+  glfwSetScrollCallback(window, scroll_callback);
+
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   glfwPollEvents();
-  glfwSetCursorPos(window, 1280 / 2, 1024 / 2);
+  glfwSetCursorPos(window, WIDTH/2, HEIGHT/2);
 
   gl::clearColor(color);
 
@@ -259,10 +248,12 @@ void applyingTextures() {
 
 void setUniforms() {
   glUseProgram(planetShader);
-  computeMatricesFromInputs(window);
-  glm::mat4 ProjectionMatrix = getProjectionMatrix();
-  glm::mat4 ViewMatrix = getViewMatrix();
+
+  glm::mat4 ProjectionMatrix = camera.getProjectionMatrix(WIDTH, HEIGHT);
+  glm::mat4 ViewMatrix = camera.getViewMatrix();
   glm::mat4 ModelMatrix = glm::mat4(1.0);
+  glUniform3f(glGetUniformLocation(planetShader, "viewPos"), camera.Position.x, camera.Position.y, camera.Position.z);
+
   glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
   //    glm::mat4 MVP = camera.getProjectionMatrix(WIDTH, HEIGHT) * camera.getViewMatrix() * glm::mat4(1.0);
 
@@ -272,10 +263,6 @@ void setUniforms() {
   glUniformMatrix4fv(glGetUniformLocation(planetShader, "projection"), 1, GL_FALSE, & ProjectionMatrix[0][0]);
   glUniform1f(glGetUniformLocation(planetShader, "radius"), planet -> getRadius());
   glUniform1i(glGetUniformLocation(planetShader, "tess"), enableTess);
-  glUniform3f(glGetUniformLocation(planetShader, "viewPos"), position.x, position.y, position.z);
-  glUniform1f(glGetUniformLocation(planetShader, "px"), position.x);
-  glUniform1f(glGetUniformLocation(planetShader, "py"), position.y);
-  glUniform1f(glGetUniformLocation(planetShader, "pz"), position.z);
   glUniform1i(glGetUniformLocation(planetShader, "pTexture"), 0);
   glUniform1i(glGetUniformLocation(planetShader, "dTexture"), 1);
   glUniform1i(glGetUniformLocation(planetShader, "nTexture"), 2);
@@ -321,6 +308,38 @@ void deleteBuffers() {
   glDeleteBuffers(1, & elementbuffer);
   glDeleteVertexArrays(1, & VertexArrayID);
   glDeleteVertexArrays(1, & feedbackVAO);
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    // make sure the viewport matches the new window dimensions; note that width and
+    // height will be significantly larger than specified on retina displays.
+    glViewport(0, 0, width, height);
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+    lastX = xpos;
+    lastY = ypos;
+
+    camera.ProcessMouseMovement(xoffset, yoffset);
+}
+
+// glfw: whenever the mouse scroll wheel scrolls, this callback is called
+// ----------------------------------------------------------------------
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    camera.ProcessMouseScroll(yoffset);
 }
 
 void CPUfbm() {

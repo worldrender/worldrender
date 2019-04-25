@@ -8,7 +8,6 @@
 #define RADIUS 7
 #define LODVALUE 6
 
-
 template<typename T>
 T fAbs(T t)
 {
@@ -20,6 +19,13 @@ T size(T* t)
 {
   return (sizeof(t)/sizeof(t[0]));
 }
+
+static const GLuint PositionSlot = 0u;
+static const GLuint WIDTH = 1280u;
+static const GLuint HEIGHT = 1024u;
+static const GLfloat meshSize = 128.0f;
+
+extern bool enableTess;
 
 extern std::vector<glm::vec3> transformedVertices;
 
@@ -64,7 +70,6 @@ namespace gl
 }
 
 void initGL();
-
 void init();
 void createProgram();
 void createPlanet();

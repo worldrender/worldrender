@@ -12,9 +12,8 @@ out vec3 tcPosition[];
 out vec3 tcNormal[];
 out vec4 tcColor[];
 
-uniform float px;
-uniform float py;
-uniform float pz;
+uniform vec3 viewPos;
+
 uniform bool tess;
 
 uniform float dx;
@@ -53,11 +52,10 @@ void main(){
 
 
   if (ID == 0) {
-    vec3 cam = vec3(px, py, pz);
     vec3 bTriangulo = (gl_in[0].gl_Position.xyz + gl_in[1].gl_Position.xyz
                        + gl_in[2].gl_Position.xyz)/3;
 
-    TessLevelInner = LOD(bTriangulo, cam);
+    TessLevelInner = LOD(bTriangulo, viewPos);
     TessLevelOuter = TessLevelInner;//dirLOD(vPos, px, py, pz);
 
     gl_TessLevelInner[0] = TessLevelInner;

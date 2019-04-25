@@ -78,8 +78,12 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="Camera.hpp" />
+		<Unit filename="Controls.cpp" />
+		<Unit filename="Controls.hpp" />
 		<Unit filename="LoadShaders.cpp" />
 		<Unit filename="LoadShaders.hpp" />
+		<Unit filename="Main.cpp" />
 		<Unit filename="NoiseFeedback.cpp" />
 		<Unit filename="NoiseFeedback.hpp" />
 		<Unit filename="Planet.cpp" />
@@ -88,10 +92,6 @@
 		<Unit filename="QuadTree.hpp" />
 		<Unit filename="Textures.h" />
 		<Unit filename="Utils.hpp" />
-		<Unit filename="camera.h" />
-		<Unit filename="controls.cpp" />
-		<Unit filename="controls.hpp" />
-		<Unit filename="main.cpp" />
 		<Unit filename="shader.hpp" />
 		<Unit filename="simplex.h" />
 		<Unit filename="stb_image.hpp" />
