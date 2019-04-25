@@ -21,8 +21,8 @@ bool tIsPressed, pIsPressed, cIsPressed, plusIsPressed, minusIsPressed, shiftMin
 extern GLFWwindow* window;
 
 // Default camera values
-const float YAW         = -90.0f;
-const float PITCH       =  0.0f;
+const float YAW         = -10.0f;
+const float PITCH       = -10.0f;
 static float SPEED       =  2.5f;
 const float SENSITIVITY =  0.1f;
 const float ZOOM        =  45.0f;
