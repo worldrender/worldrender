@@ -6,11 +6,12 @@
 #include <GL/gl.h>
 
 #define RADIUS 7
-#define LODVALUE 6
+#define LODVALUE 6 //safe number
 #define PositionSlot 0u
 #define WIDTH 1280u
 #define HEIGHT 1024u
 #define meshSize 128
+#define PLANET_SCALE 1.f
 
 #define YAW           -10.0f
 #define PITCH         -10.0f

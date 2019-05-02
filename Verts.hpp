@@ -35,8 +35,8 @@ public:
       return AddVertexResult{it->second, AddVertexResultType::ALREADY_EXISTS};
 
     auto index = static_cast<index_type>(verts_.size());
-    if (index != verts_.size() || index == INVALID_INDEX)
-      throw std::runtime_error("index out of bounds");
+//    if (index != verts_.size() || index == INVALID_INDEX)
+//      throw std::runtime_error("index out of bounds");
 
     verts_.emplace_back(vert);
     try {

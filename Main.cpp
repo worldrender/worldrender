@@ -146,42 +146,42 @@ void createPlanet() {
   auxX = -1;
   auxY = -1;
   auxZ = -1;
-  glm::vec3 v0 = vec3(auxX, auxY, auxZ);
+  glm::vec3 v0 = vec3(auxX, auxY, auxZ)*PLANET_SCALE;
 
   auxX = 1;
   auxY = -1;
   auxZ = -1;
-  glm::vec3 v1 = vec3(auxX, auxY, auxZ);
+  glm::vec3 v1 = vec3(auxX, auxY, auxZ)*PLANET_SCALE;
 
   auxX = 1;
   auxY = 1;
   auxZ = -1;
-  glm::vec3 v2 = vec3(auxX, auxY, auxZ);
+  glm::vec3 v2 = vec3(auxX, auxY, auxZ)*PLANET_SCALE;
 
   auxX = -1;
   auxY = 1;
   auxZ = -1;
-  glm::vec3 v3 = vec3(auxX, auxY, auxZ);
+  glm::vec3 v3 = vec3(auxX, auxY, auxZ)*PLANET_SCALE;
 
   auxX = -1;
   auxY = -1;
   auxZ = 1;
-  glm::vec3 v4 = vec3(auxX, auxY, auxZ);
+  glm::vec3 v4 = vec3(auxX, auxY, auxZ)*PLANET_SCALE;
 
   auxX = 1;
   auxY = -1;
   auxZ = 1;
-  glm::vec3 v5 = vec3(auxX, auxY, auxZ);
+  glm::vec3 v5 = vec3(auxX, auxY, auxZ)*PLANET_SCALE;
 
   auxX = 1;
   auxY = 1;
   auxZ = 1;
-  glm::vec3 v6 = vec3(auxX, auxY, auxZ);
+  glm::vec3 v6 = vec3(auxX, auxY, auxZ)*PLANET_SCALE;
 
   auxX = -1;
   auxY = 1;
   auxZ = 1;
-  glm::vec3 v7 = vec3(auxX, auxY, auxZ);
+  glm::vec3 v7 = vec3(auxX, auxY, auxZ)*PLANET_SCALE;
 
   planet = new Planet(v0, v1, v2, v3, v4, v5, v6, v7, RADIUS);
 

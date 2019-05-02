@@ -60,7 +60,6 @@ void instanceNoise(GLuint shader)
   glDeleteBuffers(1, &feedbackBuffer);
   glDeleteBuffers(1, &vertexBuffer);
 
-
   for(InstancedNoise &elem : transformedData)
   {
     transformedVertices.push_back(elem.vertex);
