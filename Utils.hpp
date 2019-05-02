@@ -7,6 +7,16 @@
 
 #define RADIUS 7
 #define LODVALUE 6
+#define PositionSlot 0u
+#define WIDTH 1280u
+#define HEIGHT 1024u
+#define meshSize 128
+
+#define YAW           -10.0f
+#define PITCH         -10.0f
+#define SPEED          2.5f
+#define SENSITIVITY    0.1f
+#define ZOOM           45.0f
 
 template<typename T>
 T fAbs(T t)
@@ -19,11 +29,6 @@ T size(T* t)
 {
   return (sizeof(t)/sizeof(t[0]));
 }
-
-static const GLuint PositionSlot = 0u;
-static const GLuint WIDTH = 1280u;
-static const GLuint HEIGHT = 1024u;
-static const GLfloat meshSize = 128.0f;
 
 extern bool enableTess;
 

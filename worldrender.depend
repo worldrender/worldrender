@@ -778,7 +778,7 @@
 
 1556148223 /home/ricardo/worldrender/controls.hpp
 
-1556152145 /home/ricardo/worldrender/Utils.hpp
+1556813731 /home/ricardo/worldrender/Utils.hpp
 	<vector>
 	<glm/glm.hpp>
 	<GL/gl.h>
@@ -861,7 +861,7 @@
 	<glm/vec4.hpp>
 	<glm/mat2x2.hpp>
 
-1556150894 source:/home/ricardo/worldrender/Main.cpp
+1556813561 source:/home/ricardo/worldrender/Main.cpp
 	<iostream>
 	<string>
 	<cstdlib>
@@ -870,12 +870,12 @@
 	<GL/glew.h>
 	<GLFW/glfw3.h>
 	"LoadShaders.hpp"
-	"Camera.hpp"
 	"Planet.hpp"
 	"QuadTree.hpp"
 	"NoiseFeedback.hpp"
-	"Textures.h"
+	"Textures.hpp"
 	"Utils.hpp"
+	"Camera.hpp"
 	<chrono>
 	"stb_image.hpp"
 
@@ -909,10 +909,20 @@
 
 1556148223 /home/ricardo/worldrender/Controls.hpp
 
-1556153825 /home/ricardo/worldrender/Camera.hpp
+1556813793 /home/ricardo/worldrender/Camera.hpp
 	<glm/glm.hpp>
 	<glm/gtc/matrix_transform.hpp>
 	<GLFW/glfw3.h>
 	<vector>
 	"Utils.hpp"
+
+1556813738 source:/home/ricardo/worldrender/Camera.cpp
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	<GLFW/glfw3.h>
+	<vector>
+	"Camera.hpp"
+
+1556810597 /home/ricardo/worldrender/Textures.hpp
+	<stdlib.h>
 

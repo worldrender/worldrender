@@ -7,14 +7,12 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "LoadShaders.hpp"
-//#include "Controls.hpp"
-#include "Camera.hpp"
 #include "Planet.hpp"
 #include "QuadTree.hpp"
 #include "NoiseFeedback.hpp"
-#include "Textures.h"
+#include "Textures.hpp"
+#include "Camera.hpp"
 #include "Utils.hpp"
-
 #include <chrono>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -43,7 +41,7 @@ GLuint planetShader, geomShader, activeShader, transformFeedbackShader;
 bool enableTess = true;
 
 
-Camera camera(glm::vec3(-120.f, 780.f, 0.0f));
+Camera planetCamera(glm::vec3(-120.f, 780.f, 0.0f));
 
 int main(int argv, char ** argc) {
   init();
@@ -61,7 +59,7 @@ int main(int argv, char ** argc) {
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
 
-    camera.pressButtons();
+    planetCamera.pressButtons();
 
     setUniforms();
 
@@ -234,9 +232,10 @@ void applyingTextures() {
     glActiveTexture(GL_TEXTURE0 + i);
 
     glBindTexture(GL_TEXTURE_2D, textures[i]);
-    data = stbi_load(filenames[i], & width, & height, & nrChannels, STBI_rgb_alpha);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    stbi_image_free(data);
+    int width, height, nrChannels;
+    unsigned char *textData = stbi_load(filenames[i], & width, & height, & nrChannels, STBI_rgb_alpha);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textData);
+    stbi_image_free(textData);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -249,10 +248,10 @@ void applyingTextures() {
 void setUniforms() {
   glUseProgram(planetShader);
 
-  glm::mat4 ProjectionMatrix = camera.getProjectionMatrix(WIDTH, HEIGHT);
-  glm::mat4 ViewMatrix = camera.getViewMatrix();
+  glm::mat4 ProjectionMatrix = planetCamera.getProjectionMatrix(WIDTH, HEIGHT);
+  glm::mat4 ViewMatrix = planetCamera.getViewMatrix();
   glm::mat4 ModelMatrix = glm::mat4(1.0);
-  glUniform3f(glGetUniformLocation(planetShader, "viewPos"), camera.Position.x, camera.Position.y, camera.Position.z);
+  glUniform3f(glGetUniformLocation(planetShader, "viewPos"), planetCamera.Position.x, planetCamera.Position.y, planetCamera.Position.z);
 
   glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
   //    glm::mat4 MVP = camera.getProjectionMatrix(WIDTH, HEIGHT) * camera.getViewMatrix() * glm::mat4(1.0);
@@ -317,29 +316,11 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
-{
-    if (firstMouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
-
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-    lastX = xpos;
-    lastY = ypos;
-
-    camera.ProcessMouseMovement(xoffset, yoffset);
-}
-
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    camera.ProcessMouseScroll(yoffset);
+    planetCamera.ProcessMouseScroll(yoffset);
 }
 
 void CPUfbm() {

@@ -9,6 +9,30 @@
 #include <vector>
 #include "Utils.hpp"
 
+extern bool tIsPressed;
+extern bool pIsPressed;
+extern bool cIsPressed;
+extern bool plusIsPressed;
+extern bool minusIsPressed;
+extern bool mIsPressed;
+extern bool pos2IsPressed;
+extern bool noise2IsPressed;
+extern bool pDownIsPressed;
+extern bool pUpIsPressed;
+extern bool enablePolygon;
+extern bool enableCull;
+extern bool CPUnoise;
+extern bool noise;
+extern bool modeMouse;
+extern bool firstMouse;
+
+extern GLFWwindow* window;
+
+extern float lastX;
+extern float lastY;
+extern float deltaTime;
+extern float lastFrame;
+
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement {
     FORWARD,
@@ -16,25 +40,6 @@ enum Camera_Movement {
     LEFT,
     RIGHT
 };
-
-bool tIsPressed, pIsPressed, cIsPressed, plusIsPressed, minusIsPressed, shiftMinusIsPressed, shiftPlusIsPressed, mIsPressed, pos2IsPressed, noise2IsPressed, pDownIsPressed = false, pUpIsPressed = false;
-extern GLFWwindow* window;
-
-// Default camera values
-const float YAW         = -10.0f;
-const float PITCH       = -10.0f;
-static float SPEED       =  2.5f;
-const float SENSITIVITY =  0.1f;
-const float ZOOM        =  45.0f;
-
-float lastX = (float)WIDTH / 2.0;
-float lastY = (float)HEIGHT / 2.0;
-bool firstMouse = true;
-bool enablePolygon = true, enableCull = true,  CPUnoise = true,  noise=false;
-bool modeMouse;
-float deltaTime = 0.0f;
-float lastFrame = 0.0f;
-
 
 // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
 class Camera
@@ -55,176 +60,18 @@ public:
     float Zoom;
 
     // Constructor with vectors
-    Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, 0.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
-    {
-        Position = position;
-        WorldUp = up;
-        Yaw = yaw;
-        Pitch = pitch;
-        updateCameraVectors();
-    }
+    Camera(glm::vec3 position, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
+
     // Constructor with scalar values
-    Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, 0.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
-    {
-        Position = glm::vec3(posX, posY, posZ);
-        WorldUp = glm::vec3(upX, upY, upZ);
-        Yaw = yaw;
-        Pitch = pitch;
-        updateCameraVectors();
-    }
+    Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
     // Returns the view matrix calculated using Euler Angles and the LookAt Matrix
-    glm::mat4 getViewMatrix()
-    {
-      return glm::lookAt(Position, Position + Front, Up);
-    }
-
-    glm::mat4 getProjectionMatrix(int SCR_WIDTH, int SCR_HEIGHT)
-    {
-      GLfloat pLength = fAbs(glm::length(Position));
-
-      return glm::perspective(glm::radians(this->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, (0.1f+pLength)/pLength, (1000.0f*pLength));
-    }
-    // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
-    void ProcessKeyboard(Camera_Movement direction, float deltaTime)
-    {
-        float velocity = MovementSpeed * deltaTime;
-        if (direction == FORWARD)
-            Position += Front * velocity;
-        if (direction == BACKWARD)
-            Position -= Front * velocity;
-        if (direction == LEFT)
-            Position -= Right * velocity;
-        if (direction == RIGHT)
-            Position += Right * velocity;
-    }
-
-    // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-    void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true)
-    {
-        xoffset *= MouseSensitivity;
-        yoffset *= MouseSensitivity;
-
-        Yaw   += xoffset;
-        Pitch += yoffset;
-
-        // Make sure that when pitch is out of bounds, screen doesn't get flipped
-        if (constrainPitch)
-        {
-            if (Pitch > 89.0f)
-                Pitch = 89.0f;
-            if (Pitch < -89.0f)
-                Pitch = -89.0f;
-        }
-
-        // Update Front, Right and Up Vectors using the updated Euler angles
-        updateCameraVectors();
-    }
-
-    // Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
-    void ProcessMouseScroll(float yoffset)
-    {
-        if (Zoom >= 1.0f && Zoom <= 45.0f)
-            Zoom -= yoffset;
-        if (Zoom <= 1.0f)
-            Zoom = 1.0f;
-        if (Zoom >= 45.0f)
-            Zoom = 45.0f;
-    }
-
-    void pressButtons(){
-        bool noiseIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_F ) == GLFW_PRESS);
-        if (!noise2IsPressed && noiseIsCurrentlyPressed){
-            noise = !noise;
-        }
-        noise2IsPressed = noiseIsCurrentlyPressed;
-
-        bool pos2IsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_C ) == GLFW_PRESS);
-        if (!pos2IsPressed && pos2IsCurrentlyPressed){
-            CPUnoise = !CPUnoise;
-        }
-        pos2IsPressed = pos2IsCurrentlyPressed;
-
-        bool mIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_M ) == GLFW_PRESS);
-        if (!mIsPressed && mIsCurrentlyPressed){
-            modeMouse = !modeMouse;
-            if(modeMouse){
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-                glfwMakeContextCurrent(0);
-                glfwWaitEventsTimeout(5000);
-            }
-            else{
-                glfwMakeContextCurrent(window);
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            }
-            //glfwPollEvents();
-        }
-        mIsPressed = mIsCurrentlyPressed;
-
-        bool cIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_C ) == GLFW_PRESS);
-        if (!cIsPressed && cIsCurrentlyPressed){
-            enableCull = !enableCull;
-            if(enableCull)
-                gl::enableCullFace();
-            else
-                gl::disableCullFace();
-        }
-        cIsPressed = cIsCurrentlyPressed;
-
-        bool tIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_T ) == GLFW_PRESS &&
-                                    !(glfwGetKey( window, GLFW_KEY_RIGHT_SHIFT ) == GLFW_PRESS || glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS));
-        if (!tIsPressed && tIsCurrentlyPressed){
-            enableTess = (enableTess+1)%3;
-        }
-        tIsPressed = tIsCurrentlyPressed;
-
-        bool pIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_T ) == GLFW_PRESS &&
-                                    (glfwGetKey( window, GLFW_KEY_RIGHT_SHIFT ) == GLFW_PRESS || glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS));
-        if (!pIsPressed && pIsCurrentlyPressed){
-            enablePolygon = !enablePolygon;
-            if(enablePolygon)
-                gl::polygonModeFBFill();
-            else
-                gl::polygonModeFBLine();
-        }
-        pIsPressed = pIsCurrentlyPressed;
-
-        bool pDownIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_PAGE_DOWN ) == GLFW_PRESS);
-        if (!pDownIsPressed && pDownIsCurrentlyPressed){
-            float sp = this->MovementSpeed/2;
-            if(sp<0.5)
-                sp = 0.5;
-            this->MovementSpeed = sp;
-        }
-        pDownIsPressed = pDownIsCurrentlyPressed;
-
-        bool pUpIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_PAGE_UP ) == GLFW_PRESS);
-        if (!pUpIsPressed && pUpIsCurrentlyPressed){
-            float sp = this->MovementSpeed*1.5;
-            if(sp>150)
-                sp = 150;
-            this->MovementSpeed = sp;
-
-        }
-        pUpIsPressed = pUpIsCurrentlyPressed;
-
-        if ((glfwGetKey( window, GLFW_KEY_PAGE_DOWN ) == GLFW_PRESS)){
-
-        }
-
-        if ((glfwGetKey( window, GLFW_KEY_PAGE_UP ) == GLFW_PRESS)){
-
-        }
-
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            this->ProcessKeyboard(FORWARD, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            this->ProcessKeyboard(BACKWARD, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            this->ProcessKeyboard(LEFT, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            this->ProcessKeyboard(RIGHT, deltaTime);
-    }
+    glm::mat4 getViewMatrix();
+    glm::mat4 getProjectionMatrix(int SCR_WIDTH, int SCR_HEIGHT);
+    void ProcessKeyboard(Camera_Movement direction, float deltaTime);
+    void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
+    void ProcessMouseScroll(float yoffset);
+    void pressButtons();
 
 private:
     // Calculates the front vector from the Camera's (updated) Euler Angles
@@ -241,6 +88,8 @@ private:
         Up    = glm::normalize(glm::cross(Right, Front));
     }
 };
+
+extern Camera planetCamera;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);

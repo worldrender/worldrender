@@ -3,8 +3,6 @@
 
 using namespace std;
 
-int width, height, nrChannels;
-unsigned char *data;
 GLuint textures[QTDTEXTURAS];
 
 const char* filenames[QTDTEXTURAS] = {"texture.png",
