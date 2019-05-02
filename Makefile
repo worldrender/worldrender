@@ -11,7 +11,7 @@ GLFW_LIBS 	=	-lglfw
 THREAD_LIBS	= 	-lpthread
 
 CFLAGS		= 	-g -Wno-deprecated
-CXXFLAGS	= 	-g -Wno-deprecated
+CXXFLAGS	= 	-std=c++17 -g -Wno-deprecated
 
 # libraries to link with:
 
@@ -19,7 +19,7 @@ LIBPATH =
 
 LDFLAGS =	$(THREAD_LIBS) $(GLFW_LIBS) $(OPENGL_LIBS)
 
-OBJFILES = controls.o Main.o Planet.o LoadShaders.o NoiseFeedback.o QuadTree.o Camera.o
+OBJFILES = Main.o Planet.o LoadShaders.o NoiseFeedback.o QuadTree.o Camera.o
 
 
 # ***********************************************************************************
