@@ -2,11 +2,12 @@
 #define UTILS_HPP
 
 #include <vector>
+#include <string>
 #include <glm/glm.hpp>
 #include <GL/gl.h>
 
 #define RADIUS 7
-#define LODVALUE 6 //safe number
+#define LODVALUE 6 //safe number is 6
 #define PositionSlot 0u
 #define WIDTH 1280u
 #define HEIGHT 1024u
@@ -18,51 +19,6 @@
 #define SPEED          2.5f
 #define SENSITIVITY    0.1f
 #define ZOOM           45.0f
-
-float skyboxVertices[] = {
-    // positions
-    -1.0f,  1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-
-    -1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-
-    -1.0f, -1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-
-    -1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f, -1.0f,
-
-    -1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f
-};
 
 template<typename T>
 T fAbs(T t)
@@ -76,7 +32,7 @@ T size(T* t)
   return (sizeof(t)/sizeof(t[0]));
 }
 
-extern bool enableTess;
+extern int enableTess;
 
 extern std::vector<glm::vec3> transformedVertices;
 
@@ -134,5 +90,7 @@ void swapBuffers();
 void deleteProgram(const GLuint programs[]);
 void deleteBuffers();
 void CPUfbm();
+void setSkybox();
+unsigned int loadCubemap(std::vector<std::string> faces);
 
 #endif

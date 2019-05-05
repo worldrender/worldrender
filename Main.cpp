@@ -37,10 +37,53 @@ vec4 color = vec4(0.5f, 0.5f, 0.8f, 1.0f);
 Planet * planet;
 chrono::duration < double > diff;
 GLuint VertexArrayID, feedbackVAO, vertexbuffer, noiseBuffer, elementbuffer;
+unsigned int skyboxVAO, skyboxVBO, cubemapTexture;
 GLuint planetShader, skyboxShader, activeShader, transformFeedbackShader;
-bool enableTess = true;
+int enableTess = 0;
+float skyboxVertices[] = {
+    // positions
+    -1.0f,  1.0f, -1.0f,
+    -1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
 
+    -1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
 
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+    -1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f
+};
 Camera planetCamera(glm::vec3(-120.f, 780.f, 0.0f));
 
 int main(int argv, char ** argc) {
@@ -48,6 +91,7 @@ int main(int argv, char ** argc) {
 
   createProgram();
   createPlanet();
+  setSkybox();
   createBuffer();
   applyingTextures();
 
@@ -137,7 +181,7 @@ void init() {
 
 void createProgram() {
   planetShader = LoadShaders("worldvert.glsl", "worldtesc.glsl", "worldtese.glsl", "worldfrag.glsl");
-  planetShader = LoadShaders("skybox.glsl", "skybox.glsl");
+  skyboxShader = LoadShaders("skybox.vs", "skybox.fs");
   transformFeedbackShader = LoadShader("transform.glsl");
   activeShader = planetShader;
 }
@@ -219,7 +263,7 @@ void createBuffer() {
 
   glGenBuffers(1, & elementbuffer);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, QuadTree::indices.size() * sizeof(GLushort), QuadTree::indices.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, QuadTree::indices.size() * sizeof(GLuint), QuadTree::indices.data(), GL_STATIC_DRAW);
 }
 
 void applyingTextures() {
@@ -283,32 +327,55 @@ void draw() {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
   if (activeShader == planetShader) {
-    glDrawElements(GL_PATCHES, QuadTree::indices.size(), GL_UNSIGNED_SHORT, (void * ) 0);
+    glDrawElements(GL_PATCHES, QuadTree::indices.size(), GL_UNSIGNED_INT, (void * ) 0);
   } else {
-    glDrawElements(GL_TRIANGLES, QuadTree::indices.size(), GL_UNSIGNED_SHORT, (void * ) 0);
+    glDrawElements(GL_TRIANGLES, QuadTree::indices.size(), GL_UNSIGNED_INT, (void * ) 0);
   }
+
+  // draw skybox as last
+    glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+    gl::disableCullFace();
+    glUseProgram(skyboxShader);
+    glm::mat4 ProjectionMatrix = planetCamera.getProjectionMatrix(WIDTH, HEIGHT);
+    glm::mat4 ViewMatrix = glm::mat4(glm::mat3(planetCamera.getViewMatrix())); // remove translation from the view matrix
+    glUniformMatrix4fv(glGetUniformLocation(skyboxShader, "view"), 1, GL_FALSE, & ViewMatrix[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(skyboxShader, "projection"), 1, GL_FALSE, & ProjectionMatrix[0][0]);
+
+    // skybox cube
+    glBindVertexArray(skyboxVAO);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
+    gl::enableCullFace();
+    glDepthFunc(GL_LESS); // set depth function back to default
 }
 
 void setSkybox(){
-  glUseProgram(skyboxShader);
 
-  glm::mat4 ProjectionMatrix = planetCamera.getProjectionMatrix(WIDTH, HEIGHT);
-  glm::mat4 ViewMatrix = planetCamera.getViewMatrix();
-
-  glUniform1i(glGetUniformLocation(skyboxShader, "skybox"), 0);
+    // skybox VAO
+    glGenVertexArrays(1, &skyboxVAO);
+    glGenBuffers(1, &skyboxVBO);
+    glBindVertexArray(skyboxVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
     vector<std::string> faces
     {
-        ("../../../resources/textures/skybox/right.jpg"),
-        ("../../../resources/textures/skybox/left.jpg"),
-        ("../../../resources/textures/skybox/top.jpg"),
-        ("../../../resources/textures/skybox/bottom.jpg"),
-        ("../../../resources/textures/skybox/front.jpg"),
-        ("../../../resources/textures/skybox/back.jpg")
+        ("skybox/right.png"),
+        ("skybox/left.png"),
+        ("skybox/top.png"),
+        ("skybox/bottom.png"),
+        ("skybox/front.png"),
+        ("skybox/back.png")
     };
-    unsigned int cubemapTexture = loadCubemap(faces);
-}
+    cubemapTexture = loadCubemap(faces);
 
+    glUseProgram(skyboxShader);
+    glUniform1i(glGetUniformLocation(skyboxShader, "skybox"), 0);
+}
 
 unsigned int loadCubemap(vector<std::string> faces)
 {

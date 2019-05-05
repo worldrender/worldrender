@@ -14,7 +14,7 @@ out vec4 tcColor[];
 
 uniform vec3 viewPos;
 
-uniform bool tess;
+uniform int tess;
 
 uniform float dx;
 uniform float dy;
@@ -42,6 +42,17 @@ float dirLOD(vec3 posV, float posCX, float posCY, float posCZ){
   else if(normal < -param) return 1.0;
 }
 
+float level (vec4 poz1, vec4 poz2){
+    float lod=1;
+	float d=distance(poz1, poz2);
+	if(d<10) lod=10;
+	if(10<=d && d<30) lod=5;
+	if(30<=d && d<50) lod=2;
+	if(50<=d) lod=1;
+
+	return lod;
+}
+
 void main(){
   float TessLevelInner = 1;
   float TessLevelOuter = 1;
@@ -55,7 +66,15 @@ void main(){
     vec3 bTriangulo = (gl_in[0].gl_Position.xyz + gl_in[1].gl_Position.xyz
                        + gl_in[2].gl_Position.xyz)/3;
 
-    TessLevelInner = LOD(bTriangulo, viewPos);
+        if(tess==0){
+          TessLevelInner = LOD(bTriangulo, viewPos);
+        }
+        else if(tess == 1){
+          TessLevelInner = 1;
+        }
+        else if(tess == 2){
+          TessLevelInner = 2;
+        }
     TessLevelOuter = TessLevelInner;//dirLOD(vPos, px, py, pz);
 
     gl_TessLevelInner[0] = TessLevelInner;

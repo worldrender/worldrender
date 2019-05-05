@@ -10,7 +10,7 @@
 
 class Verts {
 public:
-  using index_type = uint16_t;
+  using index_type = uint32_t;
   static_assert(std::is_unsigned<index_type>::value, "");
 
 private:
