@@ -55,34 +55,44 @@ float level (vec4 poz1, vec4 poz2){
 
 void main(){
   float TessLevelInner = 1;
-  float TessLevelOuter = 1;
+  float e0, e1, e2;
+
+  e0 = e1 = e2 = 1;
   // tcTexCoord[ID]  = TexCoord[ID];
   tcPosition[ID]  = vPosition[ID];
   tcNormal[ID]    = vNormal[ID];
   tcColor[ID]     = vColor[ID];
-
+  vec3 d1, d2, d3;
 
   if (ID == 0) {
     vec3 bTriangulo = (gl_in[0].gl_Position.xyz + gl_in[1].gl_Position.xyz
-                       + gl_in[2].gl_Position.xyz)/3;
+                     + gl_in[2].gl_Position.xyz)/3;
 
-        if(tess==0){
-          TessLevelInner = LOD(bTriangulo, viewPos);
-        }
-        else if(tess == 1){
-          TessLevelInner = 1;
-        }
-        else if(tess == 2){
-          TessLevelInner = 2;
-        }
-    TessLevelOuter = TessLevelInner;//dirLOD(vPos, px, py, pz);
+    if(tess==0){
+      TessLevelInner = LOD(bTriangulo, viewPos);
+
+      d1=gl_in[1].gl_Position.xyz+(gl_in[2].gl_Position.xyz-gl_in[1].gl_Position.xyz)/2;
+      d2=gl_in[0].gl_Position.xyz+(gl_in[2].gl_Position.xyz-gl_in[0].gl_Position.xyz)/2;
+      d3=gl_in[0].gl_Position.xyz+(gl_in[1].gl_Position.xyz-gl_in[0].gl_Position.xyz)/2;
+
+      e0=LOD(d1,viewPos);
+      e1=LOD(d2,viewPos);
+      e2=LOD(d3,viewPos);
+    }
+    else if(tess == 1){
+      TessLevelInner = 1;
+    }
+    else if(tess == 2){
+      TessLevelInner = 2;
+    }
+    //TessLevelOuter = TessLevelInner;//dirLOD(vPos, px, py, pz);
 
     gl_TessLevelInner[0] = TessLevelInner;
-    gl_TessLevelOuter[0] = TessLevelOuter;
-    gl_TessLevelOuter[1] = TessLevelOuter;
-    gl_TessLevelOuter[2] = TessLevelOuter;
+    gl_TessLevelOuter[0] = e0;
+    gl_TessLevelOuter[1] = e1;
+    gl_TessLevelOuter[2] = e2;
   }
-  if(TessLevelInner == 8.0 || TessLevelOuter == 8.0){
+  if(TessLevelInner == 8.0 /*|| TessLevelOuter == 8.0*/){
     tcColor[ID] == vec4(1.0, 1.0, 1.0, 1.0);
   }
 

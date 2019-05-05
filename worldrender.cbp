@@ -90,7 +90,6 @@
 		<Unit filename="QuadTree.cpp" />
 		<Unit filename="QuadTree.hpp" />
 		<Unit filename="Shader.hpp" />
-		<Unit filename="Shader.hpp" />
 		<Unit filename="Textures.hpp" />
 		<Unit filename="Utils.hpp" />
 		<Unit filename="Verts.hpp" />
