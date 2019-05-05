@@ -37,7 +37,7 @@ vec4 color = vec4(0.5f, 0.5f, 0.8f, 1.0f);
 Planet * planet;
 chrono::duration < double > diff;
 GLuint VertexArrayID, feedbackVAO, vertexbuffer, noiseBuffer, elementbuffer;
-GLuint planetShader, geomShader, activeShader, transformFeedbackShader;
+GLuint planetShader, skyboxShader, activeShader, transformFeedbackShader;
 bool enableTess = true;
 
 
@@ -137,6 +137,7 @@ void init() {
 
 void createProgram() {
   planetShader = LoadShaders("worldvert.glsl", "worldtesc.glsl", "worldtese.glsl", "worldfrag.glsl");
+  planetShader = LoadShaders("skybox.glsl", "skybox.glsl");
   transformFeedbackShader = LoadShader("transform.glsl");
   activeShader = planetShader;
 }
@@ -222,7 +223,6 @@ void createBuffer() {
 }
 
 void applyingTextures() {
-
   for (int i = 0; i < QTDTEXTURAS; i++) {
 
     glGenTextures(1, & textures[i]);
@@ -287,6 +287,57 @@ void draw() {
   } else {
     glDrawElements(GL_TRIANGLES, QuadTree::indices.size(), GL_UNSIGNED_SHORT, (void * ) 0);
   }
+}
+
+void setSkybox(){
+  glUseProgram(skyboxShader);
+
+  glm::mat4 ProjectionMatrix = planetCamera.getProjectionMatrix(WIDTH, HEIGHT);
+  glm::mat4 ViewMatrix = planetCamera.getViewMatrix();
+
+  glUniform1i(glGetUniformLocation(skyboxShader, "skybox"), 0);
+
+    vector<std::string> faces
+    {
+        ("../../../resources/textures/skybox/right.jpg"),
+        ("../../../resources/textures/skybox/left.jpg"),
+        ("../../../resources/textures/skybox/top.jpg"),
+        ("../../../resources/textures/skybox/bottom.jpg"),
+        ("../../../resources/textures/skybox/front.jpg"),
+        ("../../../resources/textures/skybox/back.jpg")
+    };
+    unsigned int cubemapTexture = loadCubemap(faces);
+}
+
+
+unsigned int loadCubemap(vector<std::string> faces)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+    int width, height, nrChannels;
+    for (unsigned int i = 0; i < faces.size(); i++)
+    {
+        unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+        if (data)
+        {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            stbi_image_free(data);
+        }
+        else
+        {
+            std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
+            stbi_image_free(data);
+        }
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    return textureID;
 }
 
 void swapBuffers() {
