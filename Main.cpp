@@ -362,16 +362,7 @@ void setSkybox(){
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-    vector<std::string> faces
-    {
-        ("skybox/right.png"),
-        ("skybox/left.png"),
-        ("skybox/top.png"),
-        ("skybox/bottom.png"),
-        ("skybox/front.png"),
-        ("skybox/back.png")
-    };
-    cubemapTexture = loadCubemap(faces);
+    cubemapTexture = loadCubemap(skybox);
 
     glUseProgram(skyboxShader);
     glUniform1i(glGetUniformLocation(skyboxShader, "skybox"), 0);
