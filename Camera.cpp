@@ -151,7 +151,10 @@ void Camera::pressButtons()
     if(enablePolygon)
       gl::polygonModeFBFill();
     else
+    {
       gl::polygonModeFBLine();
+    }
+
   }
   pIsPressed = pIsCurrentlyPressed;
 
