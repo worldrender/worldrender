@@ -23,15 +23,10 @@ using namespace std;
 
 GLFWwindow * window;
 
-extern glm::vec3 position;
-extern glm::vec3 direction;
-
 bool adapt = true;
 bool unif = false;
 bool geom = false;
-//static GLsizei IndexCount;
-//static float TessLevelInner;
-//static float TessLevelOuter;
+
 vec4 color = vec4(0.5f, 0.5f, 0.8f, 1.0f);
 
 Planet * planet;
@@ -40,50 +35,7 @@ GLuint VertexArrayID, feedbackVAO, vertexbuffer, noiseBuffer, elementbuffer;
 unsigned int skyboxVAO, skyboxVBO, cubemapTexture;
 GLuint planetShader, skyboxShader, activeShader, transformFeedbackShader;
 int enableTess = 0;
-float skyboxVertices[] = {
-    // positions
-    -1.0f,  1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
 
-    -1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-
-    -1.0f, -1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-
-    -1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f, -1.0f,
-
-    -1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f
-};
 Camera planetCamera(glm::vec3(-120.f, 780.f, 0.0f));
 
 int main(int argv, char ** argc) {
@@ -159,6 +111,8 @@ void initGL() {
 void init() {
   initGL();
 
+  gl::enableDepthTest();
+
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
   glfwSetCursorPosCallback(window, mouse_callback);
   glfwSetScrollCallback(window, scroll_callback);
@@ -170,7 +124,6 @@ void init() {
 
   gl::clearColor(color);
 
-  gl::enableDepthTest();
   // Accept fragment if it closer to the camera than the former one
   gl::lessDepthFunction();
 
@@ -362,16 +315,7 @@ void setSkybox(){
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-    vector<std::string> faces
-    {
-        ("skybox/right.png"),
-        ("skybox/left.png"),
-        ("skybox/top.png"),
-        ("skybox/bottom.png"),
-        ("skybox/front.png"),
-        ("skybox/back.png")
-    };
-    cubemapTexture = loadCubemap(faces);
+    cubemapTexture = loadCubemap(skybox);
 
     glUseProgram(skyboxShader);
     glUniform1i(glGetUniformLocation(skyboxShader, "skybox"), 0);
