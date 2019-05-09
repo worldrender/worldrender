@@ -80,6 +80,7 @@
 		</Compiler>
 		<Unit filename="Camera.cpp" />
 		<Unit filename="Camera.hpp" />
+		<Unit filename="CullingFeedback.cpp" />
 		<Unit filename="LoadShaders.cpp" />
 		<Unit filename="LoadShaders.hpp" />
 		<Unit filename="Main.cpp" />
