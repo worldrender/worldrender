@@ -134,9 +134,9 @@ void init() {
 
 void createProgram() {
   planetShader = LoadShaders("worldvert.glsl", "worldtesc.glsl", "worldtese.glsl", "worldfrag.glsl");
-  skyboxShader = LoadShaders("skybox.vs", "skybox.fs");
+  skyboxShader = LoadShaders("skyboxvert.glsl", "skyboxfrag.glsl");
   transformFeedbackShader = LoadShader("transform.glsl");
-  cullingShader = LoadShaders("culling.vs", "culling.gs", "culling.ps");
+  //cullingShader = LoadShaders("culling.vs", "culling.gs", "culling.ps");
   activeShader = planetShader;
 }
 
