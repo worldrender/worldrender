@@ -1,9 +1,7 @@
 #ifndef _FRUSTUM_H
 #define _FRUSTUM_H
 
-#include <windows.h>
-#include <gl\gl.h>
-#include <gl\glext.h>
+#include <GL/gl.h>
 //#include "..\glext\glext.h"
 #include <glm/glm.hpp>
 

@@ -19,6 +19,7 @@ in vec4 tcColor[];
 out float p;
 out vec3 vcNormal;
 out vec4 vcColor;
+out float vNoise;
 //out vec2 vcTexCoord;
 
 out vec3 vcPos;
@@ -73,7 +74,8 @@ void main(){
     vec3 n1 = gl_TessCoord.y * tcNormal[1];
     vec3 n2 = gl_TessCoord.z * tcNormal[2];
     vcNormal = normalize(n0 + n1 + n2);
-    vcPos = vcPos + vcNormal * fbm(vcPos)*2;
+    vNoise = fbm(vcPos)*2;
+    vcPos = vcPos + vcNormal * vNoise;
     vec4 c0 = gl_TessCoord.x * tcColor[0];
     vec4 c1 = gl_TessCoord.y * tcColor[1];
     vec4 c2 = gl_TessCoord.z * tcColor[2];

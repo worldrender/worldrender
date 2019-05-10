@@ -3,6 +3,7 @@
 in vec4 vcColor;
 in vec3 vcNormal;
 in vec3 vcPos;
+in float vNoise;
 
 uniform sampler2D pTexture;
 uniform sampler2D dTexture;
@@ -77,6 +78,14 @@ float random( vec3  v ) { return floatConstruct(hash(floatBitsToUint(v))); }
 float random( vec4  v ) { return floatConstruct(hash(floatBitsToUint(v))); }
 
 void main() {
+    vec3 normal = normalize(vcNormal);
+    vec4 fbmColor = vec4(vNoise, vNoise, vNoise, 1.0f);
+    gl_FragColor = fbmColor * vec4 (normal, 1.0f);
+
+}
+
+/*
+void main() {
   vec3 normal = normalize(vcNormal);
   vec3 fragPos = vec3(model*vec4(vcPos,1.0f));
 
@@ -131,19 +140,4 @@ void main() {
   fColor = mix(fColor,noise,0.08333f+1/length(viewPos));
 }
 
-
-/*
-	vec3 blending = getTriPlanarBlend(vNormal);
-	vec3 xaxis = texture2D( tNormal, vPos.yz * normalRepeat).rgb;
-	vec3 yaxis = texture2D( tNormal, vPos.xz * normalRepeat).rgb;
-	vec3 zaxis = texture2D( tNormal, vPos.xy * normalRepeat).rgb;
-	vec3 normalTex = xaxis * blending.x + yaxis * blending.y + zaxis * blending.z;
-	normalTex = normalTex * 2.0 - 1.0;
-	normalTex.xy *= normalScale;
-	normalTex = normalize( normalTex );
-
-	vec3 T = vec3(0.,1.,0.);
-  	vec3 BT = normalize( cross( vNormal, T ) * 1.0 );
-
-  	mat3 tsb = mat3( normalize( T ), normalize( BT ), normalize( vNormal ) );
-  	vec3 N = tsb * normalTex;*/
+*/
