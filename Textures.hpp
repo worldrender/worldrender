@@ -13,12 +13,7 @@ const char* filenames[QTDTEXTURAS] = {"textures/planetTexture.png",
 
 const vector<std::string> skybox
 {
-    ("textures/skybox/right.png"),
-    ("textures/skybox/left.png"),
-    ("textures/skybox/top.png"),
-    ("textures/skybox/bottom.png"),
-    ("textures/skybox/front.png"),
-    ("textures/skybox/back.png")
+    ("textures/skybox/stars.jpg")
 };
 
 
