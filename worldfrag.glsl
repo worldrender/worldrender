@@ -3,6 +3,7 @@
 in vec4 vcColor;
 in vec3 vcNormal;
 in vec3 vcPos;
+in float vNoise;
 
 uniform sampler2D pTexture;
 uniform sampler2D dTexture;
@@ -75,6 +76,14 @@ float random( float x ) { return floatConstruct(hash(floatBitsToUint(x))); }
 float random( vec2  v ) { return floatConstruct(hash(floatBitsToUint(v))); }
 float random( vec3  v ) { return floatConstruct(hash(floatBitsToUint(v))); }
 float random( vec4  v ) { return floatConstruct(hash(floatBitsToUint(v))); }
+/*
+void main() {
+    vec3 normal = normalize(vcNormal);
+    vec4 fbmColor = vec4(vNoise, vNoise, vNoise, 1.0f);
+    gl_FragColor = fbmColor * vec4 (normal, 1.0f);
+
+}
+*/
 
 void main() {
   vec3 normal = normalize(vcNormal);
@@ -84,14 +93,14 @@ void main() {
                                   (asin(normal.z) / M_PI + 0.5));
   //uv = vec2(atan( normal.y, normal.x )/2*M_PI, asin( normal.z )/M_PI);
 
-  vec3 detail = texture(dTexture, uv).rgb;
+  vec3 detail = texture(dTexture, uv*vNoise).rgb/vNoise;
 
   float hL = height(uv - texOffset.xz);
   float hR = height(uv + texOffset.xz);
   float hD = height(uv - texOffset.zy);
   float hU = height(uv + texOffset.zy);
+  vec3 N = normalize(vec3((hL - hR)/(vNoise), (hD - hU)/(vNoise), vNoise));
 
-  vec3 N = normalize(vec3(hL - hR, hD - hU, 2.0));
   vec3 norm = normalize(normal);
   vec3 up = vec3(0, 1, 0)-norm;
   vec3 tang = normalize(cross(norm, up));//might need flipping
@@ -101,10 +110,10 @@ void main() {
 
   mat3 TBN = transpose(mat3(tang, biTan, norm));
   vec3 viewDir = normalize((viewPos*TBN)-(fragPos*TBN));
-  uv = ParallaxMapping(uv,  viewDir);
+  uv = ParallaxMapping(uv,  viewDir)*vNoise*0.3333f;
 //  if(uv.x > 1.0 || uv.y > 1.0 || uv.x < 0.0 || uv.y < 0.0)
 //        discard;
-  vec3 parallax = texture(nTexture,uv).rgb;
+  vec3 parallax = texture(nTexture,uv).rgb/vNoise*0.2222f;
   vec3 light = dirLighting(detail, norm);
   light*=0.8f;
         // processing of the texture coordinates;
@@ -122,28 +131,13 @@ void main() {
 
   vec4 difSpe = vec4(diffuse+spec,1.0f);
 
-  fColor = mix(fColor,difSpe,0.3333f);
+  fColor = mix(fColor,difSpe,log(vNoise));
 
 //  vec4 noise = vec4(vec3(random(fColor.xyz)),1.f);
 //
 //  fColor = mix(fColor,noise,0.09333f);
   vec4 noise = vec4(random(vcPos.x),random(vcPos.y),random(vcPos.z),1.f);
-  fColor = mix(fColor,noise,0.08333f+1/length(viewPos));
+  fColor = mix(fColor,noise,(0.08333f+1/length(viewPos))*vNoise);
 }
 
 
-/*
-	vec3 blending = getTriPlanarBlend(vNormal);
-	vec3 xaxis = texture2D( tNormal, vPos.yz * normalRepeat).rgb;
-	vec3 yaxis = texture2D( tNormal, vPos.xz * normalRepeat).rgb;
-	vec3 zaxis = texture2D( tNormal, vPos.xy * normalRepeat).rgb;
-	vec3 normalTex = xaxis * blending.x + yaxis * blending.y + zaxis * blending.z;
-	normalTex = normalTex * 2.0 - 1.0;
-	normalTex.xy *= normalScale;
-	normalTex = normalize( normalTex );
-
-	vec3 T = vec3(0.,1.,0.);
-  	vec3 BT = normalize( cross( vNormal, T ) * 1.0 );
-
-  	mat3 tsb = mat3( normalize( T ), normalize( BT ), normalize( vNormal ) );
-  	vec3 N = tsb * normalTex;*/

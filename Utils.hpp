@@ -33,6 +33,7 @@ T size(T* t)
 }
 
 extern int enableTess;
+extern GLuint frame_index;
 
 extern std::vector<glm::vec3> transformedVertices;
 

@@ -33,7 +33,7 @@ Planet * planet;
 chrono::duration < double > diff;
 GLuint VertexArrayID, feedbackVAO, vertexbuffer, noiseBuffer, elementbuffer;
 unsigned int skyboxVAO, skyboxVBO, cubemapTexture;
-GLuint planetShader, skyboxShader, activeShader, transformFeedbackShader;
+GLuint planetShader, skyboxShader, activeShader, transformFeedbackShader, cullingShader;
 int enableTess = 0;
 
 Camera planetCamera(glm::vec3(-120.f, 780.f, 0.0f));
@@ -134,8 +134,9 @@ void init() {
 
 void createProgram() {
   planetShader = LoadShaders("worldvert.glsl", "worldtesc.glsl", "worldtese.glsl", "worldfrag.glsl");
-  skyboxShader = LoadShaders("skybox.vs", "skybox.fs");
+  skyboxShader = LoadShaders("skyboxvert.glsl", "skyboxfrag.glsl");
   transformFeedbackShader = LoadShader("transform.glsl");
+  //cullingShader = LoadShaders("culling.vs", "culling.gs", "culling.ps");
   activeShader = planetShader;
 }
 

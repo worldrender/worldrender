@@ -80,6 +80,9 @@
 		</Compiler>
 		<Unit filename="Camera.cpp" />
 		<Unit filename="Camera.hpp" />
+		<Unit filename="Culling.cpp" />
+		<Unit filename="Frustum.cpp" />
+		<Unit filename="Frustum.hpp" />
 		<Unit filename="LoadShaders.cpp" />
 		<Unit filename="LoadShaders.hpp" />
 		<Unit filename="Main.cpp" />
@@ -93,6 +96,7 @@
 		<Unit filename="Textures.hpp" />
 		<Unit filename="Utils.hpp" />
 		<Unit filename="Verts.hpp" />
+		<Unit filename="shader.hpp" />
 		<Unit filename="simplex.h" />
 		<Unit filename="stb_image.hpp" />
 		<Unit filename="transform.glsl" />
