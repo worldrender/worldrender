@@ -32,7 +32,7 @@
 
 1552951715 hpp"
 
-1557368461 source:c:\users\iagop\documents\projetomz\worldrender\main.cpp
+1557963279 source:c:\users\iagop\documents\projetomz\worldrender\main.cpp
 	<iostream>
 	<string>
 	<cstdlib>
@@ -1131,7 +1131,7 @@
 	<vector>
 	"Utils.hpp"
 
-1557286408 c:\users\iagop\documents\projetomz\worldrender\textures.hpp
+1557961593 c:\users\iagop\documents\projetomz\worldrender\textures.hpp
 	<stdlib.h>
 	<vector>
 
@@ -1152,9 +1152,8 @@
 	<intrin.h>
 	<arm_neon.h>
 
-1557368751 source:c:\users\iagop\documents\projetomz\worldrender\frustum.cpp
-	<windows.h>
-	"Frustum.h"
+1557465467 source:c:\users\iagop\documents\projetomz\worldrender\frustum.cpp
+	"Frustum.hpp"
 
 1557372689 c:\users\iagop\documents\projetomz\worldrender\frustum.h
 	<windows.h>
@@ -1168,7 +1167,7 @@
 1557366962 source:c:\users\iagop\documents\projetomz\worldrender\mathlib.cpp
 	"mathlib.h"
 
-1557372789 source:c:\users\iagop\documents\projetomz\worldrender\culling.cpp
+1557465310 source:c:\users\iagop\documents\projetomz\worldrender\culling.cpp
 	"NoiseFeedback.hpp"
 	"QuadTree.hpp"
 	"LoadShaders.hpp"
@@ -1181,10 +1180,8 @@
 
 1557372789 pp"
 
-1557372689 c:\users\iagop\documents\projetomz\worldrender\frustum.hpp
-	<windows.h>
-	<gl\gl.h>
-	<gl\glext.h>
+1557465467 c:\users\iagop\documents\projetomz\worldrender\frustum.hpp
+	<GL/gl.h>
 	<glm/glm.hpp>
 
 1557440379 source:/home/ricardo/worldrender/Culling.cpp
