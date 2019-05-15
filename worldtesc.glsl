@@ -25,12 +25,12 @@ uniform float radius;
 
 float LOD(vec3 posV, vec3 cam){
   float dist = distance(posV, cam);
-  if(dist<=25) return 32.0;
-  else if(dist>25 && dist<=75) return 16.0;
-  else if(dist>75 && dist<=100) return 8.0;
-  else if(dist>100 && dist<=150) return 4.0;
-  else if(dist>150 && dist<=200) return 2.0;
-  else if(dist>200) return 1.0;
+  if(dist<=75) return 32.0;
+  else if(dist>75 && dist<=150) return 16.0;
+  else if(dist>150 && dist<=200) return 8.0;
+  else if(dist>200 && dist<=300) return 4.0;
+  else if(dist>300 && dist<=400) return 2.0;
+  else if(dist>400) return 1.0;
 }
 
 float dirLOD(vec3 posV, float posCX, float posCY, float posCZ){
@@ -40,17 +40,6 @@ float dirLOD(vec3 posV, float posCX, float posCY, float posCZ){
   if(normal > param) return 8.0;
   else if(normal >= -param && normal <= param) return 4.0;
   else if(normal < -param) return 1.0;
-}
-
-float level (vec4 poz1, vec4 poz2){
-    float lod=1;
-	float d=distance(poz1, poz2);
-	if(d<10) lod=10;
-	if(10<=d && d<30) lod=5;
-	if(30<=d && d<50) lod=2;
-	if(50<=d) lod=1;
-
-	return lod;
 }
 
 void main(){
