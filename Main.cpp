@@ -52,8 +52,6 @@ int main(int argv, char ** argc) {
     glBindVertexArray(VertexArrayID);
 
     float currentFrame = glfwGetTime();
-    deltaTime = currentFrame - lastFrame;
-    lastFrame = currentFrame;
 
     planetCamera.pressButtons();
 
@@ -66,6 +64,8 @@ int main(int argv, char ** argc) {
     glDisableVertexAttribArray(2);
 
     swapBuffers();
+    float lastFrame = glfwGetTime();
+    deltaTime = currentFrame - lastFrame;
 
   } // Check if the ESC key was pressed or the window was closed
   while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
@@ -263,6 +263,8 @@ void setUniforms() {
   glUniform1i(glGetUniformLocation(planetShader, "pTexture"), 0);
   glUniform1i(glGetUniformLocation(planetShader, "dTexture"), 1);
   glUniform1i(glGetUniformLocation(planetShader, "nTexture"), 2);
+  float currentFrame = glfwGetTime();
+  glUniform1f(glGetUniformLocation(planetShader, "time"), currentFrame);
 }
 
 void draw() {
