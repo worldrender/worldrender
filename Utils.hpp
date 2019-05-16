@@ -84,7 +84,7 @@ void createPlanet();
 void feedbackBuffer();
 void createBuffer();
 void applyingTextures();
-void setUniforms();
+void setUniforms(float currentFrame);
 void draw();
 void disableVertexAttribs();
 void swapBuffers();

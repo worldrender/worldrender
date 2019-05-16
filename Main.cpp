@@ -59,7 +59,7 @@ int main(int argv, char ** argc) {
 
     planetCamera.pressButtons();
 
-    setUniforms();
+    setUniforms(currentFrame);
 
     draw();
 
@@ -245,7 +245,7 @@ void applyingTextures() {
   }
 }
 
-void setUniforms() {
+void setUniforms(float currentFrame) {
   glUseProgram(planetShader);
 
   glm::mat4 ProjectionMatrix = planetCamera.getProjectionMatrix(WIDTH, HEIGHT);
@@ -265,7 +265,6 @@ void setUniforms() {
   glUniform1i(glGetUniformLocation(planetShader, "pTexture"), 0);
   glUniform1i(glGetUniformLocation(planetShader, "dTexture"), 1);
   glUniform1i(glGetUniformLocation(planetShader, "nTexture"), 2);
-  float currentFrame = glfwGetTime();
   glUniform1f(glGetUniformLocation(planetShader, "time"), currentFrame);
 }
 

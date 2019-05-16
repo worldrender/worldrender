@@ -216,11 +216,10 @@ void main() {
   vec3 cu = normalize(cross(cw,cp));
 
 	vec3 cv = normalize(cross(cu,cw));
-  vec3 rd = normalize( vcPos.x*cu + vcPos.y*cv + 1.6*cw );
+  vec3 rd = normalize( vcPos.x*cu + vcPos.y*cv + vcPos.z*cw + 1.1*cw );
 
   vec3 col;
 
-  vec3 nor = calcNormal( viewPos, time );
 
   col = (hNoise*0.25+0.75)*0.9*mix( vec3(0.10,0.05,0.03), vec3(0.13,0.10,0.08), clamp(terrain2( vec2(vcPos.x,vcPos.y*48.0))/200.0,0.0,1.0) );
 		col = mix( col, 0.17*vec3(0.5,.23,0.04)*(0.50+0.50*hNoise),smoothstep(0.70,0.9,normal.y) );
@@ -228,7 +227,7 @@ void main() {
   col *= 0.75;
 
   fColor = vec4(mix(col,fColor.rgb,0.11111f),1);
-  if(fColor.r>0.95 && fColor.g>0.95 && fColor.b>0.95 )
+  if(fColor.r>0.9 && fColor.g>0.9 && fColor.b>0.9 )
     discard;
 }
 
