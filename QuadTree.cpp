@@ -1,6 +1,6 @@
-#include "QuadTree.hpp"
-#include "Utils.hpp"
-#include "simplex.h"
+#include "include/QuadTree.hpp"
+#include "include/Utils.hpp"
+#include "include/simplex.h"
 #include <iostream>
 #include <thread>
 #include <chrono>

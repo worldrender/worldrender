@@ -6,17 +6,17 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "LoadShaders.hpp"
-#include "Planet.hpp"
-#include "QuadTree.hpp"
-#include "NoiseFeedback.hpp"
-#include "Textures.hpp"
-#include "Camera.hpp"
-#include "Utils.hpp"
+#include "include/LoadShaders.hpp"
+#include "include/Planet.hpp"
+#include "include/QuadTree.hpp"
+#include "include/NoiseFeedback.hpp"
+#include "include/Textures.hpp"
+#include "include/Camera.hpp"
+#include "include/Utils.hpp"
 #include <chrono>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.hpp"
+#include "include/stb_image.hpp"
 
 using namespace glm;
 using namespace std;
@@ -135,9 +135,10 @@ void init() {
 }
 
 void createProgram() {
-  planetShader = LoadShaders("worldvert.glsl", "worldtesc.glsl", "worldtese.glsl", "worldfrag.glsl");
-  skyboxShader = LoadShaders("skyboxvert.glsl", "skyboxfrag.glsl");
-  transformFeedbackShader = LoadShader("transform.glsl");
+
+  planetShader = LoadShaders("shaders/worldvert.glsl", "shaders/worldtesc.glsl", "shaders/worldtese.glsl", "shaders/worldfrag.glsl");
+  skyboxShader = LoadShaders("shaders/skyboxvert.glsl", "shaders/skyboxfrag.glsl");
+  transformFeedbackShader = LoadShader("shaders/transform.glsl");
   //cullingShader = LoadShaders("culling.vs", "culling.gs", "culling.ps");
   activeShader = planetShader;
 }

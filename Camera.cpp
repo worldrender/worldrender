@@ -4,7 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #include <vector>
-#include "Camera.hpp"
+#include "include/Camera.hpp"
 // Default camera values
 
 bool tIsPressed,      pIsPressed,

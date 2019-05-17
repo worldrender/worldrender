@@ -1,4 +1,5 @@
 #version 430 core
+#define M_PI 3.14159265358979323844f
 
 struct InstancedNoise
 {

@@ -2,7 +2,7 @@
 #define _FRUSTUM_H
 
 #include <GL/gl.h>
-//#include "..\glext\glext.h"
+//#include "include/..\glext\glext.h"
 #include <glm/glm.hpp>
 
 class Camera;

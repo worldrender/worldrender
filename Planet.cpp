@@ -1,5 +1,5 @@
-#include "QuadTree.hpp"
-#include "Planet.hpp"
+#include "include/QuadTree.hpp"
+#include "include/Planet.hpp"
 #include <iostream>
 
 

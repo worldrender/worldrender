@@ -1,7 +1,7 @@
 #version 430 core
-#define M_PI 3.1415926f
+#define M_PI 3.14159265358979323844f
 #define SC 250.f
-#define RADIUS 2*20*10*7*M_PI
+#define RADIUS 200.f
 #define max_height 20.f
 
 // materials
@@ -29,6 +29,8 @@ uniform sampler2D nTexture;
 uniform mat4 model;
 uniform vec3 viewPos;
 uniform float time;
+uniform float radius;
+
 uniform vec3 lightDir = vec3(-1, -0.3, 1);
 
 uniform vec3 diffuse = vec3(1.0f, 0.5f, 0.2f);
@@ -282,22 +284,26 @@ vec3 setup_lights(
 
 void main() {
   float hNoise = (vNoise);
+  float vertNoise = terrain2(vec2(vcPos.x,vcPos.y));
   vec3 normal = normalize(vcNormal);
-
   vec3 fragPos = vec3(model*vec4(vcPos,1.0f));
 
-  vec2 uv = vec2((atan(normal.y, normal.x) / M_PI + 1.0) * 0.5,
-                                  (asin(normal.z) / M_PI + 0.5));
+  vec2 uv =  vec2(M_PI+(atan(normal.y, normal.x) / M_PI + 1.0) * 0.5,
+                                  (M_PI+asin(normal.z) / M_PI * 0.5));
+       uv.t += (M_PI*sin(normal.z)/M_PI + 0.5)/4;
+//       uv += vertNoise;
+//       uv -= vertNoise;
+  //uv = vec2((atan(normal.y - vertNoise, normal.x - vertNoise) / M_PI + 1.0) * 0.5, (asin(normal.z - vertNoise) / M_PI + 0.5));
   //uv = vec2(atan( normal.y, normal.x )/2*M_PI, asin( normal.z )/M_PI);
 
-  vec3 detail = texture(dTexture, uv*hNoise).rgb/hNoise;
+  vec3 detail = texture(dTexture, uv).rgb;
 
   float hL = height(uv - texOffset.xz);
   float hR = height(uv + texOffset.xz);
   float hD = height(uv - texOffset.zy);
   float hU = height(uv + texOffset.zy);
-  vec3 N = normalize(vec3((hL - hR)/(hNoise), (hD - hU)/(hNoise), hNoise));
 
+  vec3 N = normalize(vec3(hL - hR, hD - hU, 2.0));
   vec3 norm = normalize(normal);
   vec3 up = vec3(0, 1, 0)-norm;
   vec3 tang = normalize(cross(norm, up));//might need flipping
@@ -307,10 +313,10 @@ void main() {
 
   mat3 TBN = transpose(mat3(tang, biTan, norm));
   vec3 viewDir = normalize((viewPos*TBN)-(fragPos*TBN));
-  uv = ParallaxMapping(uv,  viewDir)*hNoise*0.3333f;
+  uv = ParallaxMapping(uv,  viewDir)-vertNoise;
 //  if(uv.x > 1.0 || uv.y > 1.0 || uv.x < 0.0 || uv.y < 0.0)
 //        discard;
-  vec3 parallax = texture(nTexture,uv).rgb/hNoise*0.2222f;
+  vec3 parallax = texture(nTexture,uv).rgb/vertNoise;
   vec3 light = dirLighting(detail, norm);
   light*=0.8f;
         // processing of the texture coordinates;
@@ -318,29 +324,18 @@ void main() {
 
   fColor = vec4(light+ambient*detail, 1.0f);
 
-  float diffP =  max(dot(light, parallax), 0.0);
-        diffP += max(dot(light, detail), 0.0)*0.233333f;
+  float diffP = max(dot(light, parallax), 0.0);
   vec3 diffuse = diffP*ambient;
 
-  vec3 reflectDir =  reflect(-light, parallax);
-       reflectDir += reflect(-light, detail)*0.233333f;
+  vec3 reflectDir = reflect(-light, parallax);
   vec3 halfwayDir = normalize(light + viewDir);
   float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
   vec3 specular = vec3(0.2) * spec;
 
   vec4 difSpe = vec4(diffuse+spec,1.0f);
-  float lColor = (0.08333f+1/length(viewPos));
-  fColor = mix(fColor,difSpe,0.222);
-  vec4 sColor = smoothstep(fColor,difSpe,vec4(0.4));
-  fColor = mix(fColor,sColor,vec4(0.222222));
 
-//  vec4 noise = vec4(vec3(random(fColor.xyz)),1.f);
-//
-//  fColor = mix(fColor,noise,0.09333f);
-  vec4 noise = vec4(random(vcPos.x),random(vcPos.y),random(vcPos.z),1.f);
-  fColor = mix(fColor,noise,lColor);
-  fColor *= 0.333f;
-  noise = fColor;
+  fColor = mix(fColor,difSpe,0.3333f);
+
   vec3 col;
   vec3 w_normal = sdf_terrain_normal(normal);
   hU = length(normal);
@@ -377,7 +372,7 @@ void main() {
   float fre = clamp( 1.0+dot(viewPos,normal), 0.0, 1.0 );
   vec3 hal = normalize(lightDir-viewPos);
 
-  col = (hD*0.25+0.75)*0.9*mix( vec3(0.10,0.05,0.03), vec3(0.13,0.10,0.08), clamp(terrain2( vec2(vcPos.x,vcPos.y*48.0))/200.0,0.0,1.0) );
+  col = (hD*0.25+0.75)*0.9*mix( vec3(0.10,0.05,0.03), vec3(0.13,0.10,0.08), clamp(vertNoise/200.0,0.0,1.0) );
 		col = mix( col, 0.17*vec3(0.5,.23,0.04)*(0.50+0.50*hD),smoothstep(0.70,0.9,hD-normal.y) );
         col = mix( col, 0.10*vec3(0.2,.30,0.00)*(0.25+0.75*hD),smoothstep(0.95,1.0,hD-normal.y) );
 
@@ -392,19 +387,19 @@ void main() {
   float dif = clamp( dot( diffuse, normal ), 0.0, 1.0 );
   float bac = clamp( 0.2 + 0.8*dot( normalize( vec3(-diffuse.x, 0.0, diffuse.z ) ), normal ), 0.0, 1.0 );
   float sh = 1.0;
+//
+//  vec3 lin  = vec3(0.0);
+//  lin += dif*vec3(7.00,5.00,3.00)*1.3*vec3( sh, sh*sh*0.5+0.5*sh, sh*sh*0.8+0.2*sh );
+//  lin += amb*vec3(0.40,0.60,1.00)*1.2;
+//      lin += bac*vec3(0.40,0.50,0.60);
+//  col += s*
+//       (0.04+0.96*pow(clamp(1.0+dot(hal,viewPos),0.0,1.0),5.0))*
+//       vec3(7.0,5.0,3.0)*dif*sh*
+//       pow( clamp(dot(normal,hal), 0.0, 1.0),16.0);
 
-  vec3 lin  = vec3(0.0);
-  lin += dif*vec3(7.00,5.00,3.00)*1.3*vec3( sh, sh*sh*0.5+0.5*sh, sh*sh*0.8+0.2*sh );
-  lin += amb*vec3(0.40,0.60,1.00)*1.2;
-      lin += bac*vec3(0.40,0.50,0.60);
-  col += s*
-       (0.04+0.96*pow(clamp(1.0+dot(hal,viewPos),0.0,1.0),5.0))*
-       vec3(7.0,5.0,3.0)*dif*sh*
-       pow( clamp(dot(normal,hal), 0.0, 1.0),16.0);
+  fColor = vec4(mix(col,fColor.rgb,0.7666f),1);
 
-  fColor = vec4(mix(col,fColor.rgb,0.444),1);
-
-  fColor *= vec4(lin,1);
+  //fColor *= vec4(lin,1);
   fColor *= 1.77773;
 }
 

@@ -1,12 +1,12 @@
-#include "NoiseFeedback.hpp"
-#include "QuadTree.hpp"
-#include "LoadShaders.hpp"
+#include "include/NoiseFeedback.hpp"
+#include "include/QuadTree.hpp"
+#include "include/LoadShaders.hpp"
 #include <iostream>
 #include <vector>
 #include <numeric>
-#include "Utils.hpp"
-#include "Camera.hpp"
-#include "Frustum.hpp"
+#include "include/Utils.hpp"
+#include "include/Camera.hpp"
+#include "include/Frustum.hpp"
 
 GLuint frame_index = 0,
 dips_texture_buffer,
