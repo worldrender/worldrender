@@ -12,10 +12,10 @@
 	#define c_snow  vec3(.600, .600, .600)
 
 	// limits
-	#define l_water .05
-	#define l_shore .17
-	#define l_grass .211
-	#define l_rock .351
+	#define l_water .40
+	#define l_shore .45
+	#define l_grass .50
+	#define l_rock .55
 
 in vec4 vcColor;
 in vec3 vcNormal;
@@ -291,7 +291,7 @@ void main() {
   vec2 uv =  vec2(M_PI+(atan(normal.y, normal.x) / M_PI + 1.0) * 0.5,
                                   (M_PI+asin(normal.z) / M_PI * 0.5));
        uv.t += (M_PI*sin(normal.z)/M_PI + 0.5)/4;
-//       uv += vertNoise;
+       uv += vertNoise*0.01;
 //       uv -= vertNoise;
   //uv = vec2((atan(normal.y - vertNoise, normal.x - vertNoise) / M_PI + 1.0) * 0.5, (asin(normal.z - vertNoise) / M_PI + 0.5));
   //uv = vec2(atan( normal.y, normal.x )/2*M_PI, asin( normal.z )/M_PI);
@@ -343,29 +343,32 @@ void main() {
   hR = hNoise/length(normal);
   float Ar = hU - hNoise;
   hD = hNoise-hL ;
-  float s = smoothstep(.4, 1., hD);
-	vec3 rock = mix(
-		c_rock, c_snow,
-		smoothstep(1. - .3*s, 1. - .2*s, hL));
+  float s = smoothstep(.4, 1., hNoise);
+
 
 	vec3 grass = mix(
-		c_grass, rock,
-		smoothstep(l_grass, l_rock, hD));
+		c_grass, c_snow,
+		smoothstep(1. - .3*s, 1. - .2*s, hNoise));
+
+	vec3 rock = mix(
+		grass, c_rock,
+		smoothstep(l_grass, l_rock, hNoise));
+
 
 	vec3 shoreline = mix(
 		c_beach, grass,
-		smoothstep(l_shore, l_grass, hD));
+		smoothstep(l_shore, l_rock, hNoise));
 
 	vec3 water = mix(
 		c_water / 2., c_water,
-		smoothstep(0., l_water, hD));
+		smoothstep(0., l_water, hNoise));
 
-	vec3 L = mat3(1.f) * normalize(vec3(1, 1, 0));
+	vec3 L = mat3(1.f) * normalize(lightDir);
 	shoreline *= setup_lights(L, normal);
 	vec3 ocean = setup_lights(L, w_normal) * water;
 
-  col = mix(ocean, shoreline,	smoothstep(l_water, l_shore, hR));
-  col *= 0.5555f;
+  col = mix(ocean, shoreline,	smoothstep(l_water, l_shore, hNoise));
+  col *= 0.3555f;
   fColor = vec4(mix(col,fColor.rgb,0.333333*smoothstep(l_water, l_shore, hR)),1);
 
   vec3 ref = reflect( viewPos, normal );

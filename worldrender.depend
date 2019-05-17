@@ -12,7 +12,7 @@
 
 1555948838 
 
-1557971097 source:c:\users\ricardo\desktop\worldrender\main.cpp
+1558110147 source:c:\users\ricardo\desktop\worldrender\main.cpp
 	<iostream>
 	<string>
 	<cstdlib>
@@ -20,15 +20,15 @@
 	<glm/gtc/matrix_transform.hpp>
 	<GL/glew.h>
 	<GLFW/glfw3.h>
-	"LoadShaders.hpp"
-	"Planet.hpp"
-	"QuadTree.hpp"
-	"NoiseFeedback.hpp"
-	"Textures.hpp"
-	"Camera.hpp"
-	"Utils.hpp"
+	"include/LoadShaders.hpp"
+	"include/Planet.hpp"
+	"include/QuadTree.hpp"
+	"include/NoiseFeedback.hpp"
+	"include/Textures.hpp"
+	"include/Camera.hpp"
+	"include/Utils.hpp"
 	<chrono>
-	"stb_image.hpp"
+	"include/stb_image.hpp"
 
 1557440519 .hpp"
 
@@ -1430,4 +1430,25 @@
 	<glm/vec3.hpp>
 	<glm/vec4.hpp>
 	<glm/mat2x2.hpp>
+
+1557286199 c:\users\ricardo\desktop\worldrender\include\textures.hpp
+	<stdlib.h>
+	<vector>
+
+1558109452 c:\users\ricardo\desktop\worldrender\include\stb_image.hpp
+	"include/stb_image.h"
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<stddef.h>
+	<stdlib.h>
+	<string.h>
+	<limits.h>
+	<math.h>
+	<stdio.h>
+	<assert.h>
+	<stdint.h>
+	<emmintrin.h>
+	<intrin.h>
+	<arm_neon.h>
 

@@ -108,11 +108,6 @@
 		<Unit filename="shaders/worldtesc.glsl" />
 		<Unit filename="shaders/worldtese.glsl" />
 		<Unit filename="shaders/worldvert.glsl" />
-		<Unit filename="transform.glsl" />
-		<Unit filename="worldfrag.glsl" />
-		<Unit filename="worldtesc.glsl" />
-		<Unit filename="worldtese.glsl" />
-		<Unit filename="worldvert.glsl" />
 		<Extensions>
 			<code_completion />
 			<envvars />
