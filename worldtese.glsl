@@ -135,8 +135,8 @@ void main(){
     vec3 n1 = gl_TessCoord.y * tcNormal[1];
     vec3 n2 = gl_TessCoord.z * tcNormal[2];
     vcNormal = normalize(n0 + n1 + n2);
-    vNoise = fbm(vcPos)*2;
-    vcPos = vcPos + vcNormal * vNoise;
+    vNoise = fbm(vcPos);
+    vcPos = vcPos + vcNormal * vNoise*2;
     vcNormal = normalize(vcPos);
     ///PASSAR O DELTA antes depois da normal
     vec4 c0 = gl_TessCoord.x * tcColor[0];

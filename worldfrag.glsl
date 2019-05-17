@@ -47,6 +47,13 @@ const mat3 m3i = mat3( 0.00, -0.80, -0.60,
 
 out vec4 fColor;
 
+
+float fAbs(float t)
+{
+  return t>0 ? t : -t;
+}
+
+
 float lambertian(vec3 norm, vec3 lightDir)
 {
   return max(dot(norm, -lightDir), 0);
@@ -271,12 +278,7 @@ vec3 setup_lights(
 	return diff;
 }
 
-//void main() {
-//    vec3 normal = normalize(vcNormal);
-//    vec4 fbmColor = vec4(vNoise, vNoise, vNoise, 1.0f);
-//    gl_FragColor = fbmColor * vec4 ((normal.y+normal.z)/2,(normal.y+normal.z)/2,(normal.y+normal.z)/2, 1.0f);
-//
-//}
+
 
 void main() {
   float hNoise = (vNoise);

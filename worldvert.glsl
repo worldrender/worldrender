@@ -12,7 +12,7 @@ out vec4 vColor;
 
 void main() {
 
-	vPosition = position*10;
+	vPosition = position;
 
 	vNormal = normalize(vPosition);
 

@@ -108,8 +108,8 @@ in vec3 vertex;
 
 void main() {
   vec3 sphereCoord = normalize(vertex);
-	sphereCoord = mix(vertex, sphereCoord*radius, 1)*10;
+	sphereCoord = mix(vertex, sphereCoord*radius, 1)*100;
 
   outValue.vertex = sphereCoord;
-  outValue.noiseValue = fbm(sphereCoord)*20;
+  outValue.noiseValue = fbm(sphereCoord);
 }
