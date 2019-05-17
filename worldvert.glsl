@@ -16,7 +16,7 @@ void main() {
 
 	vNormal = normalize(vPosition);
 
-	vPosition = vPosition + vNormal*noise*4;
+	vPosition = vPosition + vNormal*noise;
 
     vColor = vec4(vNormal, 1.0);
     gl_Position = vec4(vPosition, 1.0);
