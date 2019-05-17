@@ -339,7 +339,7 @@ void main() {
 //  fColor = mix(fColor,noise,0.09333f);
   vec4 noise = vec4(random(vcPos.x),random(vcPos.y),random(vcPos.z),1.f);
   fColor = mix(fColor,noise,lColor);
-  fColor *= 0.7f;
+  fColor *= 0.333f;
   noise = fColor;
   vec3 col;
   vec3 w_normal = sdf_terrain_normal(normal);
