@@ -1,16 +1,18 @@
 #version 430 core
 
-layout(vertices = 4) out;
+layout(vertices = 3) out;
 
 in vec3 vPosition[];
 in vec3 vNormal[];
 in vec4 vColor[];
+in float vertNoise[];
 //in vec2 TexCoord[];
 
 //out vec2 tcTexCoord[];
 out vec3 tcPosition[];
 out vec3 tcNormal[];
 out vec4 tcColor[];
+out float tNoise[];
 
 uniform vec3 viewPos;
 
@@ -51,18 +53,19 @@ void main(){
   tcPosition[ID]  = vPosition[ID];
   tcNormal[ID]    = vNormal[ID];
   tcColor[ID]     = vColor[ID];
+  tNoise[ID]      = vertNoise[ID];
   vec3 d1, d2, d3;
 
   if (ID == 0) {
-    vec3 bTriangulo = (gl_in[0].gl_Position.xyz + gl_in[1].gl_Position.xyz
-                     + gl_in[2].gl_Position.xyz)/3;
+    vec3 bTriangulo = (vPosition[0] + vPosition[1]
+                     + vPosition[2])/3;
 
     if(tess==0){
       TessLevelInner = LOD(bTriangulo, viewPos);
 
-      d1=gl_in[1].gl_Position.xyz+(gl_in[2].gl_Position.xyz-gl_in[1].gl_Position.xyz)/2;
-      d2=gl_in[0].gl_Position.xyz+(gl_in[2].gl_Position.xyz-gl_in[0].gl_Position.xyz)/2;
-      d3=gl_in[0].gl_Position.xyz+(gl_in[1].gl_Position.xyz-gl_in[0].gl_Position.xyz)/2;
+      d1=vPosition[1]+(vPosition[2]-vPosition[1])/2;
+      d2=vPosition[0]+(vPosition[2]-vPosition[0])/2;
+      d3=vPosition[0]+(vPosition[1]-vPosition[0])/2;
 
       e0=LOD(d1,viewPos);
       e1=LOD(d2,viewPos);

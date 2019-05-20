@@ -9,15 +9,15 @@ uniform mat4 MVP;
 out vec3 vPosition;
 out vec3 vNormal;
 out vec4 vColor;
+out float vertNoise;
 
 void main() {
 
 	vPosition = position;
 
 	vNormal = normalize(vPosition);
+  vertNoise = noise;
+	vPosition = vPosition;
 
-	vPosition = vPosition + vNormal*noise;
-
-    vColor = vec4(vNormal, 1.0);
-    gl_Position = vec4(vPosition, 1.0);
+  vColor = vec4(vNormal, 1.0);
 }
