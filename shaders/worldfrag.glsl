@@ -266,7 +266,7 @@ void main() {
        vec3(7.0,5.0,3.0)*dif*sh*
        pow( clamp(dot(normal,hal), 0.0, 1.0),16.0);
 
-  fColor = vec4(mix(col,fColor.rgb,0.7666f),1);
+  fColor = vec4(mix(col,fColor.rgb,0.2666f),1);
 
   //fColor *= vec4(lin,1);
   fColor *= 1.77773;

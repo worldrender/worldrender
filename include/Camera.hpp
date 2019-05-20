@@ -54,6 +54,8 @@ public:
     // Euler Angles
     float Yaw;
     float Pitch;
+    float Near;
+    float Far;
     // Camera options
     float MovementSpeed;
     float MouseSensitivity;

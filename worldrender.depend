@@ -10,7 +10,7 @@
 	<glm/glm.hpp>
 	<GL/gl.h>
 
-1557286199 
+1555948838 
 
 1558110147 source:c:\users\ricardo\desktop\worldrender\main.cpp
 	<iostream>
@@ -134,8 +134,6 @@
 	"QuadTree.hpp"
 	"Planet.hpp"
 	<iostream>
-
-1555948838 
 
 1553141226 c:\users\iagop\documents\projetomz\worldrender\planet.hpp
 	<iostream>
@@ -1471,7 +1469,7 @@
 	<vector>
 	"include/Camera.hpp"
 
-1558372382 /home/ricardo/worldrender/include/Camera.hpp
+1558395949 /home/ricardo/worldrender/include/Camera.hpp
 	<glm/glm.hpp>
 	<glm/gtc/matrix_transform.hpp>
 	<GLFW/glfw3.h>
