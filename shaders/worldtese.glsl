@@ -138,7 +138,7 @@ void main(){
     vec3 n2 = gl_TessCoord.z * tcNormal[2];
     vcNormal = normalize(n0 + n1 + n2);
     vNoise = fbm(vcPos)+vNoise*10;
-    vNoise = vNoise*clamp(cubeNoise(vcPos),0,1);
+//    vNoise = vNoise*clamp(cubeNoise(vcPos),0,1);
     vcPos = vcPos + vcNormal * vNoise;
 
     vcNormal = normalize(vcPos);
