@@ -9,19 +9,20 @@
 	#define c_grass vec3(.086, .132, .018)
 	#define c_beach vec3(.153, .172, .121)
 	#define c_rock  vec3(.080, .050, .030)
-	#define c_snow  vec3(.350, .450, .500)
+	#define c_snow  vec3(.30, .40, .450)
 
 	// limits
-	#define l_water .65
-	#define l_shore .70
-	#define l_grass .75
-	#define l_rock .8
+	#define l_water .4
+	#define l_shore .5
+	#define l_grass .9
+	#define l_rock .9
 
 in vec4 vcColor;
 in vec3 vcNormal;
 in vec3 vcPos;
 in float vNoise;
 in float vertNoise;
+in float fNoise;
 
 uniform sampler2D pTexture;
 uniform sampler2D dTexture;
@@ -153,57 +154,14 @@ vec3 setup_lights(
 }
 
 void main() {
-  float hNoise = (vNoise)/10;
+  float hNoise = (vNoise)/1.3;
   vec3 normal = normalize(vcNormal);
   vec3 fragPos = vec3(model*vec4(vcPos,1.0f));
 
-  vec2 uv =  vec2(M_PI+(atan(normal.y, normal.x) / M_PI + 1.0) * 0.5,
-                                  (M_PI+asin(normal.z) / M_PI * 0.5));
-       uv.t += (M_PI*sin(normal.z)/M_PI + 0.5)/4;
-       uv += hNoise;
-//       uv -= vertNoise;
-  //uv = vec2((atan(normal.y - vertNoise, normal.x - vertNoise) / M_PI + 1.0) * 0.5, (asin(normal.z - vertNoise) / M_PI + 0.5));
-  //uv = vec2(atan( normal.y, normal.x )/2*M_PI, asin( normal.z )/M_PI);
-
-  vec3 detail = texture(dTexture, uv).rgb;
-
-  float hL = height(uv - texOffset.xz);
-  float hR = height(uv + texOffset.xz);
-  float hD = height(uv - texOffset.zy);
-  float hU = height(uv + texOffset.zy);
-
-  vec3 N = normalize(vec3(hL - hR, hD - hU, 2.0));
-  vec3 norm = normalize(normal);
-  vec3 up = vec3(0, 1, 0)-norm;
-  vec3 tang = normalize(cross(norm, up));//might need flipping
-  vec3 biTan = normalize(cross(norm, tang));//same
-  mat3 localAxis = mat3(tang, biTan, norm);
-  norm = normalize(localAxis * normalize(N));
-
-  mat3 TBN = transpose(mat3(tang, biTan, norm));
-  vec3 viewDir = normalize((viewPos*TBN)-(fragPos*TBN));
-  uv = ParallaxMapping(uv,  viewDir)-hNoise;
-//  if(uv.x > 1.0 || uv.y > 1.0 || uv.x < 0.0 || uv.y < 0.0)
-//        discard;
-  vec3 parallax = texture(nTexture,uv).rgb/hNoise;
-  vec3 light = dirLighting(detail, norm);
-  light*=0.8f;
-        // processing of the texture coordinates;
-        // this is unnecessary if correct texture coordinates are specified by the application
-
-  fColor = vec4(light+ambient*detail, 1.0f);
-
-  float diffP = max(dot(light, parallax), 0.0);
-  vec3 diffuse = diffP*ambient;
-
-  vec3 reflectDir = reflect(-light, parallax);
-  vec3 halfwayDir = normalize(light + viewDir);
-  float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
-  vec3 specular = vec3(0.2) * spec;
-
-  vec4 difSpe = vec4(diffuse+spec,1.0f);
-
-  fColor = mix(fColor,difSpe,0.3333f);
+  float hL;
+  float hR;
+  float hD;
+  float hU;
 
  vec3 col;
   vec3 w_normal = sdf_terrain_normal(normal);
@@ -215,7 +173,7 @@ void main() {
 	float s = smoothstep(.4, 1., hNoise);
 	vec3 rock = mix(
 		c_rock, c_snow,
-		smoothstep(1. - .3*s, 1. - .2*s, hL));
+		smoothstep(1. - .3*s, 1. - .2*s, hNoise));
 
 	vec3 grass = mix(
 		c_grass, rock,
@@ -234,8 +192,8 @@ void main() {
 	vec3 ocean = setup_lights(L, w_normal) * water;
 
   col = mix(ocean, shoreline,	smoothstep(l_water, l_shore, hNoise));
-  col *= 0.666;
-  fColor = vec4(mix(col,fColor.rgb,0.333333*smoothstep(l_water, l_shore, hL)),1);
+  col *= 0.888;
+  fColor = vec4(col,1.f);
 
   vec3 ref = reflect( viewPos, w_normal );
   float fre = clamp( 1.0+dot(viewPos,w_normal), 0.0, 1.0 );

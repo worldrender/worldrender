@@ -134,14 +134,17 @@ void QuadTree::triangulator(){
  * This method splits for each quad on quadtree list.
  */
 void QuadTree::verticalSplit(GLuint lod){
-  GLuint leftover=0;
+  vector<QuadTree*> tmp;
   for(GLuint i=0;i<lod;i++)
   {
-    GLuint boundary=QuadTree::quadTreeList.size();
-    for(;leftover<boundary;leftover++)
+    tmp = QuadTree::quadTreeList;
+    QuadTree::quadTreeList.clear();
+    GLuint boundary=tmp.size();
+    for(GLuint j=0;j<boundary;j++)
     {
-      QuadTree::quadTreeList[leftover]->split();
+      tmp[j]->split();
     }
+
   }
 }
 
