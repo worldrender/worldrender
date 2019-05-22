@@ -47,8 +47,10 @@ glm::mat4 Camera::getViewMatrix()
 glm::mat4 Camera::getProjectionMatrix(int SCR_WIDTH, int SCR_HEIGHT)
 {
   GLfloat pLength = fAbs(glm::length(Position));
+  this->Near = ((0.000000001f+pLength)/(pLength-0.001f))/RADIUS;
+  this->Far = (1000.0f*pLength);
 
-  return glm::perspective(glm::radians(this->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, (0.1f+pLength)/pLength, (1000.0f*pLength));
+  return glm::perspective(glm::radians(this->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, this->Near, this->Far);
 }
 // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
 void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime)

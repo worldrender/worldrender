@@ -1,6 +1,7 @@
 #version 430 core
 #define F3 0.333333333
 #define G3 0.166666667
+#define M_PI 3.14159265358979323844f
 
 layout(triangles, equal_spacing, ccw) in;
 
@@ -14,6 +15,7 @@ uniform float radius;
 in vec3 tcPosition[];
 in vec3 tcNormal[];
 in vec4 tcColor[];
+in float tNoise[];
 //in vec2 tcTexCoord[];
 
 out float p;
@@ -33,15 +35,61 @@ float noise(vec3 x) {
 	vec3 i = floor(x);
 	vec3 f = fract(x);
 
-	// For performance, compute the base input to a 1D hash from the integer part of the argument and the
-	// incremental change to the 1D based on the 3D -> 1D wrapping
-    float n = dot(i, step);
+  float n = dot(i, step);
 
 	vec3 u = f * f * (3.0 - 2.0 * f);
-	return mix(mix(mix( hash(n + dot(step, vec3(0, 0, 0))), hash(n + dot(step, vec3(1, 0, 0))), u.x),
-                   mix( hash(n + dot(step, vec3(0, 1, 0))), hash(n + dot(step, vec3(1, 1, 0))), u.x), u.y),
-               mix(mix( hash(n + dot(step, vec3(0, 0, 1))), hash(n + dot(step, vec3(1, 0, 1))), u.x),
-                   mix( hash(n + dot(step, vec3(0, 1, 1))), hash(n + dot(step, vec3(1, 1, 1))), u.x), u.y), u.z);
+	return mix(mix(mix( hash(n + dot(step, vec3(0, 0, 0))), hash(n + dot(step, vec3(1, 0, 0))), u.x), mix( hash(n + dot(step, vec3(0, 1, 0))), hash(n + dot(step, vec3(1, 1, 0))), u.x), u.y),
+             mix(mix( hash(n + dot(step, vec3(0, 0, 1))), hash(n + dot(step, vec3(1, 0, 1))), u.x), mix( hash(n + dot(step, vec3(0, 1, 1))), hash(n + dot(step, vec3(1, 1, 1))), u.x), u.y), u.z);
+}
+
+float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
+vec4 mod289(vec4 x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
+vec4 perm(vec4 x){return mod289(((x * 34.0) + 1.0) * x);}
+
+float snoise(vec3 p){
+    vec3 a = floor(p);
+    vec3 d = p - a;
+    d = d * d * (3.0 - 2.0 * d);
+
+    vec4 b = a.xxyy + vec4(0.0, 1.0, 0.0, 1.0);
+    vec4 k1 = perm(b.xyxy);
+    vec4 k2 = perm(k1.xyxy + b.zzww);
+
+    vec4 c = k2 + a.zzzz;
+    vec4 k3 = perm(c);
+    vec4 k4 = perm(c + 1.0);
+
+    vec4 o1 = fract(k3 * (1.0 / 41.0));
+    vec4 o2 = fract(k4 * (1.0 / 41.0));
+
+    vec4 o3 = o2 * d.z + o1 * (1.0 - d.z);
+    vec2 o4 = o3.yw * d.x + o3.xz * (1.0 - d.x);
+
+    return o4.y * d.y + o4.x * (1.0 - d.y);
+}
+
+
+float ridgedNoise(in vec3 p )
+{
+  int octaves = 11;
+  float persistence = 0.5f;
+  float frequency = 0.03f;
+  float amplitude = 1.f;
+  float gain = 0.03f;
+  float total = 0.f;
+  for(int i=0;i<octaves;i++)
+  {
+    total += ((1.0 - abs(noise(p * frequency))) * 2.0 - 1.0) * amplitude;
+    frequency	*= 2.f;
+    amplitude *= gain;
+  }
+  return total;
+}
+
+float cubeNoise(in vec3 p)
+{
+  float t = ridgedNoise(p);
+  return t*t*t;
 }
 
 const mat3 m3  = mat3( 0.00,  0.80,  0.60,
@@ -51,72 +99,24 @@ const mat3 m3i = mat3( 0.00, -0.80, -0.60,
                        0.80,  0.36, -0.48,
                        0.60, -0.48,  0.64 );
 
-float fbm( in vec3 p ){
+float fbm( in vec3 p, int octaves=16, float gain=1, float amplitude=0.93753125f, float frequency=1, float size=1){
     float f = 0.0;
-    f += 0.5000*noise( p ); p = m3*p*2.02;
-    f += 0.2500*noise( p ); p = m3*p*2.03;
-    f += 0.1250*noise( p ); p = m3*p*2.01;
-    f += 0.0625*noise( p );
+    for(int i=0;i<octaves;i++)
+    {
+      f+=noise(p*amplitude)*frequency;
+      p = m3*p*(2.f+i/100.f);
+      frequency /= 2.f;
+      amplitude *= gain;
+    }
 
-    return f/0.9375;
+    f *= size;
+
+    return f/amplitude;
 }
 
-vec4 noised( in vec3 x )
+vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
 {
-    vec3 p = floor(x);
-    vec3 w = fract(x);
-
-    vec3 u = w*w*w*(w*(w*6.0-15.0)+10.0);
-    vec3 du = 30.0*w*w*(w*(w-2.0)+1.0);
-
-    float n = p.x + 317.0*p.y + 157.0*p.z;
-
-    float a = hash(n+0.0);
-    float b = hash(n+1.0);
-    float c = hash(n+317.0);
-    float d = hash(n+318.0);
-    float e = hash(n+157.0);
-	  float f = hash(n+158.0);
-    float g = hash(n+474.0);
-    float h = hash(n+475.0);
-
-    float k0 =   a;
-    float k1 =   b - a;
-    float k2 =   c - a;
-    float k3 =   e - a;
-    float k4 =   a - b - c + d;
-    float k5 =   a - c - e + g;
-    float k6 =   a - b - e + f;
-    float k7 = - a + b + c - d + e - f - g + h;
-
-    return vec4( -1.0+2.0*(k0 + k1*u.x + k2*u.y + k3*u.z + k4*u.x*u.y + k5*u.y*u.z + k6*u.z*u.x + k7*u.x*u.y*u.z),
-                      2.0* du * vec3( k1 + k4*u.y + k6*u.z + k7*u.y*u.z,
-                                      k2 + k5*u.z + k4*u.x + k7*u.z*u.x,
-                                      k3 + k6*u.x + k5*u.y + k7*u.x*u.y ) );
-}
-
-float terrain3 (in vec3 x, float octaves = 14)
-{
-  float f = 1.98;  // could be 2.0
-  float s = 0.49;  // could be 0.5
-  float a = 0.0;
-  float b = 0.5;
-  vec3  d = vec3(0.0);
-
-  mat3  m = mat3( 1.0,0.0,0.0,
-                0.0,1.0,0.0,
-                0.0,0.0,1.0 );
-
-  for( int i=0; i < octaves; i++ )
-  {
-  vec4 n = noised(x);
-    a += b*n.x;          // accumulate values
-    d += b*m*n.yzw;      // accumulate derivatives
-    b *= s;
-    x = f*m3*x;
-    m = f*m3i*m;
-  }
-  return a;
+    return vec3(gl_TessCoord.x) * v0 + vec3(gl_TessCoord.y) * v1 + vec3(gl_TessCoord.z) * v2;
 }
 
 void main(){
@@ -128,6 +128,8 @@ void main(){
     vec3 p1 = gl_TessCoord.y * tcPos1;
     vec3 p2 = gl_TessCoord.z * tcPos2;
     vcPos = (p0 + p1 + p2);
+    vNoise = gl_TessCoord.x*tNoise[0]+gl_TessCoord.y*tNoise[1]+gl_TessCoord.z*tNoise[2];
+
     //tePosition*= radius;
     //tePosition.y = iqfBm(tePosition, 1,2,0.5);
 
@@ -135,8 +137,10 @@ void main(){
     vec3 n1 = gl_TessCoord.y * tcNormal[1];
     vec3 n2 = gl_TessCoord.z * tcNormal[2];
     vcNormal = normalize(n0 + n1 + n2);
-    vNoise = fbm(vcPos);
-    vcPos = vcPos + vcNormal * vNoise*2;
+    vNoise = fbm(vcPos)+vNoise*10;
+//    vNoise = vNoise*clamp(cubeNoise(vcPos),0,1);
+    vcPos = vcPos + vcNormal * vNoise;
+
     vcNormal = normalize(vcPos);
     ///PASSAR O DELTA antes depois da normal
     vec4 c0 = gl_TessCoord.x * tcColor[0];
