@@ -60,7 +60,7 @@ QuadTree::QuadTree():
  *
  */
 
-QuadTree::QuadTree(std::unique_ptr<Quad> quad):
+QuadTree::QuadTree(std::unique_ptr<Quad> quad, QuadTree* parent):
     nw{nullptr},
     sw{nullptr},
     ne{nullptr},
@@ -68,6 +68,7 @@ QuadTree::QuadTree(std::unique_ptr<Quad> quad):
 {
   this->quad = std::move(quad);
   this->index = this->quadTreeList.size();
+  this->parent = parent;
   this->quadTreeList.push_back(this);
 }
 
@@ -100,10 +101,10 @@ void QuadTree::split()
   GLuint wIndex = QuadTree::verts.addVertex(West).index;
   GLuint cIndex = QuadTree::verts.addVertex(Center).index;
 
-  this->nw = std::make_unique<QuadTree>(std::make_unique<Quad>(this->quad->c0, nIndex, cIndex, wIndex));
-  this->ne = std::make_unique<QuadTree>(std::make_unique<Quad>(nIndex,this->quad->c1,eIndex,cIndex));
-  this->sw = std::make_unique<QuadTree>(std::make_unique<Quad>(cIndex,eIndex,this->quad->c2,sIndex));
-  this->se = std::make_unique<QuadTree>(std::make_unique<Quad>(wIndex,cIndex,sIndex,this->quad->c3));
+  this->nw = std::make_unique<QuadTree>(std::make_unique<Quad>(this->quad->c0, nIndex, cIndex, wIndex),this);
+  this->ne = std::make_unique<QuadTree>(std::make_unique<Quad>(nIndex,this->quad->c1,eIndex,cIndex),this);
+  this->sw = std::make_unique<QuadTree>(std::make_unique<Quad>(cIndex,eIndex,this->quad->c2,sIndex),this);
+  this->se = std::make_unique<QuadTree>(std::make_unique<Quad>(wIndex,cIndex,sIndex,this->quad->c3),this);
 
   this->quad->split = true;
 }

@@ -50,7 +50,7 @@ class QuadTree
     static std::vector<QuadTree*> quadTreeList;
 
     QuadTree();
-    QuadTree(std::unique_ptr<Quad> quad);
+    QuadTree(std::unique_ptr<Quad> quad, QuadTree* parent);
 
     ~QuadTree();
 

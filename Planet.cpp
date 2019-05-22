@@ -29,12 +29,12 @@ Planet::Planet(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3,
     for (auto v : {v0, v1, v2, v3, v4, v5, v6, v7})
       QuadTree::verts.addVertex(v);
 
-    QuadTree* quadtree0 = new QuadTree(std::make_unique<Quad>(0,1,2,3));
-    QuadTree* quadtree1 = new QuadTree(std::make_unique<Quad>(1,5,6,2));
-    QuadTree* quadtree2 = new QuadTree(std::make_unique<Quad>(7,6,5,4));
-    QuadTree* quadtree3 = new QuadTree(std::make_unique<Quad>(4,0,3,7));
-    QuadTree* quadtree4 = new QuadTree(std::make_unique<Quad>(4,5,1,0));
-    QuadTree* quadtree5 = new QuadTree(std::make_unique<Quad>(3,2,6,7));
+    QuadTree* quadtree0 = new QuadTree(std::make_unique<Quad>(0,1,2,3),nullptr);
+    QuadTree* quadtree1 = new QuadTree(std::make_unique<Quad>(1,5,6,2),nullptr);
+    QuadTree* quadtree2 = new QuadTree(std::make_unique<Quad>(7,6,5,4),nullptr);
+    QuadTree* quadtree3 = new QuadTree(std::make_unique<Quad>(4,0,3,7),nullptr);
+    QuadTree* quadtree4 = new QuadTree(std::make_unique<Quad>(4,5,1,0),nullptr);
+    QuadTree* quadtree5 = new QuadTree(std::make_unique<Quad>(3,2,6,7),nullptr);
 
     Cube *cube = new Cube();
     cube->Front = quadtree0; cube->Back = quadtree2;
