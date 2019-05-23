@@ -1,55 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
-	<ActiveTarget name="Release" />
-	<File name="worldfrag.glsl" open="1" top="1" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="9370" topLine="340" />
-		</Cursor>
-	</File>
-	<File name="worldtese.glsl" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4030" topLine="124" />
-		</Cursor>
-	</File>
-	<File name="Textures.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="69" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="simplex.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="68689" topLine="1652" />
-		</Cursor>
-	</File>
-	<File name="worldvert.glsl" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="299" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="LoadShaders.cpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="244" topLine="150" />
-		</Cursor>
-	</File>
-	<File name="Planet.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1896" topLine="34" />
-		</Cursor>
-	</File>
-	<File name="NoiseFeedback.hpp" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<ActiveTarget name="Debug" />
+	<File name="NoiseFeedback.hpp" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="175" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="Planet.hpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="Utils.hpp" open="0" top="0" tabpos="26" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="122" topLine="0" />
+			<Cursor1 position="151" topLine="60" />
 		</Cursor>
 	</File>
-	<File name="transform.glsl" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="Verts.hpp" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3244" topLine="84" />
+			<Cursor1 position="244" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="stb_image.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -57,57 +22,99 @@
 			<Cursor1 position="229151" topLine="6492" />
 		</Cursor>
 	</File>
-	<File name="NoiseFeedback.cpp" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="Textures.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="248" topLine="11" />
+			<Cursor1 position="69" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="Verts.hpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="Planet.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="242" topLine="0" />
+			<Cursor1 position="1896" topLine="34" />
 		</Cursor>
 	</File>
-	<File name="QuadTree.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="LoadShaders.cpp" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="-3" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="4417" topLine="137" />
-		</Cursor>
-	</File>
-	<File name="LoadShaders.hpp" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="Utils.hpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="427" topLine="15" />
-		</Cursor>
-	</File>
-	<File name="worldtesc.glsl" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2037" topLine="0" />
+			<Cursor1 position="1147" topLine="9" />
 		</Cursor>
 		<Folding>
-			<Collapse line="35" />
+			<Collapse line="14" />
+			<Collapse line="20" />
+			<Collapse line="34" />
+			<Collapse line="42" />
+			<Collapse line="49" />
+			<Collapse line="209" />
+			<Collapse line="340" />
+			<Collapse line="435" />
 		</Folding>
 	</File>
-	<File name="Camera.cpp" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="QuadTree.hpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="259" topLine="36" />
+			<Cursor1 position="760" topLine="32" />
+		</Cursor>
+	</File>
+	<File name="NoiseFeedback.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1008" topLine="27" />
+		</Cursor>
+	</File>
+	<File name="Planet.hpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="122" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="worldtese.glsl" open="0" top="0" tabpos="21" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1260" topLine="33" />
+		</Cursor>
+	</File>
+	<File name="simplex.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="-3" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="37229" topLine="923" />
+		</Cursor>
+	</File>
+	<File name="transform.glsl" open="0" top="0" tabpos="23" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3204" topLine="77" />
+		</Cursor>
+	</File>
+	<File name="worldfrag.glsl" open="0" top="0" tabpos="22" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1024" topLine="38" />
+		</Cursor>
+	</File>
+	<File name="worldvert.glsl" open="0" top="0" tabpos="19" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="306" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="Camera.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2413" topLine="66" />
 		</Cursor>
 	</File>
 	<File name="Main.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1309" topLine="46" />
+			<Cursor1 position="2057" topLine="255" />
 		</Cursor>
 	</File>
-	<File name="QuadTree.hpp" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="QuadTree.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="919" topLine="32" />
+			<Cursor1 position="4417" topLine="137" />
 		</Cursor>
 	</File>
-	<File name="Camera.hpp" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="worldtesc.glsl" open="0" top="0" tabpos="20" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="543" topLine="9" />
+			<Cursor1 position="1879" topLine="50" />
+		</Cursor>
+	</File>
+	<File name="LoadShaders.hpp" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="521" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="Camera.hpp" open="0" top="0" tabpos="25" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2040" topLine="61" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

@@ -36,7 +36,7 @@ unsigned int skyboxVAO, skyboxVBO, cubemapTexture;
 GLuint planetShader, skyboxShader, activeShader, transformFeedbackShader, cullingShader;
 int enableTess = 0;
 
-Camera planetCamera(glm::vec3(-120.f, 780.f, 0.0f));
+Camera planetCamera(glm::vec3(-520.f, 780.f, 0.0f));
 
 int main(int argv, char ** argc) {
   init();

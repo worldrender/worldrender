@@ -23,6 +23,7 @@ out float vNoise;
 //out vec2 vcTexCoord;
 
 out vec3 vcPos;
+out vec4 sph;
 
 float hash(float n) { return fract(sin(n) * 1e4); }
 float hash(vec2 p) { return fract(1e4 * sin(17.0 * p.x + p.y * 0.1) * (0.1 + abs(sin(p.y * 13.0 + p.x)))); }
@@ -95,8 +96,8 @@ vec4 noised( in vec3 x )
                                       k3 + k6*u.x + k5*u.y + k7*u.x*u.y ) );
 }
 
-float terrain3 (in vec3 x, float octaves = 14)
-{
+float terrain3 (in vec3 x){
+   float octaves = 14;
   float f = 1.98;  // could be 2.0
   float s = 0.49;  // could be 0.5
   float a = 0.0;
@@ -150,6 +151,7 @@ void main(){
     vcTexCoord = (t0 + t1 + t2);
 */
     p = vcPos.y;
-    gl_Position = MVP * vec4(vcPos, 1.0);
-}
+    sph = MVP * vec4(vcPos, 1.0);
+    gl_Position = sph;
+    }
 

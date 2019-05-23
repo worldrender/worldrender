@@ -34,7 +34,7 @@
 
 1552951715 hpp"
 
-1557963279 source:c:\users\iagop\documents\projetomz\worldrender\main.cpp
+1558141170 source:c:\users\iagop\documents\projetomz\worldrender\main.cpp
 	<iostream>
 	<string>
 	<cstdlib>
@@ -271,6 +271,16 @@
 	<fstream>
 	<algorithm>
 	"LoadShaders.hpp"
+	<stdlib.h>
+	<GL/glew.h>
+	<GLFW/glfw3.h>
+	<stdio.h>
+	<string>
+	<vector>
+	<iostream>
+	<fstream>
+	<algorithm>
+	"LoadShaders.hpp"
 
 1557440379 /home/ricardo/worldrender/LoadShaders.hpp
 
@@ -356,8 +366,19 @@
 	<vector>
 	<numeric>
 	"Utils.hpp"
+	"NoiseFeedback.hpp"
+	"QuadTree.hpp"
+	"LoadShaders.hpp"
+	<iostream>
+	<vector>
+	<numeric>
+	"Utils.hpp"
 
 1553780496 /home/ricardo/worldrender/NoiseFeedback.hpp
+	<GL/glew.h>
+	<glm/glm.hpp>
+	<GL/gl.h>
+	<vector>
 	<GL/glew.h>
 	<glm/glm.hpp>
 	<GL/gl.h>
@@ -397,6 +418,14 @@
 	<iostream>
 	<thread>
 	<chrono>
+	"QuadTree.hpp"
+	"Utils.hpp"
+	"simplex.h"
+	<iostream>
+	<thread>
+	<chrono>
+	<unordered_map>
+	<glm/gtx/hash.hpp>
 	"QuadTree.hpp"
 	"Utils.hpp"
 	"simplex.h"
@@ -479,10 +508,26 @@
 	<GL/gl.h>
 	<memory>
 	"Verts.hpp"
+	<vector>
+	<iostream>
+	<glm/glm.hpp>
+	<GL/gl.h>
+	<memory>
+	"Verts.hpp"
 
 1553816315 ash.hpp"
 
 1550605020 /home/ricardo/worldrender/simplex.h
+	<functional>
+	<array>
+	<random>
+	<math.h>
+	<stdlib.h>
+	<glm/geometric.hpp>
+	<glm/vec2.hpp>
+	<glm/vec3.hpp>
+	<glm/vec4.hpp>
+	<glm/mat2x2.hpp>
 	<functional>
 	<array>
 	<random>
@@ -645,6 +690,10 @@
 	<glm/glm.hpp>
 	<GL/gl.h>
 	"QuadTree.hpp"
+	<iostream>
+	<glm/glm.hpp>
+	<GL/gl.h>
+	"QuadTree.hpp"
 
 1554834427 source:/home/ricardo/worldrender/Planet.cpp
 	"QuadTree.hpp"
@@ -668,8 +717,11 @@
 	"QuadTree.hpp"
 	"Planet.hpp"
 	<iostream>
+	"QuadTree.hpp"
+	"Planet.hpp"
+	<iostream>
 
-1557447801 /home/ricardo/worldrender/Utils.hpp
+1558041942 /home/ricardo/worldrender/Utils.hpp
 	<vector>
 	<glm/glm.hpp>
 	<vector>
@@ -678,6 +730,10 @@
 	<glm/glm.hpp>
 	<GL/gl.h>
 	<vector>
+	<glm/glm.hpp>
+	<GL/gl.h>
+	<vector>
+	<string>
 	<glm/glm.hpp>
 	<GL/gl.h>
 	<vector>
@@ -870,8 +926,29 @@
 	<experimental/optional>
 	<glm/glm.hpp>
 	<glm/gtx/hash.hpp>
+	<cstring>
+	<unordered_map>
+	<vector>
+	<experimental/optional>
+	<glm/glm.hpp>
+	<glm/gtx/hash.hpp>
 
 1554835035 /home/ricardo/worldrender/stb_image.hpp
+	"stb_image.h"
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<stddef.h>
+	<stdlib.h>
+	<string.h>
+	<limits.h>
+	<math.h>
+	<stdio.h>
+	<assert.h>
+	<stdint.h>
+	<emmintrin.h>
+	<intrin.h>
+	<arm_neon.h>
 	"stb_image.h"
 	<stdio.h>
 	<stdlib.h>
@@ -978,7 +1055,7 @@
 1555012659 c:\users\iago.labcg-pc\documents\worldrender\textures.h
 	<stdlib.h>
 
-1557372430 c:\users\iagop\documents\projetomz\worldrender\utils.hpp
+1558144036 c:\users\iagop\documents\projetomz\worldrender\utils.hpp
 	<vector>
 	<string>
 	<glm/glm.hpp>
@@ -1016,7 +1093,23 @@
 	<GLFW/glfw3.h>
 	<glm/glm.hpp>
 
-1557440519 source:/home/ricardo/worldrender/Main.cpp
+1558041942 source:/home/ricardo/worldrender/Main.cpp
+	<iostream>
+	<string>
+	<cstdlib>
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	<GL/glew.h>
+	<GLFW/glfw3.h>
+	"LoadShaders.hpp"
+	"Planet.hpp"
+	"QuadTree.hpp"
+	"NoiseFeedback.hpp"
+	"Textures.hpp"
+	"Camera.hpp"
+	"Utils.hpp"
+	<chrono>
+	"stb_image.hpp"
 	<iostream>
 	<string>
 	<cstdlib>
@@ -1092,6 +1185,11 @@
 	<GLFW/glfw3.h>
 	<vector>
 	"Utils.hpp"
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	<GLFW/glfw3.h>
+	<vector>
+	"Utils.hpp"
 
 1557274076 source:/home/ricardo/worldrender/Camera.cpp
 	<glm/glm.hpp>
@@ -1109,22 +1207,29 @@
 	<GLFW/glfw3.h>
 	<vector>
 	"Camera.hpp"
-
-1557182011 /home/ricardo/worldrender/Textures.hpp
-	<stdlib.h>
-	<stdlib.h>
-	<vector>
-	<stdlib.h>
-	<vector>
-
-1557286408 source:c:\users\iagop\documents\projetomz\worldrender\camera.cpp
 	<glm/glm.hpp>
 	<glm/gtc/matrix_transform.hpp>
 	<GLFW/glfw3.h>
 	<vector>
 	"Camera.hpp"
 
-1556911151 c:\users\iagop\documents\projetomz\worldrender\camera.hpp
+1557882190 /home/ricardo/worldrender/Textures.hpp
+	<stdlib.h>
+	<stdlib.h>
+	<vector>
+	<stdlib.h>
+	<vector>
+	<stdlib.h>
+	<vector>
+
+1558140852 source:c:\users\iagop\documents\projetomz\worldrender\camera.cpp
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	<GLFW/glfw3.h>
+	<vector>
+	"Camera.hpp"
+
+1558062803 c:\users\iagop\documents\projetomz\worldrender\camera.hpp
 	<glm/glm.hpp>
 	<glm/gtc/matrix_transform.hpp>
 	<GLFW/glfw3.h>
@@ -1152,7 +1257,7 @@
 	<intrin.h>
 	<arm_neon.h>
 
-1557465467 source:c:\users\iagop\documents\projetomz\worldrender\frustum.cpp
+1558062803 source:c:\users\iagop\documents\projetomz\worldrender\frustum.cpp
 	"Frustum.hpp"
 
 1557547291 pp"
@@ -1169,7 +1274,7 @@
 1557366962 source:c:\users\iagop\documents\projetomz\worldrender\mathlib.cpp
 	"mathlib.h"
 
-1557465310 source:c:\users\iagop\documents\projetomz\worldrender\culling.cpp
+1558062803 source:c:\users\iagop\documents\projetomz\worldrender\culling.cpp
 	"NoiseFeedback.hpp"
 	"QuadTree.hpp"
 	"LoadShaders.hpp"
@@ -1180,7 +1285,7 @@
 	"Camera.hpp"
 	"Frustum.hpp"
 
-1557465467 c:\users\iagop\documents\projetomz\worldrender\frustum.hpp
+1558062803 c:\users\iagop\documents\projetomz\worldrender\frustum.hpp
 	<GL/gl.h>
 	<glm/glm.hpp>
 
@@ -1194,12 +1299,24 @@
 	"Utils.hpp"
 	"Camera.hpp"
 	"Frustum.hpp"
+	"NoiseFeedback.hpp"
+	"QuadTree.hpp"
+	"LoadShaders.hpp"
+	<iostream>
+	<vector>
+	<numeric>
+	"Utils.hpp"
+	"Camera.hpp"
+	"Frustum.hpp"
 
 1557440465 /home/ricardo/worldrender/Frustum.hpp
 	<GL/gl.h>
 	<glm/glm.hpp>
+	<GL/gl.h>
+	<glm/glm.hpp>
 
 1557440453 source:/home/ricardo/worldrender/Frustum.cpp
+	"Frustum.hpp"
 	"Frustum.hpp"
 
 1557282574 source:c:\users\ricardo\desktop\worldrender\camera.cpp
@@ -1239,161 +1356,6 @@
 	<vector>
 
 1554947798 c:\users\ricardo\desktop\worldrender\stb_image.hpp
-	"stb_image.h"
-	<stdio.h>
-	<stdlib.h>
-	<stdarg.h>
-	<stddef.h>
-	<stdlib.h>
-	<string.h>
-	<limits.h>
-	<math.h>
-	<stdio.h>
-	<assert.h>
-	<stdint.h>
-	<emmintrin.h>
-	<intrin.h>
-	<arm_neon.h>
-
-1557274076 source:/home/ricardo/worldrender/Camera.cpp
-	<glm/glm.hpp>
-	<glm/gtc/matrix_transform.hpp>
-	<GLFW/glfw3.h>
-	<vector>
-	"Camera.hpp"
-
-1556814354 /home/ricardo/worldrender/Camera.hpp
-	<glm/glm.hpp>
-	<glm/gtc/matrix_transform.hpp>
-	<GLFW/glfw3.h>
-	<vector>
-	"Utils.hpp"
-
-1558041942 /home/ricardo/worldrender/Utils.hpp
-	<vector>
-	<string>
-	<glm/glm.hpp>
-	<GL/gl.h>
-
-1557440379 source:/home/ricardo/worldrender/Culling.cpp
-	"NoiseFeedback.hpp"
-	"QuadTree.hpp"
-	"LoadShaders.hpp"
-	<iostream>
-	<vector>
-	<numeric>
-	"Utils.hpp"
-	"Camera.hpp"
-	"Frustum.hpp"
-
-1553780496 /home/ricardo/worldrender/NoiseFeedback.hpp
-	<GL/glew.h>
-	<glm/glm.hpp>
-	<GL/gl.h>
-	<vector>
-
-1557176569 /home/ricardo/worldrender/QuadTree.hpp
-	<vector>
-	<iostream>
-	<glm/glm.hpp>
-	<GL/gl.h>
-	<memory>
-	"Verts.hpp"
-
-1557176569 /home/ricardo/worldrender/Verts.hpp
-	<cstring>
-	<unordered_map>
-	<vector>
-	<experimental/optional>
-	<glm/glm.hpp>
-	<glm/gtx/hash.hpp>
-
-1557440379 /home/ricardo/worldrender/LoadShaders.hpp
-
-1557440465 /home/ricardo/worldrender/Frustum.hpp
-	<GL/gl.h>
-	<glm/glm.hpp>
-
-1557440453 source:/home/ricardo/worldrender/Frustum.cpp
-	"Frustum.hpp"
-
-1557440379 source:/home/ricardo/worldrender/LoadShaders.cpp
-	<stdlib.h>
-	<GL/glew.h>
-	<GLFW/glfw3.h>
-	<stdio.h>
-	<string>
-	<vector>
-	<iostream>
-	<fstream>
-	<algorithm>
-	"LoadShaders.hpp"
-
-1556821289 source:/home/ricardo/worldrender/NoiseFeedback.cpp
-	"NoiseFeedback.hpp"
-	"QuadTree.hpp"
-	"LoadShaders.hpp"
-	<iostream>
-	<vector>
-	<numeric>
-	"Utils.hpp"
-
-1554834427 source:/home/ricardo/worldrender/Planet.cpp
-	"QuadTree.hpp"
-	"Planet.hpp"
-	<iostream>
-
-1553552562 /home/ricardo/worldrender/Planet.hpp
-	<iostream>
-	<glm/glm.hpp>
-	<GL/gl.h>
-	"QuadTree.hpp"
-
-1557176569 source:/home/ricardo/worldrender/QuadTree.cpp
-	"QuadTree.hpp"
-	"Utils.hpp"
-	"simplex.h"
-	<iostream>
-	<thread>
-	<chrono>
-	<unordered_map>
-	<glm/gtx/hash.hpp>
-
-1550605020 /home/ricardo/worldrender/simplex.h
-	<functional>
-	<array>
-	<random>
-	<math.h>
-	<stdlib.h>
-	<glm/geometric.hpp>
-	<glm/vec2.hpp>
-	<glm/vec3.hpp>
-	<glm/vec4.hpp>
-	<glm/mat2x2.hpp>
-
-1558041942 source:/home/ricardo/worldrender/Main.cpp
-	<iostream>
-	<string>
-	<cstdlib>
-	<glm/glm.hpp>
-	<glm/gtc/matrix_transform.hpp>
-	<GL/glew.h>
-	<GLFW/glfw3.h>
-	"LoadShaders.hpp"
-	"Planet.hpp"
-	"QuadTree.hpp"
-	"NoiseFeedback.hpp"
-	"Textures.hpp"
-	"Camera.hpp"
-	"Utils.hpp"
-	<chrono>
-	"stb_image.hpp"
-
-1557882190 /home/ricardo/worldrender/Textures.hpp
-	<stdlib.h>
-	<vector>
-
-1554835035 /home/ricardo/worldrender/stb_image.hpp
 	"stb_image.h"
 	<stdio.h>
 	<stdlib.h>

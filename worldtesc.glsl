@@ -57,7 +57,7 @@ void main(){
     vec3 bTriangulo = (gl_in[0].gl_Position.xyz + gl_in[1].gl_Position.xyz
                      + gl_in[2].gl_Position.xyz)/3;
 
-    if(tess==0){
+    if(tess==1){
       TessLevelInner = LOD(bTriangulo, viewPos);
 
       d1=gl_in[1].gl_Position.xyz+(gl_in[2].gl_Position.xyz-gl_in[1].gl_Position.xyz)/2;
@@ -68,7 +68,7 @@ void main(){
       e1=LOD(d2,viewPos);
       e2=LOD(d3,viewPos);
     }
-    else if(tess == 1){
+    else if(tess == 0){
       TessLevelInner = 1;
     }
     else if(tess == 2){

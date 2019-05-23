@@ -170,8 +170,8 @@ void Camera::pressButtons()
   bool pUpIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_PAGE_UP ) == GLFW_PRESS);
   if (!pUpIsPressed && pUpIsCurrentlyPressed){
     float sp = this->MovementSpeed*1.5;
-    if(sp>550)
-      sp = 550;
+    if(sp>1050)
+      sp = 1050;
     this->MovementSpeed = sp;
 
   }

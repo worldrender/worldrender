@@ -16,7 +16,7 @@
 
 #define YAW           -10.0f
 #define PITCH         -10.0f
-#define SPEED          2.5f
+#define SPEED          200.5f
 #define SENSITIVITY    0.1f
 #define ZOOM           45.0f
 

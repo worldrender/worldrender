@@ -93,10 +93,10 @@
 		<Unit filename="QuadTree.cpp" />
 		<Unit filename="QuadTree.hpp" />
 		<Unit filename="Shader.hpp" />
+		<Unit filename="Shader.hpp" />
 		<Unit filename="Textures.hpp" />
 		<Unit filename="Utils.hpp" />
 		<Unit filename="Verts.hpp" />
-		<Unit filename="shader.hpp" />
 		<Unit filename="simplex.h" />
 		<Unit filename="stb_image.hpp" />
 		<Unit filename="transform.glsl" />

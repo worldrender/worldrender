@@ -79,8 +79,9 @@ vec4 noised( in vec3 x )
                                       k3 + k6*u.x + k5*u.y + k7*u.x*u.y ) );
 }
 
-float terrain3 (in vec3 x, float octaves = 14)
-{
+float terrain3 (in vec3 x){
+   float octaves = 14;
+
   float f = 1.98;  // could be 2.0
   float s = 0.49;  // could be 0.5
   float a = 0.0;
