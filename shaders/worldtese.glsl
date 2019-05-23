@@ -147,18 +147,14 @@ float sNoise(vec3 v){
 }
 
 
-float ridgedNoise(in vec3 p )
+float ridgedNoise(in vec3 p, int octaves = 11, float H=0.7, float gain=0.03f, float amplitude = 1.f, float frequency = 0.03f, float persistence = 0.5f, float offset=0.01f)
 {
-  int octaves = 11;
-  float persistence = 0.5f;
-  float frequency = 0.03f;
-  float amplitude = 1.f;
-  float gain = 0.03f;
   float total = 0.f;
+  float exponent = pow(amplitude, -H);
   for(int i=0;i<octaves;i++)
   {
-    total += ((1.0 - abs(noise(p * frequency))) * 2.0 - 1.0) * amplitude;
-    frequency	*= 2.f;
+    total += offset-(((1.0 - abs(noise(p * frequency))) * 2.0 - 1.0) * amplitude*exponent);
+    frequency	*= 1.f;
     amplitude *= gain;
   }
   return total;
@@ -181,7 +177,7 @@ const mat3 m3i = mat3( 0.00, -0.80, -0.60,
                        0.80,  0.36, -0.48,
                        0.60, -0.48,  0.64 );
 
-float fbm( in vec3 p, int octaves=16, float gain=1, float amplitude=0.93753125f, float frequency=1, float size=1){
+float fbm( in vec3 p, int octaves=16, float gain=1, float amplitude=0.93753125f, float frequency=1.f, float size=1){
     float f = 0.0;
     for(int i=0;i<octaves;i++)
     {
@@ -220,9 +216,19 @@ void main(){
     vec3 n2 = gl_TessCoord.z * tcNormal[2];
     vcNormal = normalize(n0 + n1 + n2);
 //    vNoise = vNoise*clamp(cubeNoise(vcPos),0,1);
-    float fnoise = (fbm(vcPos)+vNoise);
-    vNoise = clamp(cubeVal(ridgedNoise(vcPos)),0,1);
-    vNoise *= fnoise*2.77777f;
+    vNoise = (fbm(vcPos*10f))*0.2f;
+    float mountains = (ridgedNoise(vcPos));
+
+//     float h1 = hyrbidMultifractal(p/8.0, H, lacunarity, octaves, offset, gain);
+//    float h2 = hyrbidMultifractal(p/3.0, H, lacunarity, octaves, offset, gain/2.0)*2.0;
+//    float h3 = hyrbidMultifractal(p*2.0, H, lacunarity, octaves, offset, gain)*0.3;
+
+    float f1 = ridgedNoise(vcPos/8.f, 5, 0.7, 0.7f, 4.f, 0.03f, 0.5f, 0.05f);
+    float f2 = ridgedNoise(vcPos/3.f, 5, 0.7, 0.4f, 4.f, 0.03f, 0.5f, 0.05f)*2.f;
+    float f3 = ridgedNoise(vcPos/2.f, 5, 0.7, 0.4f, 4.f, 0.03f, 0.5f, 0.05f)*0.3f;
+
+
+    vNoise += mountains-cubeVal(mountains)*clamp((f1),-1.5f,1.5f)+clamp((f2),-1.5f,1.5f)+clamp((f3),-1.5f,1.5f)-0.8;
     vcPos = vcPos + vcNormal * vNoise;
     vcNormal = normalize(vcPos);
     ///PASSAR O DELTA antes depois da normal

@@ -9,7 +9,7 @@
 	#define c_grass vec3(.086, .132, .018)
 	#define c_beach vec3(.153, .172, .121)
 	#define c_rock  vec3(.080, .050, .030)
-	#define c_snow  vec3(.30, .40, .450)
+	#define c_snow  vec3(.30, .40, .550)
 
 	// limits
 	#define l_water .4
