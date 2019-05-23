@@ -228,7 +228,7 @@ void main(){
     float f3 = ridgedNoise(vcPos/2.f, 5, 0.7, 0.4f, 4.f, 0.03f, 0.5f, 0.05f)*0.3f;
 
 
-    vNoise += mountains-cubeVal(mountains)*clamp((f1),-1.5f,1.5f)+clamp((f2),-1.5f,1.5f)+clamp((f3),-1.5f,1.5f)-0.8;
+    vNoise += cubeVal(mountains)*clamp((f1),-1.5f,1.5f)+clamp((f2),-1.5f,1.5f)+clamp((f3),-1.5f,1.5f)-0.8;
     vcPos = vcPos + vcNormal * vNoise;
     vcNormal = normalize(vcPos);
     ///PASSAR O DELTA antes depois da normal
