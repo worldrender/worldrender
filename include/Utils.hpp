@@ -6,13 +6,14 @@
 #include <glm/glm.hpp>
 #include <GL/gl.h>
 
-#define RADIUS 7
-#define LODVALUE 9 //safe number is 6
+#define RADIUS 7.f
+#define LODVALUE 5 //safe number is 6
 #define PositionSlot 0u
 #define WIDTH 1280u
 #define HEIGHT 1024u
 #define meshSize 128
 #define PLANET_SCALE 1.f
+#define PI 3.14f
 
 #define YAW           -10.0f
 #define PITCH         -10.0f

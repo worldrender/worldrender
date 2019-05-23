@@ -1,4 +1,5 @@
-#include "include/Frustum.hpp"
+#include "Frustum.h"
+#include <GL/gl.h>
 
 enum FrustumSide
 {
@@ -10,32 +11,17 @@ enum FrustumSide
 	FRONT	= 5			// The FRONT side of the frustum
 };
 
-enum PlaneData
+enum FrustumStatus
 {
-	A = 0,				// The X value of the plane's normal
-	B = 1,				// The Y value of the plane's normal
-	C = 2,				// The Z value of the plane's normal
-	D = 3				// The distance the plane is from the origin
+    OUTSIDE       0,
+    INSIDE        1,
+    INTERSECTING  2
 };
 
-enum EnumFrustum {
-    OUTSIDE         = 0,
-    INSIDE          = 1,
-    INTERSECTING    = 2
-};
-
-void Frustum::normalizePlane(glm::vec4 &frustum_plane)
+// Creates a frustum based on current OpenGL matrices
+Frustum::Frustum()
 {
-	float magnitude = (float)sqrt(frustum_plane[A] * frustum_plane[A] + frustum_plane[B] * frustum_plane[B] + frustum_plane[C] * frustum_plane[C]);
-	frustum_plane[A] /= magnitude;
-	frustum_plane[B] /= magnitude;
-	frustum_plane[C] /= magnitude;
-	frustum_plane[D] /= magnitude;
-}
-
-void Frustum::CalculateFrustum(glm::mat4 &view_matrix, glm::mat4 &proj_matrix)
-{
-	float   *proj = &proj_matrix[0][0];
+ float   *proj = &proj_matrix[0][0];
 	float   *modl = &view_matrix[0][0];
 	float   clip[16]; //clipping planes
 
@@ -94,10 +80,43 @@ void Frustum::CalculateFrustum(glm::mat4 &view_matrix, glm::mat4 &proj_matrix)
 	frustum_planes[FRONT][C] = clip[11] + clip[10];
 	frustum_planes[FRONT][D] = clip[15] + clip[14];
 	normalizePlane(frustum_planes[FRONT]);
+
+}
+
+// Calculates the closest distance from a given point to a given clipping plane
+double Frustum::CalculateDistanceToPlane(const int plane, const Vector3<double> &point) const
+{
+  // Return the point-to-plane distance
+  return planes[plane].x * point.x + planes[plane].y * point.y + planes[plane].z * point.z + planes[plane].w;
+}
+
+// Normalizes the clipping planes
+void Frustum::NormalizePlanes()
+{
+  // For each plane
+  for (unsigned int i = 0; i < 6; i++)
+  {
+    // Normalize the plane using the length of its vector part
+    const double normalLength = Vector3<double>(planes[i].x, planes[i].y, planes[i].z).GetLength();
+    if (normalLength != 0.0)
+      planes[i] /= normalLength;
+  }
+}
+
+// Determines whether a given point is inside the frustum
+bool Frustum::ContainsPoint(const Vector3<double> &point) const
+{
+  // For each plane; return outside if the point is behind the plane
+  for (unsigned int i = 0; i < 6; i++)
+    if (CalculateDistanceToPlane(i, point) <= 0.0)
+      return OUTSIDE;
+
+  // Return inside
+  return INSIDE;
 }
 
 // Determines whether a given sphere is inside the frustum
-int Frustum::ContainsSphere(const glm::vec3 &position, const double radius) const
+int Frustum::ContainsSphere(const Vector3<double> &position, const double radius) const
 {
   // Plane counter
   int planeCount = 0;
@@ -116,20 +135,37 @@ int Frustum::ContainsSphere(const glm::vec3 &position, const double radius) cons
   return planeCount == 6 ? INSIDE : INTERSECTING;
 }
 
-bool Frustum::ContainsPoint(const glm::vec3 &point) const
+// Determines whether a given box is inside the frustum
+int Frustum::ContainsBox(const Vector3<double> &min, const Vector3<double> &max) const
 {
-  // For each plane; return outside if the point is behind the plane
-  for (unsigned int i = 0; i < 6; i++)
-    if (CalculateDistanceToPlane(i, point) <= 0.0)
-      return OUTSIDE;
+  // Build a vector holding all box corners
+  vector<Vector3<double> > points;
+  for (unsigned int i = 0; i < 8; i++)
+    points.push_back(Vector3<double>(i < 4 ? max.x : min.x, i % 4 < 2 ? max.y : min.y, i % 2 ? max.z : min.z));
 
-  // Return inside
-  return INSIDE;
+  // Test the box as a polygon
+  return ContainsPolygon(points);
 }
 
-// Calculates the closest distance from a given point to a given clipping plane
-double Frustum::CalculateDistanceToPlane(const int plane, const glm::vec3 &point) const
+// Determines whether a given polygon is inside the frustum
+int Frustum::ContainsPolygon(const vector<Vector3<double> > &points) const
 {
-  // Return the point-to-plane distance
-  return frustum_planes[plane].x * point.x + frustum_planes[plane].y * point.y + frustum_planes[plane].z * point.z + frustum_planes[plane].w;
+  // Plane counter
+  int planeCount = 0;
+
+  // Use the point-to-plane distance to calculate the number of planes the polygon is in front of
+  for (unsigned int i = 0; i < 6; i++)
+  {
+    unsigned int pointCount = 0;
+    for (unsigned int j = 0; j < points.size(); j++)
+      if (CalculateDistanceToPlane(i, points[j]) > 0.0)
+        pointCount++;
+    if (pointCount == 0)
+      return OUTSIDE;
+    else if (pointCount == points.size())
+      planeCount++;
+  }
+
+  // Return inside if in front of all planes; otherwise intersecting
+  return planeCount == 6 ? INSIDE : INTERSECTING;
 }
