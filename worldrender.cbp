@@ -79,7 +79,6 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="Camera.cpp" />
-		<Unit filename="Culling.cpp" />
 		<Unit filename="Frustum.cpp" />
 		<Unit filename="LoadShaders.cpp" />
 		<Unit filename="Main.cpp" />

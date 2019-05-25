@@ -20,19 +20,17 @@ class Frustum
     // Instance variables
     glm::vec4 frustum_planes[6];
     double CalculateDistanceToPlane(const int plane, const glm::vec3 &point) const;
-    void NormalizePlanes();
+    void NormalizePlane(glm::vec4 &frustum_plane);
+    void SettingFrustum(glm::mat4 proj_matrix, glm::mat4 view_matrix);
 
   public:
     // Constructor
-    Frustum();
+    Frustum(glm::mat4 proj_matrix, glm::mat4 view_matrix);
 
     // Instance methods
+    bool  ContainsPoint(const glm::vec3 &point) const;
     int   ContainsSphere(const glm::vec3 &position, const double radius) const;
-    void normalizePlane(glm::vec4 &frustum_plane);
-    void CalculateFrustum(glm::mat4 &view_matrix, glm::mat4 &proj_matrix);
-    bool ContainsPoint(const glm::vec3 &point) const;
-
-
+    void Update(glm::mat4 proj_matrix, glm::mat4 view_matrix);
 };
 
 #endif

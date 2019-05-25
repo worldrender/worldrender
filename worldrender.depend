@@ -864,7 +864,7 @@
 	<GL/gl.h>
 	<vector>
 
-1558378398 source:c:\users\iago.labcg-pc\documents\worldrender\main.cpp
+1558812628 source:c:\users\iago.labcg-pc\documents\worldrender\main.cpp
 	<iostream>
 	<string>
 	<cstdlib>
@@ -879,6 +879,7 @@
 	"include/Textures.hpp"
 	"include/Camera.hpp"
 	"include/Utils.hpp"
+	"include/Frustum.hpp"
 	<chrono>
 	"include/stb_image.hpp"
 
@@ -1601,7 +1602,7 @@
 	<glm/vec4.hpp>
 	<glm/mat2x2.hpp>
 
-1558398818 source:c:\users\iago.labcg-pc\documents\worldrender\camera.cpp
+1558573830 source:c:\users\iago.labcg-pc\documents\worldrender\camera.cpp
 	<glm/glm.hpp>
 	<glm/gtc/matrix_transform.hpp>
 	<GLFW/glfw3.h>
@@ -1656,7 +1657,7 @@
 
 1558378398 c:\users\iago.labcg-pc\documents\worldrender\include\loadshaders.hpp
 
-1558571457 c:\users\iago.labcg-pc\documents\worldrender\include\frustum.hpp
+1558812475 c:\users\iago.labcg-pc\documents\worldrender\include\frustum.hpp
 	<vector>
 	<glm/glm.hpp>
 
@@ -1699,6 +1700,7 @@
 	<glm/vec4.hpp>
 	<glm/mat2x2.hpp>
 
-1558571375 source:c:\users\iago.labcg-pc\documents\worldrender\frustum.cpp
+1558812460 source:c:\users\iago.labcg-pc\documents\worldrender\frustum.cpp
 	"include/Frustum.hpp"
+	<GL/gl.h>
 
