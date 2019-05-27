@@ -790,8 +790,13 @@
 	"Utils.hpp"
 
 1551134935 c:\users\iago.labcg-pc\documents\worldrender\controls.hpp
+<<<<<<< HEAD
 
 1555013223 source:c:\users\iago.labcg-pc\documents\worldrender\loadshaders.cpp
+=======
+
+1558378398 source:c:\users\iago.labcg-pc\documents\worldrender\loadshaders.cpp
+>>>>>>> eb4777072522be11b03a0f5ec9c9ad8326eef79d
 	<stdlib.h>
 	<GL/glew.h>
 	<GLFW/glfw3.h>
@@ -801,6 +806,7 @@
 	<iostream>
 	<fstream>
 	<algorithm>
+<<<<<<< HEAD
 	"LoadShaders.hpp"
 
 1555013208 c:\users\iago.labcg-pc\documents\worldrender\loadshaders.hpp
@@ -808,6 +814,15 @@
 1555008825 source:c:\users\iago.labcg-pc\documents\worldrender\planet.cpp
 	"QuadTree.hpp"
 	"Planet.hpp"
+=======
+	"include/LoadShaders.hpp"
+
+1555013208 c:\users\iago.labcg-pc\documents\worldrender\loadshaders.hpp
+
+1558566938 source:c:\users\iago.labcg-pc\documents\worldrender\planet.cpp
+	"include/QuadTree.hpp"
+	"include/Planet.hpp"
+>>>>>>> eb4777072522be11b03a0f5ec9c9ad8326eef79d
 	<iostream>
 
 1555008825 c:\users\iago.labcg-pc\documents\worldrender\quadtree.hpp
@@ -823,11 +838,19 @@
 	<glm/glm.hpp>
 	<GL/gl.h>
 	"QuadTree.hpp"
+<<<<<<< HEAD
 
 1556054763 source:c:\users\iago.labcg-pc\documents\worldrender\quadtree.cpp
 	"QuadTree.hpp"
 	"Utils.hpp"
 	"simplex.h"
+=======
+
+1558566938 source:c:\users\iago.labcg-pc\documents\worldrender\quadtree.cpp
+	"include/QuadTree.hpp"
+	"include/Utils.hpp"
+	"include/simplex.h"
+>>>>>>> eb4777072522be11b03a0f5ec9c9ad8326eef79d
 	<iostream>
 	<thread>
 	<chrono>
@@ -845,6 +868,7 @@
 	<glm/vec3.hpp>
 	<glm/vec4.hpp>
 	<glm/mat2x2.hpp>
+<<<<<<< HEAD
 
 1556054763 source:c:\users\iago.labcg-pc\documents\worldrender\noisefeedback.cpp
 	"NoiseFeedback.hpp"
@@ -855,6 +879,18 @@
 	<numeric>
 	"Utils.hpp"
 
+=======
+
+1558378398 source:c:\users\iago.labcg-pc\documents\worldrender\noisefeedback.cpp
+	"include/NoiseFeedback.hpp"
+	"include/QuadTree.hpp"
+	"include/LoadShaders.hpp"
+	<iostream>
+	<vector>
+	<numeric>
+	"include/Utils.hpp"
+
+>>>>>>> eb4777072522be11b03a0f5ec9c9ad8326eef79d
 1556054763 c:\users\iago.labcg-pc\documents\worldrender\utils.hpp
 	<vector>
 	<glm/glm.hpp>
@@ -865,8 +901,13 @@
 	<glm/glm.hpp>
 	<GL/gl.h>
 	<vector>
+<<<<<<< HEAD
 
 1556055617 source:c:\users\iago.labcg-pc\documents\worldrender\main.cpp
+=======
+
+1558812628 source:c:\users\iago.labcg-pc\documents\worldrender\main.cpp
+>>>>>>> eb4777072522be11b03a0f5ec9c9ad8326eef79d
 	<iostream>
 	<string>
 	<cstdlib>
@@ -874,16 +915,22 @@
 	<glm/gtc/matrix_transform.hpp>
 	<GL/glew.h>
 	<GLFW/glfw3.h>
-	"LoadShaders.hpp"
-	"controls.hpp"
-	"Planet.hpp"
-	"QuadTree.hpp"
-	"NoiseFeedback.hpp"
-	"Textures.h"
-	"Utils.hpp"
+	"include/LoadShaders.hpp"
+	"include/Planet.hpp"
+	"include/QuadTree.hpp"
+	"include/NoiseFeedback.hpp"
+	"include/Textures.hpp"
+	"include/Camera.hpp"
+	"include/Utils.hpp"
+	"include/Frustum.hpp"
 	<chrono>
+<<<<<<< HEAD
 	"stb_image.hpp"
 
+=======
+	"include/stb_image.hpp"
+
+>>>>>>> eb4777072522be11b03a0f5ec9c9ad8326eef79d
 1557971060 c:\users\ricardo\desktop\worldrender\utils.hpp
 	<vector>
 	<string>
@@ -1600,6 +1647,7 @@
 	<glm/vec3.hpp>
 	<glm/vec4.hpp>
 	<glm/mat2x2.hpp>
+<<<<<<< HEAD
 
 1558396100 source:/home/ricardo/worldrender/Camera.cpp
 	<glm/glm.hpp>
@@ -1756,3 +1804,108 @@
 	<glm/vec4.hpp>
 	<glm/mat2x2.hpp>
 
+=======
+
+1558573830 source:c:\users\iago.labcg-pc\documents\worldrender\camera.cpp
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	<GLFW/glfw3.h>
+	<vector>
+	"include/Camera.hpp"
+
+1558398818 c:\users\iago.labcg-pc\documents\worldrender\include\camera.hpp
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	<GLFW/glfw3.h>
+	<vector>
+	"Utils.hpp"
+
+1558573084 c:\users\iago.labcg-pc\documents\worldrender\include\utils.hpp
+	<vector>
+	<string>
+	<glm/glm.hpp>
+	<GL/gl.h>
+
+1558378398 source:c:\users\iago.labcg-pc\documents\worldrender\culling.cpp
+	"include/NoiseFeedback.hpp"
+	"include/QuadTree.hpp"
+	"include/LoadShaders.hpp"
+	<iostream>
+	<vector>
+	<numeric>
+	"include/Utils.hpp"
+	"include/Camera.hpp"
+	"include/Frustum.hpp"
+
+1558378398 c:\users\iago.labcg-pc\documents\worldrender\include\noisefeedback.hpp
+	<GL/glew.h>
+	<glm/glm.hpp>
+	<GL/gl.h>
+	<vector>
+
+1558566938 c:\users\iago.labcg-pc\documents\worldrender\include\quadtree.hpp
+	<vector>
+	<iostream>
+	<glm/glm.hpp>
+	<GL/gl.h>
+	<memory>
+	"Verts.hpp"
+
+1558378398 c:\users\iago.labcg-pc\documents\worldrender\include\verts.hpp
+	<cstring>
+	<unordered_map>
+	<vector>
+	<experimental/optional>
+	<glm/glm.hpp>
+	<glm/gtx/hash.hpp>
+
+1558378398 c:\users\iago.labcg-pc\documents\worldrender\include\loadshaders.hpp
+
+1558812475 c:\users\iago.labcg-pc\documents\worldrender\include\frustum.hpp
+	<vector>
+	<glm/glm.hpp>
+
+1558378398 c:\users\iago.labcg-pc\documents\worldrender\include\planet.hpp
+	<iostream>
+	<glm/glm.hpp>
+	<GL/gl.h>
+	"QuadTree.hpp"
+
+1558378398 c:\users\iago.labcg-pc\documents\worldrender\include\textures.hpp
+	<stdlib.h>
+	<vector>
+
+1558378398 c:\users\iago.labcg-pc\documents\worldrender\include\stb_image.hpp
+	"include/stb_image.h"
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<stddef.h>
+	<stdlib.h>
+	<string.h>
+	<limits.h>
+	<math.h>
+	<stdio.h>
+	<assert.h>
+	<stdint.h>
+	<emmintrin.h>
+	<intrin.h>
+	<arm_neon.h>
+
+1558378398 c:\users\iago.labcg-pc\documents\worldrender\include\simplex.h
+	<functional>
+	<array>
+	<random>
+	<math.h>
+	<stdlib.h>
+	<glm/geometric.hpp>
+	<glm/vec2.hpp>
+	<glm/vec3.hpp>
+	<glm/vec4.hpp>
+	<glm/mat2x2.hpp>
+
+1558812460 source:c:\users\iago.labcg-pc\documents\worldrender\frustum.cpp
+	"include/Frustum.hpp"
+	<GL/gl.h>
+
+>>>>>>> eb4777072522be11b03a0f5ec9c9ad8326eef79d

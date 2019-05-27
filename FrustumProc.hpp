@@ -12,25 +12,29 @@
 #include <vector>
 #include <glm/glm.hpp>
 
+#define OUTSIDE       0
+#define INSIDE        1
+#define INTERSECTING  2
+
 using std::vector;
 
 class Frustum
 {
   private:
     // Instance variables
-    glm::vec4 frustum_planes[6];
-    double CalculateDistanceToPlane(const int plane, const glm::vec3 &point) const;
-    void NormalizePlane(glm::vec4 &frustum_plane);
-    void SettingFrustum(glm::mat4 proj_matrix, glm::mat4 view_matrix);
+    glm::vec4<double> frustum_planes[6];
+    double CalculateDistanceToPlane(const int plane, const glm::vec3<double> &point) const;
+    void NormalizePlanes();
 
   public:
     // Constructor
-    Frustum(glm::mat4 proj_matrix, glm::mat4 view_matrix);
+    Frustum();
 
     // Instance methods
-    bool  ContainsPoint(const glm::vec3 &point) const;
-    int   ContainsSphere(const glm::vec3 &position, const double radius) const;
-    void Update(glm::mat4 proj_matrix, glm::mat4 view_matrix);
+    bool  ContainsPoint(const glm::vec3<double> &point) const;
+    int   ContainsSphere(const glm::vec3<double> &position, const double radius) const;
+    int   ContainsBox(const glm::vec3<double> &min, const glm::vec3<double> &max) const;
+    int   ContainsPolygon(const vector<glm::vec3<double> > &points) const;
 };
 
 #endif

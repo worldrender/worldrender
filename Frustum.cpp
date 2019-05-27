@@ -1,4 +1,5 @@
 #include "include/Frustum.hpp"
+#include <GL/gl.h>
 
 enum FrustumSide
 {
@@ -18,18 +19,16 @@ enum PlaneData
 	D = 3				// The distance the plane is from the origin
 };
 
-void normalizePlane(glm::vec4 &frustum_plane)
+enum FrustumStatus
 {
-	float magnitude = (float)sqrt(frustum_plane[A] * frustum_plane[A] + frustum_plane[B] * frustum_plane[B] + frustum_plane[C] * frustum_plane[C]);
-	frustum_plane[A] /= magnitude;
-	frustum_plane[B] /= magnitude;
-	frustum_plane[C] /= magnitude;
-	frustum_plane[D] /= magnitude;
-}
+    OUTSIDE       = 0,
+    INSIDE        = 1,
+    INTERSECTING  = 2
+};
 
-void CFrustum::CalculateFrustum(glm::mat4 &view_matrix, glm::mat4 &proj_matrix)
-{
-	float   *proj = &proj_matrix[0][0];
+
+void Frustum::SettingFrustum(glm::mat4 proj_matrix, glm::mat4 view_matrix){
+    float   *proj = &proj_matrix[0][0];
 	float   *modl = &view_matrix[0][0];
 	float   clip[16]; //clipping planes
 
@@ -57,35 +56,93 @@ void CFrustum::CalculateFrustum(glm::mat4 &view_matrix, glm::mat4 &proj_matrix)
 	frustum_planes[RIGHT][B] = clip[7] - clip[4];
 	frustum_planes[RIGHT][C] = clip[11] - clip[8];
 	frustum_planes[RIGHT][D] = clip[15] - clip[12];
-	normalizePlane(frustum_planes[RIGHT]);
+	NormalizePlane(frustum_planes[RIGHT]);
 
 	frustum_planes[LEFT][A] = clip[3] + clip[0];
 	frustum_planes[LEFT][B] = clip[7] + clip[4];
 	frustum_planes[LEFT][C] = clip[11] + clip[8];
 	frustum_planes[LEFT][D] = clip[15] + clip[12];
-	normalizePlane(frustum_planes[LEFT]);
+	NormalizePlane(frustum_planes[LEFT]);
 
 	frustum_planes[BOTTOM][A] = clip[3] + clip[1];
 	frustum_planes[BOTTOM][B] = clip[7] + clip[5];
 	frustum_planes[BOTTOM][C] = clip[11] + clip[9];
 	frustum_planes[BOTTOM][D] = clip[15] + clip[13];
-	normalizePlane(frustum_planes[BOTTOM]);
+	NormalizePlane(frustum_planes[BOTTOM]);
 
 	frustum_planes[TOP][A] = clip[3] - clip[1];
 	frustum_planes[TOP][B] = clip[7] - clip[5];
 	frustum_planes[TOP][C] = clip[11] - clip[9];
 	frustum_planes[TOP][D] = clip[15] - clip[13];
-	normalizePlane(frustum_planes[TOP]);
+	NormalizePlane(frustum_planes[TOP]);
 
 	frustum_planes[BACK][A] = clip[3] - clip[2];
 	frustum_planes[BACK][B] = clip[7] - clip[6];
 	frustum_planes[BACK][C] = clip[11] - clip[10];
 	frustum_planes[BACK][D] = clip[15] - clip[14];
-	normalizePlane(frustum_planes[BACK]);
+	NormalizePlane(frustum_planes[BACK]);
 
 	frustum_planes[FRONT][A] = clip[3] + clip[2];
 	frustum_planes[FRONT][B] = clip[7] + clip[6];
 	frustum_planes[FRONT][C] = clip[11] + clip[10];
 	frustum_planes[FRONT][D] = clip[15] + clip[14];
-	normalizePlane(frustum_planes[FRONT]);
+	NormalizePlane(frustum_planes[FRONT]);
+}
+// Creates a frustum based on current OpenGL matrices
+Frustum::Frustum(glm::mat4 proj_matrix, glm::mat4 view_matrix)
+{
+    SettingFrustum(proj_matrix, view_matrix);
+
+}
+
+// Calculates the closest distance from a given point to a given clipping plane
+double Frustum::CalculateDistanceToPlane(const int plane, const glm::vec3 &point) const
+{
+  // Return the point-to-plane distance
+  return frustum_planes[plane].x * point.x + frustum_planes[plane].y * point.y + frustum_planes[plane].z * point.z + frustum_planes[plane].w;
+}
+
+void Frustum::NormalizePlane(glm::vec4 &frustum_plane)
+{
+	float magnitude = (float)sqrt(frustum_plane[A] * frustum_plane[A] + frustum_plane[B] * frustum_plane[B] + frustum_plane[C] * frustum_plane[C]);
+	frustum_plane[A] /= magnitude;
+	frustum_plane[B] /= magnitude;
+	frustum_plane[C] /= magnitude;
+	frustum_plane[D] /= magnitude;
+}
+
+
+// Determines whether a given sphere is inside the frustum
+int Frustum::ContainsSphere(const glm::vec3 &position, const double radius) const
+{
+  // Plane counter
+  int planeCount = 0;
+
+  // Use the point-to-plane distance to calculate the number of planes the sphere is in front of
+  for (unsigned int i = 0; i < 6; i++)
+  {
+    const double distance = CalculateDistanceToPlane(i, position);
+    if (distance <= -radius)
+      return OUTSIDE;
+    else if (distance > radius)
+      planeCount++;
+  }
+
+  // Return inside if in front of all planes; otherwise intersecting
+  return planeCount == 6 ? INSIDE : INTERSECTING;
+}
+
+bool Frustum::ContainsPoint(const glm::vec3 &point) const
+{
+  // For each plane; return outside if the point is behind the plane
+  for (unsigned int i = 0; i < 6; i++)
+    if (CalculateDistanceToPlane(i, point) <= 0.0)
+      return OUTSIDE;
+
+  // Return inside
+  return INSIDE;
+}
+
+void Frustum::Update(glm::mat4 proj_matrix, glm::mat4 view_matrix){
+    SettingFrustum(proj_matrix, view_matrix);
 }
