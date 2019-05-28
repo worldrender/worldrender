@@ -26,7 +26,10 @@ void instanceNoise(GLuint shader)
   glUseProgram(program);
 
   GLuint radiusID = glGetUniformLocation(program, "radius");
+  GLuint scaleID = glGetUniformLocation(program, "scale");
+
   glUniform1f(radiusID, RADIUS);
+  glUniform1f(scaleID, SCALE);
 
   GLuint vertexBuffer;
   glGenBuffers(1, &vertexBuffer);

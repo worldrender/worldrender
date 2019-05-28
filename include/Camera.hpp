@@ -8,6 +8,8 @@
 
 #include <vector>
 #include "Utils.hpp"
+#include "Transformation.hpp"
+#include "Planet.hpp"
 
 extern bool tIsPressed;
 extern bool pIsPressed;
@@ -32,6 +34,8 @@ extern float lastX;
 extern float lastY;
 extern float deltaTime;
 extern float lastFrame;
+
+#ifndef NEWCAMERA
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement {
@@ -96,5 +100,64 @@ extern Camera planetCamera;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+
+#else
+
+class Camera
+{
+public:
+	Camera();
+	~Camera();
+
+	void SetFarClippingPlane(float far)   { this->far = far; }
+	void SetFieldOfView(float fov)        { this->fov = fov; }
+	void SetOrthoSize(float size)         { this->size = size; }
+	void SetNearClippingPlane(float near) { this->near = near; }
+
+	void UsePerspectiveProjection()       { this->isPerspective = true; }
+	void UseOrthographicProjection()      { this->isPerspective = false; }
+
+	void Update(float xoffset, float yoffset);
+
+	glm::mat4 GetView()                   { return this->View; }
+	glm::mat4 GetProj()                   { return this->Projection; }
+	glm::mat4 GetViewInv()                { return this->ViewInverse; }
+	glm::mat4 GetViewProj()               { return this->ViewProjection; }
+	glm::mat4 GetViewProjInv()            { return this->ViewProjectionInverse; }
+	float GetFOV()                        { return this->fov; }
+	float GetFarPlane()                   { return this->far; }
+	float GetNearPlane()                  { return this->near; }
+
+	void SetPlanet(Planet *planet)        { this->planet = planet; }
+	bool HasMoved()                       { return this->hasMoved; }
+	Transformation* GetTransform()        { return this->transform; }
+
+	float GetAltitude()                   { return this->altitude; }
+
+private:
+
+	Planet *planet = nullptr;
+	float altitude = 10000.
+        latitude = 0.
+	      longitude = 0.
+	      rotationSpeed = 0.5f,
+
+	      far,
+	      near,
+	      fov,
+	      size;
+	Transformation *transform = nullptr;
+	bool m_Moved = true;
+
+	//Camera projection
+	glm::mat4 View,
+	        	Projection,
+	         	ViewInverse,
+		        ViewProjection,
+		        ViewProjectionInverse;
+	bool isPerspective,
+       hasMoved;
+};
+#endif // NEWCAMERA
 #endif
 

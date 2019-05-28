@@ -1,148 +1,186 @@
 #include "include/Frustum.hpp"
 #include <GL/gl.h>
 
-enum FrustumSide
+using namespace glm;
+
+void FrustumCorners::Transform(mat4 space)
 {
-	RIGHT	= 0,		// The RIGHT side of the frustum
-	LEFT	= 1,		// The LEFT	 side of the frustum
-	BOTTOM	= 2,		// The BOTTOM side of the frustum
-	TOP		= 3,		// The TOP side of the frustum
-	BACK	= 4,		// The BACK	side of the frustum
-	FRONT	= 5			// The FRONT side of the frustum
-};
-
-enum PlaneData
-{
-	A = 0,				// The X value of the plane's normal
-	B = 1,				// The Y value of the plane's normal
-	C = 2,				// The Z value of the plane's normal
-	D = 3				// The distance the plane is from the origin
-};
-
-enum FrustumStatus
-{
-    OUTSIDE       = 0,
-    INSIDE        = 1,
-    INTERSECTING  = 2
-};
-
-
-void Frustum::SettingFrustum(glm::mat4 proj_matrix, glm::mat4 view_matrix){
-    float   *proj = &proj_matrix[0][0];
-	float   *modl = &view_matrix[0][0];
-	float   clip[16]; //clipping planes
-
-	clip[0] = modl[0] * proj[0] + modl[1] * proj[4] + modl[2] * proj[8] + modl[3] * proj[12];
-	clip[1] = modl[0] * proj[1] + modl[1] * proj[5] + modl[2] * proj[9] + modl[3] * proj[13];
-	clip[2] = modl[0] * proj[2] + modl[1] * proj[6] + modl[2] * proj[10] + modl[3] * proj[14];
-	clip[3] = modl[0] * proj[3] + modl[1] * proj[7] + modl[2] * proj[11] + modl[3] * proj[15];
-
-	clip[4] = modl[4] * proj[0] + modl[5] * proj[4] + modl[6] * proj[8] + modl[7] * proj[12];
-	clip[5] = modl[4] * proj[1] + modl[5] * proj[5] + modl[6] * proj[9] + modl[7] * proj[13];
-	clip[6] = modl[4] * proj[2] + modl[5] * proj[6] + modl[6] * proj[10] + modl[7] * proj[14];
-	clip[7] = modl[4] * proj[3] + modl[5] * proj[7] + modl[6] * proj[11] + modl[7] * proj[15];
-
-	clip[8] = modl[8] * proj[0] + modl[9] * proj[4] + modl[10] * proj[8] + modl[11] * proj[12];
-	clip[9] = modl[8] * proj[1] + modl[9] * proj[5] + modl[10] * proj[9] + modl[11] * proj[13];
-	clip[10] = modl[8] * proj[2] + modl[9] * proj[6] + modl[10] * proj[10] + modl[11] * proj[14];
-	clip[11] = modl[8] * proj[3] + modl[9] * proj[7] + modl[10] * proj[11] + modl[11] * proj[15];
-
-	clip[12] = modl[12] * proj[0] + modl[13] * proj[4] + modl[14] * proj[8] + modl[15] * proj[12];
-	clip[13] = modl[12] * proj[1] + modl[13] * proj[5] + modl[14] * proj[9] + modl[15] * proj[13];
-	clip[14] = modl[12] * proj[2] + modl[13] * proj[6] + modl[14] * proj[10] + modl[15] * proj[14];
-	clip[15] = modl[12] * proj[3] + modl[13] * proj[7] + modl[14] * proj[11] + modl[15] * proj[15];
-
-	frustum_planes[RIGHT][A] = clip[3] - clip[0];
-	frustum_planes[RIGHT][B] = clip[7] - clip[4];
-	frustum_planes[RIGHT][C] = clip[11] - clip[8];
-	frustum_planes[RIGHT][D] = clip[15] - clip[12];
-	NormalizePlane(frustum_planes[RIGHT]);
-
-	frustum_planes[LEFT][A] = clip[3] + clip[0];
-	frustum_planes[LEFT][B] = clip[7] + clip[4];
-	frustum_planes[LEFT][C] = clip[11] + clip[8];
-	frustum_planes[LEFT][D] = clip[15] + clip[12];
-	NormalizePlane(frustum_planes[LEFT]);
-
-	frustum_planes[BOTTOM][A] = clip[3] + clip[1];
-	frustum_planes[BOTTOM][B] = clip[7] + clip[5];
-	frustum_planes[BOTTOM][C] = clip[11] + clip[9];
-	frustum_planes[BOTTOM][D] = clip[15] + clip[13];
-	NormalizePlane(frustum_planes[BOTTOM]);
-
-	frustum_planes[TOP][A] = clip[3] - clip[1];
-	frustum_planes[TOP][B] = clip[7] - clip[5];
-	frustum_planes[TOP][C] = clip[11] - clip[9];
-	frustum_planes[TOP][D] = clip[15] - clip[13];
-	NormalizePlane(frustum_planes[TOP]);
-
-	frustum_planes[BACK][A] = clip[3] - clip[2];
-	frustum_planes[BACK][B] = clip[7] - clip[6];
-	frustum_planes[BACK][C] = clip[11] - clip[10];
-	frustum_planes[BACK][D] = clip[15] - clip[14];
-	NormalizePlane(frustum_planes[BACK]);
-
-	frustum_planes[FRONT][A] = clip[3] + clip[2];
-	frustum_planes[FRONT][B] = clip[7] + clip[6];
-	frustum_planes[FRONT][C] = clip[11] + clip[10];
-	frustum_planes[FRONT][D] = clip[15] + clip[14];
-	NormalizePlane(frustum_planes[FRONT]);
-}
-// Creates a frustum based on current OpenGL matrices
-Frustum::Frustum(glm::mat4 proj_matrix, glm::mat4 view_matrix)
-{
-    SettingFrustum(proj_matrix, view_matrix);
-
+	//move corners of the near plane
+	this->na = (space*vec4(na, 0));
+	this->nb = (space*vec4(nb, 0));
+	this->nc = (space*vec4(nc, 0));
+	this->nd = (space*vec4(nd, 0));
+	//move corners of the far plane
+	this->fa = (space*vec4(fa, 0));
+	this->fb = (space*vec4(fb, 0));
+	this->fc = (space*vec4(fc, 0));
+	this->fd = (space*vec4(fd, 0));
 }
 
-// Calculates the closest distance from a given point to a given clipping plane
-double Frustum::CalculateDistanceToPlane(const int plane, const glm::vec3 &point) const
+Frustum::Frustum()
 {
-  // Return the point-to-plane distance
-  return frustum_planes[plane].x * point.x + frustum_planes[plane].y * point.y + frustum_planes[plane].z * point.z + frustum_planes[plane].w;
+	this->m_Corners = FrustumCorners();
+}
+Frustum::~Frustum()
+{
 }
 
-void Frustum::NormalizePlane(glm::vec4 &frustum_plane)
+//create transforms to prevent transforming every triangle into world space
+void Frustum::SetCullTransform(mat4 objectWorld)
 {
-	float magnitude = (float)sqrt(frustum_plane[A] * frustum_plane[A] + frustum_plane[B] * frustum_plane[B] + frustum_plane[C] * frustum_plane[C]);
-	frustum_plane[A] /= magnitude;
-	frustum_plane[B] /= magnitude;
-	frustum_plane[C] /= magnitude;
-	frustum_plane[D] /= magnitude;
+	m_CullWorld = objectWorld;
+	m_CullInverse = glm::inverse(objectWorld);
 }
 
-
-// Determines whether a given sphere is inside the frustum
-int Frustum::ContainsSphere(const glm::vec3 &position, const double radius) const
-{
-  // Plane counter
-  int planeCount = 0;
-
-  // Use the point-to-plane distance to calculate the number of planes the sphere is in front of
-  for (unsigned int i = 0; i < 6; i++)
-  {
-    const double distance = CalculateDistanceToPlane(i, position);
-    if (distance <= -radius)
-      return OUTSIDE;
-    else if (distance > radius)
-      planeCount++;
-  }
-
-  // Return inside if in front of all planes; otherwise intersecting
-  return planeCount == 6 ? INSIDE : INTERSECTING;
+void Frustum::SetToCamera(CameraComponent* pCamera)
+{/*
+	m_Position = pCamera->GetTransform()->GetPosition();
+	m_Forward = pCamera->GetTransform()->GetForward();
+	m_Up = pCamera->GetTransform()->GetUp();
+	m_Right = pCamera->GetTransform()->GetRight();
+	m_NearPlane = pCamera->GetNearPlane();
+	m_FarPlane = pCamera->GetFarPlane();
+	m_FOV = pCamera->GetFOV();*/
 }
 
-bool Frustum::ContainsPoint(const glm::vec3 &point) const
-{
-  // For each plane; return outside if the point is behind the plane
-  for (unsigned int i = 0; i < 6; i++)
-    if (CalculateDistanceToPlane(i, point) <= 0.0)
-      return OUTSIDE;
+void Frustum::Update()
+{/*
+	//calculate generalized relative width and aspect ratio
+	float normHalfWidth = glm::tan(glm::radians(m_FOV));
+	float aspectRatio = WINDOW.GetAspectRatio();
 
-  // Return inside
-  return INSIDE;
+	//calculate width and height for near and far plane
+	float nearHW = normHalfWidth*m_NearPlane;
+	float nearHH = nearHW / aspectRatio;
+	float farHW = normHalfWidth*m_FarPlane;// *0.5f;
+	float farHH = farHW / aspectRatio;
+
+	//calculate near and far plane centers
+	auto nCenter = m_Position + m_Forward*m_NearPlane;
+	auto fCenter = m_Position + m_Forward*m_FarPlane *0.5f;
+
+	//construct corners of the near plane in the culled objects world space
+	m_Corners.na = nCenter + m_Up*nearHH - m_Right*nearHW;
+	m_Corners.nb = nCenter + m_Up*nearHH + m_Right*nearHW;
+	m_Corners.nc = nCenter - m_Up*nearHH - m_Right*nearHW;
+	m_Corners.nd = nCenter - m_Up*nearHH + m_Right*nearHW;
+	//construct corners of the far plane
+	m_Corners.fa = fCenter + m_Up*farHH - m_Right*farHW;
+	m_Corners.fb = fCenter + m_Up*farHH + m_Right*farHW;
+	m_Corners.fc = fCenter - m_Up*farHH - m_Right*farHW;
+	m_Corners.fd = fCenter - m_Up*farHH + m_Right*farHW;
+
+	//float yFac = tanf( radians(m_FOV) / 2 );
+	//float xFac = yFac*WINDOW.GetAspectRatio();
+	//vec3 nCenter = m_Position + m_Forward*m_NearPlane;
+	//vec3 fCenter = m_Position + m_Forward*m_FarPlane;
+	//vec3 nearHW = m_Right*m_FarPlane*xFac;
+	//vec3 nearHH = m_Up*m_FarPlane*yFac;
+	//vec3 farHW = m_Right*m_FarPlane*xFac;
+	//vec3 farHH = m_Up*m_FarPlane*yFac;
+
+	////construct corners of the near plane in the culled objects world space
+	//m_Corners.na = nCenter + nearHH - nearHW;
+	//m_Corners.nb = nCenter + nearHH + nearHW;
+	//m_Corners.nc = nCenter - nearHH - nearHW;
+	//m_Corners.nd = nCenter - nearHH + nearHW;
+	////construct corners of the far plane
+	//m_Corners.fa = fCenter + farHH - farHW;
+	//m_Corners.fb = fCenter + farHH + farHW;
+	//m_Corners.fc = fCenter - farHH - farHW;
+	//m_Corners.fd = fCenter - farHH + farHW;
+	m_Corners.Transform(m_CullInverse);
+
+	m_PositionObject = (m_CullInverse*vec4(m_Position, 0)).xyz;
+	m_RadInvFOV = 1 / radians(m_FOV);
+
+	//construct planes
+	m_Planes.clear();
+	//winding in an outside perspective so the cross product creates normals pointing inward
+	m_Planes.push_back(Plane(m_Corners.na, m_Corners.nb, m_Corners.nc));//Near
+	m_Planes.push_back(Plane(m_Corners.fb, m_Corners.fa, m_Corners.fd));//Far
+	m_Planes.push_back(Plane(m_Corners.fa, m_Corners.na, m_Corners.fc));//Left
+	m_Planes.push_back(Plane(m_Corners.nb, m_Corners.fb, m_Corners.nd));//Right
+	m_Planes.push_back(Plane(m_Corners.fa, m_Corners.fb, m_Corners.na));//Top
+	m_Planes.push_back(Plane(m_Corners.nc, m_Corners.nd, m_Corners.fc));//Bottom*/
 }
 
-void Frustum::Update(glm::mat4 proj_matrix, glm::mat4 view_matrix){
-    SettingFrustum(proj_matrix, view_matrix);
+VolumeCheck Frustum::ContainsPoint(const vec3 &point) const
+{
+	for (auto plane : m_Planes)
+	{
+		if (dot(plane.n, point - plane.d) < 0)return VolumeCheck::OUTSIDE;
+	}
+	return VolumeCheck::CONTAINS;
+}
+VolumeCheck Frustum::ContainsSphere(const Sphere &sphere) const
+{
+	VolumeCheck ret = VolumeCheck::CONTAINS;
+	for (auto plane : m_Planes)
+	{
+		float dist = dot(plane.n, sphere.pos - plane.d);
+		if (dist < -sphere.radius)return VolumeCheck::OUTSIDE;
+		else if (dist < 0) ret = VolumeCheck::INTERSECT;
+	}
+	return ret;
+}
+//this method will treat triangles as intersecting even though they may be outside
+//but it is faster then performing a proper intersection test with every plane
+//and it does not reject triangles that are inside but with all corners outside
+VolumeCheck Frustum::ContainsTriangle(vec3 &a, vec3 &b, vec3 &c)
+{
+	VolumeCheck ret = VolumeCheck::CONTAINS;
+	for (auto plane : m_Planes)
+	{
+		char rejects = 0;
+		if (dot(plane.n, a - plane.d) < 0)rejects++;
+		if (dot(plane.n, b - plane.d) < 0)rejects++;
+		if (dot(plane.n, c - plane.d) < 0)rejects++;
+		// if all three are outside a plane the triangle is outside the frustrum
+		if (rejects >= 3)return VolumeCheck::OUTSIDE;
+		// if at least one is outside the triangle intersects at least one plane
+		else if (rejects > 0)ret = VolumeCheck::INTERSECT;
+	}
+	return ret;
+}
+
+VolumeCheck Frustum::ContainsTriangleByIndex(const GLuint a, const GLuint b, const GLuint c)
+{
+	VolumeCheck ret = VolumeCheck::CONTAINS;
+	for (auto plane : m_Planes)
+	{
+		char rejects = 0;
+		if (dot(plane.n, QuadTree::verts.lookupIndexRequired(a) - plane.d) < 0)rejects++;
+		if (dot(plane.n, QuadTree::verts.lookupIndexRequired(b) - plane.d) < 0)rejects++;
+		if (dot(plane.n, QuadTree::verts.lookupIndexRequired(c) - plane.d) < 0)rejects++;
+		// if all three are outside a plane the triangle is outside the frustrum
+		if (rejects >= 3)return VolumeCheck::OUTSIDE;
+		// if at least one is outside the triangle intersects at least one plane
+		else if (rejects > 0)ret = VolumeCheck::INTERSECT;
+	}
+	return ret;
+}
+//same as above but with a volume generated above the triangle
+VolumeCheck Frustum::ContainsTriVolume(vec3 &a, vec3 &b, vec3 &c, float height)
+{
+	VolumeCheck ret = VolumeCheck::CONTAINS;
+	for (auto plane : m_Planes)
+	{
+		char rejects = 0;
+		if (dot(plane.n, a - plane.d) < 0)rejects++;
+		if (dot(plane.n, b - plane.d) < 0)rejects++;
+		if (dot(plane.n, c - plane.d) < 0)rejects++;
+		// if all three are outside a plane the triangle is outside the frustrum
+		if (rejects >= 3)
+		{
+			if (dot(plane.n, (a*height) - plane.d) < 0)rejects++;
+			if (dot(plane.n, (b*height) - plane.d) < 0)rejects++;
+			if (dot(plane.n, (c*height) - plane.d) < 0)rejects++;
+			if (rejects >= 6)return VolumeCheck::OUTSIDE;
+			else ret = VolumeCheck::INTERSECT;
+		}
+		// if at least one is outside the triangle intersects at least one plane
+		else if (rejects > 0)ret = VolumeCheck::INTERSECT;
+	}
+	return ret;
 }

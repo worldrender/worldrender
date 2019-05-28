@@ -51,11 +51,12 @@ float fbm( in vec3 p, int octaves=16, float gain=1, float amplitude=0.93753125f,
 }
 
 uniform float radius;
+uniform float scale=0.f;
 in vec3 vertex;
 
 void main() {
   vec3 sphereCoord = normalize(vertex);
-	sphereCoord = mix(vertex, sphereCoord*radius, 1)*100;
+	sphereCoord = mix(vertex, sphereCoord*radius, 1)*scale;
 
   outValue.vertex = sphereCoord;
   outValue.noiseValue = fbm(sphereCoord);

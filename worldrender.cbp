@@ -85,13 +85,16 @@
 		<Unit filename="NoiseFeedback.cpp" />
 		<Unit filename="Planet.cpp" />
 		<Unit filename="QuadTree.cpp" />
+		<Unit filename="Transformation.cpp" />
 		<Unit filename="include/Camera.hpp" />
 		<Unit filename="include/Frustum.hpp" />
 		<Unit filename="include/LoadShaders.hpp" />
 		<Unit filename="include/NoiseFeedback.hpp" />
 		<Unit filename="include/Planet.hpp" />
 		<Unit filename="include/QuadTree.hpp" />
+		<Unit filename="include/QuadTreeProcedurus.h" />
 		<Unit filename="include/Textures.hpp" />
+		<Unit filename="include/Transformation.hpp" />
 		<Unit filename="include/Utils.hpp" />
 		<Unit filename="include/Verts.hpp" />
 		<Unit filename="include/shader.hpp" />

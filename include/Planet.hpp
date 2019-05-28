@@ -1,5 +1,5 @@
-#ifndef PLANET_H_
-#define PLANET_H_
+#ifndef PLANET_HPP_
+#define PLANET_HPP_
 
 #include <iostream>
 #include <glm/glm.hpp>

@@ -84,7 +84,7 @@ QuadTree::~QuadTree() = default;
  * When it will finish, each calculated vertex is added on vertex list and is created four new quads and it will mark the parameter "quad->split" true;
  */
 
-void QuadTree::split(Frustum frustumP)
+void QuadTree::split()
 {
   if(this->quad->split)
     return;
@@ -101,42 +101,16 @@ void QuadTree::split(Frustum frustumP)
   GLuint wIndex;
   GLuint cIndex;
 
-  bool n = false,e = false, s= false, w= false, c= false;
-  if(frustumP.ContainsPoint(Center)){
-    n=e=s=w=c=true;
-  }
-  if(frustumP.ContainsPoint(North)){
-    n=e=w=c=true;
-  }
-  if(frustumP.ContainsPoint(South)){
-    s=e=w=c=true;
-  }
-  if(frustumP.ContainsPoint(West)){
-    w=n=s=c=true;
-  }
-  if(frustumP.ContainsPoint(East)){
-    e=n=s=c=true;
-  }
+  nIndex = QuadTree::verts.addVertex(North).index;
+  eIndex = QuadTree::verts.addVertex(East).index;
+  sIndex = QuadTree::verts.addVertex(South).index;
+  wIndex = QuadTree::verts.addVertex(West).index;
+  cIndex = QuadTree::verts.addVertex(Center).index;
 
-  if(n)
-    nIndex = QuadTree::verts.addVertex(North).index;
-  if(e)
-    eIndex = QuadTree::verts.addVertex(East).index;
-  if(s)
-    sIndex = QuadTree::verts.addVertex(South).index;
-  if(w)
-    wIndex = QuadTree::verts.addVertex(West).index;
-  if(c)
-   cIndex = QuadTree::verts.addVertex(Center).index;
-
-  if(n || w)
-    this->nw = std::make_unique<QuadTree>(std::make_unique<Quad>(this->quad->c0, nIndex, cIndex, wIndex),this);
-  if(n || e)
-    this->ne = std::make_unique<QuadTree>(std::make_unique<Quad>(nIndex,this->quad->c1,eIndex,cIndex),this);
-  if(s || e)
-    this->se = std::make_unique<QuadTree>(std::make_unique<Quad>(cIndex,eIndex,this->quad->c2,sIndex),this);
-  if(s || w)
-    this->sw = std::make_unique<QuadTree>(std::make_unique<Quad>(wIndex,cIndex,sIndex,this->quad->c3),this);
+  this->nw = std::make_unique<QuadTree>(std::make_unique<Quad>(this->quad->c0, nIndex, cIndex, wIndex),this);
+  this->ne = std::make_unique<QuadTree>(std::make_unique<Quad>(nIndex,this->quad->c1,eIndex,cIndex),this);
+  this->se = std::make_unique<QuadTree>(std::make_unique<Quad>(cIndex,eIndex,this->quad->c2,sIndex),this);
+  this->sw = std::make_unique<QuadTree>(std::make_unique<Quad>(wIndex,cIndex,sIndex,this->quad->c3),this);
 
   this->quad->split = true;
 }
@@ -166,7 +140,7 @@ void QuadTree::triangulator(){
 /**
  * This method splits for each quad on quadtree list.
  */
-void QuadTree::verticalSplit(GLuint lod, Frustum frustumP){
+void QuadTree::verticalSplit(GLuint lod){
   vector<QuadTree*> tmp;
   for(GLuint i=0;i<lod;i++)
   {
@@ -175,7 +149,7 @@ void QuadTree::verticalSplit(GLuint lod, Frustum frustumP){
     GLuint boundary=tmp.size();
     for(GLuint j=0;j<boundary;j++)
     {
-      tmp[j]->split(frustumP);
+      tmp[j]->split();
     }
 
   }

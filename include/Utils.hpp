@@ -7,6 +7,7 @@
 #include <GL/gl.h>
 
 #define RADIUS 7.f
+#define SCALE 100.f
 #define LODVALUE 5 //safe number is 6
 #define PositionSlot 0u
 #define WIDTH 1280u

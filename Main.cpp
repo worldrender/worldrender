@@ -13,7 +13,6 @@
 #include "include/Textures.hpp"
 #include "include/Camera.hpp"
 #include "include/Utils.hpp"
-#include "include/Frustum.hpp"
 #include <chrono>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -37,13 +36,7 @@ unsigned int skyboxVAO, skyboxVBO, cubemapTexture;
 GLuint planetShader, skyboxShader, activeShader, transformFeedbackShader, cullingShader;
 int enableTess = 0;
 
-
-
 Camera planetCamera(glm::vec3(-120.f, 780.f, 0.0f));
-glm::mat4 ProjectionMatrix = planetCamera.getProjectionMatrix(WIDTH, HEIGHT);
-glm::mat4 ViewMatrix = planetCamera.getViewMatrix();
-glm::mat4 ModelMatrix = glm::mat4(1.0);
-Frustum frustumP(ProjectionMatrix, ViewMatrix);
 
 int main(int argv, char ** argc) {
   init();
@@ -194,7 +187,7 @@ void createPlanet() {
 
   planet = new Planet(v0, v1, v2, v3, v4, v5, v6, v7, RADIUS);
 
-  QuadTree::verticalSplit(LODVALUE, frustumP);
+  QuadTree::verticalSplit(LODVALUE);
 
   feedbackBuffer();
 
@@ -255,11 +248,10 @@ void applyingTextures() {
 
 void setUniforms(float currentFrame) {
   glUseProgram(planetShader);
-//
-//  glm::mat4 ProjectionMatrix = planetCamera.getProjectionMatrix(WIDTH, HEIGHT);
-//  glm::mat4 ViewMatrix = planetCamera.getViewMatrix();
-//  glm::mat4 ModelMatrix = glm::mat4(1.0);
-  frustumP.Update(ProjectionMatrix, ViewMatrix);
+
+  glm::mat4 ProjectionMatrix = planetCamera.getProjectionMatrix(WIDTH, HEIGHT);
+  glm::mat4 ViewMatrix = planetCamera.getViewMatrix();
+  glm::mat4 ModelMatrix = glm::mat4(1.0);
   glUniform3f(glGetUniformLocation(planetShader, "viewPos"), planetCamera.Position.x, planetCamera.Position.y, planetCamera.Position.z);
 
   glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
