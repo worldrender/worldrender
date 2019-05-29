@@ -36,8 +36,6 @@ unsigned int skyboxVAO, skyboxVBO, cubemapTexture;
 GLuint planetShader, skyboxShader, activeShader, transformFeedbackShader, cullingShader;
 int enableTess = 0;
 
-Camera planetCamera(glm::vec3(-120.f, 780.f, 0.0f));
-
 int main(int argv, char ** argc) {
   init();
 
@@ -51,15 +49,14 @@ int main(int argv, char ** argc) {
     // Clear the screen
     glBindVertexArray(VertexArrayID);
 
-    float currentFrame = glfwGetTime();
-    deltaTime = currentFrame - lastFrame;
+    std::chrono::high_resolution_clock::time_point currentFrame = std::chrono::high_resolution_clock::now();
+    std::chrono::duration < float > diff = currentFrame - lastFrame;
+    deltaTime = diff.count();
     lastFrame = currentFrame;
 
+    planetCamera.Update(deltaTime);
 
-
-    planetCamera.pressButtons();
-
-    setUniforms(currentFrame);
+    setUniforms();
 
     draw();
 
@@ -116,7 +113,7 @@ void init() {
   gl::enableDepthTest();
 
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-  glfwSetCursorPosCallback(window, mouse_callback);
+  glfwSetCursorPosCallback(window, mouseCallback);
   glfwSetScrollCallback(window, scroll_callback);
 
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -186,6 +183,7 @@ void createPlanet() {
   glm::vec3 v7 = vec3(auxX, auxY, auxZ)*PLANET_SCALE;
 
   planet = new Planet(v0, v1, v2, v3, v4, v5, v6, v7, RADIUS);
+  planetCamera.SetPlanet(planet);
 
   QuadTree::verticalSplit(LODVALUE);
 
@@ -246,13 +244,15 @@ void applyingTextures() {
   }
 }
 
-void setUniforms(float currentFrame) {
+void setUniforms() {
   glUseProgram(planetShader);
 
-  glm::mat4 ProjectionMatrix = planetCamera.getProjectionMatrix(WIDTH, HEIGHT);
-  glm::mat4 ViewMatrix = planetCamera.getViewMatrix();
+  glm::mat4 ProjectionMatrix = planetCamera.GetProj();
+  glm::mat4 ViewMatrix = planetCamera.GetView();
   glm::mat4 ModelMatrix = glm::mat4(1.0);
-  glUniform3f(glGetUniformLocation(planetShader, "viewPos"), planetCamera.Position.x, planetCamera.Position.y, planetCamera.Position.z);
+  glUniform3f(glGetUniformLocation(planetShader, "viewPos"), planetCamera.GetTransform()->getPosition().x,
+                                                             planetCamera.GetTransform()->getPosition().y,
+                                                             planetCamera.GetTransform()->getPosition().z);
 
   glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
   //    glm::mat4 MVP = camera.getProjectionMatrix(WIDTH, HEIGHT) * camera.getViewMatrix() * glm::mat4(1.0);
@@ -266,7 +266,6 @@ void setUniforms(float currentFrame) {
   glUniform1i(glGetUniformLocation(planetShader, "pTexture"), 0);
   glUniform1i(glGetUniformLocation(planetShader, "dTexture"), 1);
   glUniform1i(glGetUniformLocation(planetShader, "nTexture"), 2);
-  glUniform1f(glGetUniformLocation(planetShader, "time"), currentFrame);
 }
 
 void draw() {
@@ -294,8 +293,8 @@ void draw() {
     glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
     gl::disableCullFace();
     glUseProgram(skyboxShader);
-    glm::mat4 ProjectionMatrix = planetCamera.getProjectionMatrix(WIDTH, HEIGHT);
-    glm::mat4 ViewMatrix = glm::mat4(glm::mat3(planetCamera.getViewMatrix())); // remove translation from the view matrix
+    glm::mat4 ProjectionMatrix = planetCamera.GetProj();
+    glm::mat4 ViewMatrix = glm::mat4(glm::mat3(planetCamera.GetView())); // remove translation from the view matrix
     glUniformMatrix4fv(glGetUniformLocation(skyboxShader, "view"), 1, GL_FALSE, & ViewMatrix[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(skyboxShader, "projection"), 1, GL_FALSE, & ProjectionMatrix[0][0]);
 
@@ -381,7 +380,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    planetCamera.ProcessMouseScroll(yoffset);
+    planetCamera.processMouseScroll(yoffset);
 }
 
 void CPUfbm() {

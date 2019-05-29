@@ -1620,23 +1620,24 @@
 	<glm/vec4.hpp>
 	<glm/mat2x2.hpp>
 
-1559004686 source:/home/ricardo/worldrender/Camera.cpp
+1559088419 source:/home/ricardo/worldrender/Camera.cpp
 	<glm/glm.hpp>
 	<glm/gtc/matrix_transform.hpp>
 	<GLFW/glfw3.h>
 	<vector>
 	"include/Camera.hpp"
 
-1559004785 /home/ricardo/worldrender/include/Camera.hpp
+1559087788 /home/ricardo/worldrender/include/Camera.hpp
 	<glm/glm.hpp>
 	<glm/gtc/matrix_transform.hpp>
 	<GLFW/glfw3.h>
 	<vector>
+	<chrono>
 	"Utils.hpp"
 	"Transformation.hpp"
 	"Planet.hpp"
 
-1558998952 /home/ricardo/worldrender/include/Utils.hpp
+1559087090 /home/ricardo/worldrender/include/Utils.hpp
 	<vector>
 	<string>
 	<glm/glm.hpp>
@@ -1698,7 +1699,7 @@
 	<algorithm>
 	"include/LoadShaders.hpp"
 
-1558998798 source:/home/ricardo/worldrender/Main.cpp
+1559086904 source:/home/ricardo/worldrender/Main.cpp
 	<iostream>
 	<string>
 	<cstdlib>
@@ -1883,7 +1884,7 @@
 	"include/Frustum.hpp"
 	<GL/gl.h>
 
-1559004098 /home/ricardo/worldrender/include/Transformation.hpp
+1559086822 /home/ricardo/worldrender/include/Transformation.hpp
 	<glm/gtc/quaternion.hpp>
 
 1559003077 source:/home/ricardo/worldrender/Transformation.cpp

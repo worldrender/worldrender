@@ -8,10 +8,11 @@
 
 #define RADIUS 7.f
 #define SCALE 100.f
-#define LODVALUE 5 //safe number is 6
+#define LODVALUE 8 //safe number is 6
 #define PositionSlot 0u
 #define WIDTH 1280u
 #define HEIGHT 1024u
+#define ASPECT_RATIO WIDTH/(float)HEIGHT
 #define meshSize 128
 #define PLANET_SCALE 1.f
 #define PI 3.14f
@@ -86,7 +87,7 @@ void createPlanet();
 void feedbackBuffer();
 void createBuffer();
 void applyingTextures();
-void setUniforms(float currentFrame);
+void setUniforms();
 void draw();
 void disableVertexAttribs();
 void swapBuffers();

@@ -1,13 +1,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
 #include <GLFW/glfw3.h>
-
 #include <vector>
+
 #include "include/Camera.hpp"
 // Default camera values
+#define NEWCAMERA
 
-#ifndef NEWCAMERA
 bool tIsPressed,      pIsPressed,
      cIsPressed,      plusIsPressed,
      minusIsPressed,  mIsPressed,
@@ -20,8 +19,9 @@ bool modeMouse;
 float lastX = (float)WIDTH / 2.0;
 float lastY = (float)HEIGHT / 2.0;
 float deltaTime = 0.0f;
-float lastFrame = 0.0f;
+std::chrono::high_resolution_clock::time_point lastFrame = {};
 
+#ifndef NEWCAMERA
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, 0.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 {
   this->Position = position;
@@ -66,7 +66,7 @@ void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime)
 }
 
 // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
+void Camera::Update(float xoffset, float yoffset, GLboolean constrainPitch)
 {
   xoffset *= MouseSensitivity;
   yoffset *= MouseSensitivity;
@@ -197,7 +197,189 @@ void Camera::pressButtons()
 }
 
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+#else
+
+float Camera::deltaX = 1.f;
+float Camera::deltaY = 1.f;
+
+Camera planetCamera = Camera();
+
+Camera::Camera() :
+	fov(ZOOM),
+	near(1),
+	far(200000),
+	size(25.0f),
+	isPerspective(true)
+{
+	this->Projection = glm::mat4();
+	this->View = glm::mat4();
+	this->ViewInverse = glm::mat4();
+	this->ViewProjection = glm::mat4();
+	this->ViewProjectionInverse = glm::mat4();
+
+	this->transform = new Transformation();
+	this->transform->setPosition(-120.f, 780.f, 0.0f);
+	//this->transform->setRotation(glm::rotate(this->transform->getRotation(), glm::radians(270.f), glm::vec3(0.0f, 1.0f, 0.0f)));
+}
+
+void Camera::Update(float deltaTime)
+{
+  glm::vec2 look = glm::vec2(Camera::deltaX, Camera::deltaY);
+
+    look.x *= -this->rotationSpeed;
+    look.y *= -this->rotationSpeed * deltaTime;
+
+  transform->setRotation(glm::rotate(transform->getRotation(), look.y, glm::vec3(1, 0, 0)));
+  transform->setRotation(glm::rotate(transform->getRotation(), look.x, glm::vec3(0, 1, 0)));
+
+  bool noiseIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_F ) == GLFW_PRESS);
+  if (!noise2IsPressed && noiseIsCurrentlyPressed){
+    noise = !noise;
+  }
+  noise2IsPressed = noiseIsCurrentlyPressed;
+
+  bool pos2IsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_C ) == GLFW_PRESS);
+  if (!pos2IsPressed && pos2IsCurrentlyPressed){
+    CPUnoise = !CPUnoise;
+  }
+  pos2IsPressed = pos2IsCurrentlyPressed;
+
+  bool mIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_M ) == GLFW_PRESS);
+  if (!mIsPressed && mIsCurrentlyPressed){
+    modeMouse = !modeMouse;
+    if(modeMouse){
+      glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+      glfwMakeContextCurrent(0);
+      glfwWaitEventsTimeout(5000);
+    }
+    else{
+      glfwMakeContextCurrent(window);
+      glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+    //glfwPollEvents();
+  }
+  mIsPressed = mIsCurrentlyPressed;
+
+  bool cIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_C ) == GLFW_PRESS);
+  if (!cIsPressed && cIsCurrentlyPressed){
+    enableCull = !enableCull;
+    if(enableCull)
+      gl::enableCullFace();
+    else
+      gl::disableCullFace();
+  }
+  cIsPressed = cIsCurrentlyPressed;
+
+  bool tIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_T ) == GLFW_PRESS &&
+                !(glfwGetKey( window, GLFW_KEY_RIGHT_SHIFT ) == GLFW_PRESS || glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS));
+  if (!tIsPressed && tIsCurrentlyPressed){
+    enableTess = (enableTess+1)%3;
+  }
+  tIsPressed = tIsCurrentlyPressed;
+
+  bool pIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_T ) == GLFW_PRESS &&
+                (glfwGetKey( window, GLFW_KEY_RIGHT_SHIFT ) == GLFW_PRESS || glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS));
+  if (!pIsPressed && pIsCurrentlyPressed){
+    enablePolygon = !enablePolygon;
+    if(enablePolygon)
+      gl::polygonModeFBFill();
+    else
+    {
+      gl::polygonModeFBLine();
+    }
+
+  }
+  pIsPressed = pIsCurrentlyPressed;
+
+  bool pDownIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_PAGE_DOWN ) == GLFW_PRESS);
+  if (!pDownIsPressed && pDownIsCurrentlyPressed){
+    float sp = this->speed/2;
+    if(sp<0.4)
+      sp = 0.4;
+    this->speed = sp;
+  }
+  pDownIsPressed = pDownIsCurrentlyPressed;
+
+  bool pUpIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_PAGE_UP ) == GLFW_PRESS);
+  if (!pUpIsPressed && pUpIsCurrentlyPressed){
+    float sp = this->speed*1.5;
+    if(sp>600)
+      sp = 600;
+    this->speed = sp;
+
+  }
+  pUpIsPressed = pUpIsCurrentlyPressed;
+
+  if ((glfwGetKey( window, GLFW_KEY_KP_4 ) == GLFW_PRESS)&&this->fov<110)
+  {
+    this->fov += 30.f * deltaTime;
+  }
+  if (glfwGetKey( window, GLFW_KEY_KP_6 ) == GLFW_PRESS&&this->fov>5)
+    this->fov -= 30.f * deltaTime;
+  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    this->altitude -= ((this->altitude*2.0f) - this->altitude)*deltaTime*speed;
+  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    this->altitude += ((this->altitude*2.0f) - this->altitude)*deltaTime*speed;
+
+  float deltaLong = this->longitude;
+
+  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    this->longitude -= 0.5f*deltaTime;
+  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    this->longitude += 0.5f*deltaTime;
+
+  deltaLong -= this->longitude;
+  transform->setRotation(glm::rotate(transform->getRotation(), deltaLong, glm::vec3(0, 1, 0)));
+
+	float dist = this->altitude + planet->getRadius();
+
+	GLfloat pLength = fAbs(glm::length(this->transform->getPosition()));
+
+	this->far = (1000.0f*pLength);
+	this->near = (0.1f+pLength)/pLength;
+
+	this->transform->setPosition(sin(this->longitude)*dist, 0, -cos(this->longitude)*dist);
+	this->transform->update();
+
+	if (isPerspective)
+	{
+		Projection = glm::perspectiveLH(glm::radians(fov),
+			(float)WIDTH / (float)HEIGHT, near, far);
+	}
+	else
+	{
+		float viewWidth = (this->size>0) ? this->size * ASPECT_RATIO : WIDTH;
+		float viewHeight = (this->size>0) ? this->size : HEIGHT;
+		Projection = glm::ortho(0.f, viewWidth, viewHeight, 0.f, near, far);
+	}
+
+	glm::vec3 worldPos = transform->getPosition();
+	glm::vec3 lookAt = worldPos + transform->getForward();
+	glm::vec3 upVec = transform->getUp();// glm::vec3(0, 1, 0);//
+	View = glm::lookAtLH(worldPos, lookAt, upVec);
+
+	ViewInverse = glm::inverse(View);
+	ViewProjection = Projection*View;
+	ViewProjectionInverse = glm::inverse(ViewProjection);
+}
+
+Camera::~Camera()
+{
+	delete this->transform;
+}
+
+void Camera::processMouseScroll(float yoffset)
+{
+  if (this->fov >= 5.0f && this->fov <= 110.0f)
+    this->fov -= yoffset;
+  if (this->fov <= 5.0f)
+    this->fov = 5.0f;
+  if (this->fov >= 110.0f)
+    this->fov = 110.0f;
+}
+#endif
+
+void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
     if (firstMouse)
     {
@@ -209,111 +391,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     float xoffset = xpos - lastX;
     float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
 
-    lastX = xpos;
-    lastY = ypos;
+    Camera::deltaX = xoffset;
+    Camera::deltaY = yoffset;
 
-    planetCamera.ProcessMouseMovement(xoffset, yoffset);
+    planetCamera.Update(deltaTime);
 }
-
-#else
-Camera::Camera() :
-	this->fov(45),
-	this->near(1),
-	this->far(200000),
-	this->size(25.0f),
-	this->isPerspective(true)
-{
-	this->Projection = glm::mat4();
-	this->View = glm::mat4();
-	this->ViewInverse = glm::mat4();
-	this->ViewProjection = glm::mat4();
-	this->ViewProjectionInverse = glm::mat4();
-
-	this->transform = new Transformation();
-	this->transform->setPosition(0, 0, -6);
-}
-
-void Camera::Update()
-{
-	this->hasMoved = false;
-	if (INPUT->IsMouseButtonDown(1))
-	{
-		glm::vec2 look = INPUT->GetMouseMovement();
-		look.x *= -m_RotationSpeed * TIME->DeltaTime();
-		look.y *= -m_RotationSpeed * TIME->DeltaTime();
-		m_pTransform->SetRotation(glm::rotate(m_pTransform->GetRotation(), look.y, glm::vec3(1, 0, 0)));
-		m_pTransform->SetRotation(glm::rotate(m_pTransform->GetRotation(), look.x, glm::vec3(0, 1, 0)));
-	}
-	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_4)&&m_FOV<110)
-	{
-		m_FOV += 30.f * TIME->DeltaTime();
-		m_Moved = true;
-	}
-	if (INPUT->IsKeyboardKeyDown(SDL_SCANCODE_KP_6)&&m_FOV>5)
-	{
-		m_FOV -= 30.f * TIME->DeltaTime();
-		m_Moved = true;
-	}
-	if (INPUT->IsKeyboardKeyDown('w'))
-	{
-		m_Altitude -= ((m_Altitude*2.0f) - m_Altitude)*TIME->DeltaTime();
-		m_Moved = true;
-	}
-	if (INPUT->IsKeyboardKeyDown('s'))
-	{
-		m_Altitude += ((m_Altitude*2.0f) - m_Altitude)*TIME->DeltaTime();
-		m_Moved = true;
-	}
-	float deltaLong = m_Longitude;
-	if (INPUT->IsKeyboardKeyDown('a'))
-	{
-		m_Longitude -= 0.5f*TIME->DeltaTime();
-		m_Moved = true;
-	}
-	if (INPUT->IsKeyboardKeyDown('d'))
-	{
-		m_Longitude += 0.5f * TIME->DeltaTime();
-		m_Moved = true;
-	}
-	deltaLong -= m_Longitude;
-	m_pTransform->SetRotation(glm::rotate(m_pTransform->GetRotation(), deltaLong, glm::vec3(0, 1, 0)));
-
-	float dist = m_pPlanet->GetRadius() + m_Altitude;
-	//std::cout << "Altitude (earth): " << (dist - m_pPlanet->GetRadius()) * (6371.f / m_pPlanet->GetRadius()) << std::endl;
-
-	//Calculate far plane based on planet
-	m_FarPlane = sqrtf(powf(m_pPlanet->GetRadius() + m_Altitude, 2) - powf(m_pPlanet->GetRadius(), 2)) +
-		sqrtf(powf(m_pPlanet->GetRadius() + m_pPlanet->GetMaxHeight(), 2) - powf(m_pPlanet->GetRadius(), 2));
-	m_NearPlane = m_FarPlane*0.000003f;
-
-	m_pTransform->SetPosition(sin(m_Longitude)*dist, 0, -cos(m_Longitude)*dist);
-
-	m_pTransform->UpdateTransforms();
-
-	if (m_PerspectiveProjection)
-	{
-		m_Projection = glm::perspectiveLH(glm::radians(m_FOV),
-			(float)(WINDOW.Width) / (float)WINDOW.Height, m_NearPlane, m_FarPlane);
-	}
-	else
-	{
-		float viewWidth = (m_Size>0) ? m_Size * WINDOW.AspectRatio : WINDOW.Width;
-		float viewHeight = (m_Size>0) ? m_Size : WINDOW.Height;
-		m_Projection = glm::ortho(0.f, viewWidth, viewHeight, 0.f, m_NearPlane, m_FarPlane);
-	}
-
-	glm::vec3 worldPos = m_pTransform->GetPosition();
-	glm::vec3 lookAt = worldPos + m_pTransform->GetForward();
-	glm::vec3 upVec = m_pTransform->GetUp();// glm::vec3(0, 1, 0);//
-	m_View = glm::lookAtLH(worldPos, lookAt, upVec);
-
-	m_ViewInverse = glm::inverse(m_View);
-	m_ViewProjection = m_Projection*m_View;
-	m_ViewProjectionInverse = glm::inverse(m_ViewProjection);
-}
-
-Camera::~Camera()
-{
-	SafeDelete(m_pTransform);
-}
-#endif

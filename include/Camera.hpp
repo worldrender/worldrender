@@ -3,10 +3,10 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
 #include <GLFW/glfw3.h>
-
 #include <vector>
+#include <chrono>
+
 #include "Utils.hpp"
 #include "Transformation.hpp"
 #include "Planet.hpp"
@@ -33,8 +33,9 @@ extern GLFWwindow* window;
 extern float lastX;
 extern float lastY;
 extern float deltaTime;
-extern float lastFrame;
+extern std::chrono::high_resolution_clock::time_point lastFrame;
 
+#define NEWCAMERA
 #ifndef NEWCAMERA
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
@@ -75,7 +76,7 @@ public:
     glm::mat4 getViewMatrix();
     glm::mat4 getProjectionMatrix(int SCR_WIDTH, int SCR_HEIGHT);
     void ProcessKeyboard(Camera_Movement direction, float deltaTime);
-    void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
+    void Update(float xoffset, float yoffset, GLboolean constrainPitch = true);
     void ProcessMouseScroll(float yoffset);
     void pressButtons();
 
@@ -97,12 +98,11 @@ private:
 
 extern Camera planetCamera;
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+
 
 #else
-
 class Camera
 {
 public:
@@ -117,7 +117,7 @@ public:
 	void UsePerspectiveProjection()       { this->isPerspective = true; }
 	void UseOrthographicProjection()      { this->isPerspective = false; }
 
-	void Update(float xoffset, float yoffset);
+	void Update(float deltaTime);
 
 	glm::mat4 GetView()                   { return this->View; }
 	glm::mat4 GetProj()                   { return this->Projection; }
@@ -127,27 +127,32 @@ public:
 	float GetFOV()                        { return this->fov; }
 	float GetFarPlane()                   { return this->far; }
 	float GetNearPlane()                  { return this->near; }
+	void processMouseScroll(float yoffset);
 
 	void SetPlanet(Planet *planet)        { this->planet = planet; }
-	bool HasMoved()                       { return this->hasMoved; }
+
 	Transformation* GetTransform()        { return this->transform; }
 
 	float GetAltitude()                   { return this->altitude; }
 
+  static float deltaX;
+	static float deltaY;
+
 private:
 
 	Planet *planet = nullptr;
-	float altitude = 10000.
-        latitude = 0.
-	      longitude = 0.
+	float altitude = SCALE,
+        latitude = 0.f,
+	      longitude = 0.f,
 	      rotationSpeed = 0.5f,
+	      speed = SPEED,
 
 	      far,
 	      near,
 	      fov,
 	      size;
+
 	Transformation *transform = nullptr;
-	bool m_Moved = true;
 
 	//Camera projection
 	glm::mat4 View,
@@ -155,9 +160,14 @@ private:
 	         	ViewInverse,
 		        ViewProjection,
 		        ViewProjectionInverse;
-	bool isPerspective,
-       hasMoved;
+	bool isPerspective;
 };
+
+extern Camera planetCamera;
 #endif // NEWCAMERA
+
+void mouseCallback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 #endif
 

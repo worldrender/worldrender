@@ -20,7 +20,7 @@ public:
 	void Rotate(glm::quat rotation)             { this->rotation *= rotation; }
 	void Rotate(glm::vec3 euler)                { this->rotation *= glm::quat(euler); }
 	void setScale(glm::vec3 scaleVector)        { this->scaleVector = scaleVector; }
-	void plusScale(glm::vec3 scaleVector)           { this->scaleVector *= scaleVector; }
+	void plusScale(glm::vec3 scaleVector)       { this->scaleVector *= scaleVector; }
 
 	const glm::mat4& getTransformation() const  { return this->transformMatrix; }
 	const glm::vec3& getPosition() const        { return this->pos; }
