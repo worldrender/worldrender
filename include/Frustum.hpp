@@ -8,7 +8,7 @@
 using std::vector;
 using namespace glm;
 
-class CameraComponent;
+class Camera;
 
 struct Plane
 {
@@ -79,7 +79,7 @@ public:
 
 	void Update();
 
-	void SetToCamera(CameraComponent* pCamera);
+	void SetToCamera(Camera* pCamera);
 	void SetCullTransform(mat4 objectWorld);
 
 	VolumeCheck ContainsPoint(const vec3 &point) const;

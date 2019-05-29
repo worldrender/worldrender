@@ -30,7 +30,6 @@ uniform sampler2D nTexture;
 
 uniform mat4 model;
 uniform vec3 viewPos;
-uniform float time;
 uniform float radius;
 
 uniform vec3 lightDir = vec3(-1, -0.3, 1);
@@ -71,12 +70,6 @@ vec3 dirLighting(vec3 dif, vec3 norm)
 float height(vec2 uv)
 {
   return texture(pTexture, uv).r*maxHeight;
-}
-vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
-{
-    float height =  texture(nTexture, texCoords).r;
-    vec2 p = viewDir.xy / viewDir.z * (height * maxHeight);
-    return texCoords - p;
 }
 
 float map2( in vec3 p )
@@ -139,11 +132,11 @@ vec3 setup_lights(
 	vec3 diff = diffuse;
 
 	// key light
-	vec3 c_L = vec3(7, 5, 3);
+	vec3 c_L = vec3(7.1111f, 5.2222f, 3.3333f);
 	diff += max(0., dot(L, normal)) * c_L;
 
 	// fill light 1 - faked hemisphere
-	float hemi = clamp(.25 + .5 * normal.y, .0, 1.);
+	float hemi = clamp(.255555 + .55555 * normal.y, .0, 1.);
 	diff += hemi * vec3(.4, .6, .8) * .2;
 
 	// fill light 2 - ambient (reversed key)
@@ -154,7 +147,7 @@ vec3 setup_lights(
 }
 
 void main() {
-  float hNoise = (vNoise)/1.3;
+  float hNoise = (vNoise)/2;
   vec3 normal = normalize(vcNormal);
   vec3 fragPos = vec3(model*vec4(vcPos,1.0f));
 
@@ -188,11 +181,11 @@ void main() {
 		smoothstep(0., l_water, hNoise));
 
 	vec3 L = mat3(1.f) * normalize(lightDir);
-	shoreline *= setup_lights(L, w_normal);
-	vec3 ocean = setup_lights(L, w_normal) * water;
+	shoreline *= setup_lights(L, w_normal*hL);
+	vec3 ocean = setup_lights(L, w_normal*hL) * water;
 
   col = mix(ocean, shoreline,	smoothstep(l_water, l_shore, hNoise));
-  col *= 0.888;
+  col *= 1;
   fColor = vec4(col,1.f);
 
   vec3 ref = reflect( viewPos, w_normal );
@@ -219,13 +212,14 @@ void main() {
   lin += dif*vec3(7.00,5.00,3.00)*1.3*vec3( sh, sh*sh*0.5+0.5*sh, sh*sh*0.8+0.2*sh );
   lin += amb*vec3(0.40,0.60,1.00)*1.2;
       lin += bac*vec3(0.40,0.50,0.60);
-  col += s*
+  col *= s*
        (0.04+0.96*pow(clamp(1.0+dot(hal,viewPos),0.0,1.0),5.0))*
        vec3(7.0,5.0,3.0)*dif*sh*
        pow( clamp(dot(normal,hal), 0.0, 1.0),16.0);
-
+  col *= col;
   fColor = vec4(mix(col,fColor.rgb,0.2666f),1);
-
+  if(fColor.x<0.05&&fColor.y<0.05&&fColor.z<0.05)
+    fColor /= 2;
   //fColor *= vec4(lin,1);
   fColor *= 1.77773;
 }

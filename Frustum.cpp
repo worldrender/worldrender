@@ -1,4 +1,6 @@
 #include "include/Frustum.hpp"
+#include "include/Camera.hpp"
+
 #include <GL/gl.h>
 
 using namespace glm;
@@ -32,15 +34,15 @@ void Frustum::SetCullTransform(mat4 objectWorld)
 	m_CullInverse = glm::inverse(objectWorld);
 }
 
-void Frustum::SetToCamera(CameraComponent* pCamera)
-{/*
-	m_Position = pCamera->GetTransform()->GetPosition();
-	m_Forward = pCamera->GetTransform()->GetForward();
-	m_Up = pCamera->GetTransform()->GetUp();
-	m_Right = pCamera->GetTransform()->GetRight();
-	m_NearPlane = pCamera->GetNearPlane();
-	m_FarPlane = pCamera->GetFarPlane();
-	m_FOV = pCamera->GetFOV();*/
+void Frustum::SetToCamera(Camera* camera)
+{
+	m_Position = camera->Position;
+	m_Forward = camera->Front;
+	m_Up = camera->Up;
+	m_Right = camera->Right;
+	m_NearPlane = camera->Near;
+	m_FarPlane = camera->Far;
+	m_FOV = camera->Zoom;
 }
 
 void Frustum::Update()

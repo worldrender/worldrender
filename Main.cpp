@@ -51,15 +51,14 @@ int main(int argv, char ** argc) {
     // Clear the screen
     glBindVertexArray(VertexArrayID);
 
-    float currentFrame = glfwGetTime();
-    deltaTime = currentFrame - lastFrame;
+    std::chrono::high_resolution_clock::time_point currentFrame = std::chrono::high_resolution_clock::now();
+    std::chrono::duration < float > diff = currentFrame - lastFrame;
+    deltaTime = diff.count();
     lastFrame = currentFrame;
-
-
 
     planetCamera.pressButtons();
 
-    setUniforms(currentFrame);
+    setUniforms();
 
     draw();
 
@@ -246,7 +245,7 @@ void applyingTextures() {
   }
 }
 
-void setUniforms(float currentFrame) {
+void setUniforms() {
   glUseProgram(planetShader);
 
   glm::mat4 ProjectionMatrix = planetCamera.getProjectionMatrix(WIDTH, HEIGHT);
@@ -266,7 +265,6 @@ void setUniforms(float currentFrame) {
   glUniform1i(glGetUniformLocation(planetShader, "pTexture"), 0);
   glUniform1i(glGetUniformLocation(planetShader, "dTexture"), 1);
   glUniform1i(glGetUniformLocation(planetShader, "nTexture"), 2);
-  glUniform1f(glGetUniformLocation(planetShader, "time"), currentFrame);
 }
 
 void draw() {

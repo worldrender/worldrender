@@ -8,7 +8,7 @@
 
 #define RADIUS 7.f
 #define SCALE 100.f
-#define LODVALUE 5 //safe number is 6
+#define LODVALUE 8 //safe number is 6
 #define PositionSlot 0u
 #define WIDTH 1280u
 #define HEIGHT 1024u
@@ -86,7 +86,7 @@ void createPlanet();
 void feedbackBuffer();
 void createBuffer();
 void applyingTextures();
-void setUniforms(float currentFrame);
+void setUniforms();
 void draw();
 void disableVertexAttribs();
 void swapBuffers();

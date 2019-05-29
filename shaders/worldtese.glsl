@@ -206,7 +206,7 @@ void main(){
     vec3 p1 = gl_TessCoord.y * tcPos1;
     vec3 p2 = gl_TessCoord.z * tcPos2;
     vcPos = (p0 + p1 + p2);
-    vNoise = gl_TessCoord.x*tNoise[0]+gl_TessCoord.y*tNoise[1]+gl_TessCoord.z*tNoise[2];
+    float vertexNoise = gl_TessCoord.x*tNoise[0]+gl_TessCoord.y*tNoise[1]+gl_TessCoord.z*tNoise[2];
 
     //tePosition*= radius;
     //tePosition.y = iqfBm(tePosition, 1,2,0.5);
@@ -229,7 +229,8 @@ void main(){
 
 
     vNoise += cubeVal(mountains)*clamp((f1),-1.5f,1.5f)+clamp((f2),-1.5f,1.5f)+clamp((f3),-1.5f,1.5f)-0.8;
-    vcPos = vcPos + vcNormal * vNoise;
+    vNoise += (vertexNoise);
+    vcPos = vcPos + vcNormal * (vNoise);
     vcNormal = normalize(vcPos);
     ///PASSAR O DELTA antes depois da normal
     vec4 c0 = gl_TessCoord.x * tcColor[0];
