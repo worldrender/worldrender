@@ -99,6 +99,38 @@ vec3 calcNormal( in vec3 pos, float t )
     return normalize(nor);
 }
 
+vec3 calcTangent(in vec3 a, in vec3 b)
+{
+  float c0 = fAbs(a.x)+fAbs(a.y)+fAbs(a.z);
+  float c1 = fAbs(a.x)+fAbs(a.x)+fAbs(a.y);
+  float c2 = fAbs(a.x)+fAbs(a.x)+fAbs(a.z);
+  float c3 = fAbs(a.y)+fAbs(a.y)+fAbs(a.x);
+  float c4 = fAbs(a.y)+fAbs(a.y)+fAbs(a.z);
+  float c5 = fAbs(a.z)+fAbs(a.z)+fAbs(a.x);
+  float c6 = fAbs(a.z)+fAbs(a.z)+fAbs(a.y);
+
+  float d0 = fAbs(b.x)+fAbs(b.y)+fAbs(b.z);
+  float d1 = fAbs(b.x)+fAbs(b.x)+fAbs(b.y);
+  float d2 = fAbs(b.x)+fAbs(b.x)+fAbs(b.z);
+  float d3 = fAbs(b.y)+fAbs(b.y)+fAbs(b.x);
+  float d4 = fAbs(b.y)+fAbs(b.y)+fAbs(b.z);
+  float d5 = fAbs(b.z)+fAbs(b.z)+fAbs(b.x);
+  float d6 = fAbs(b.z)+fAbs(b.z)+fAbs(b.y);
+
+  float e = 0.001;
+
+  float c = c0+c1+c2+c3+c4+c5+c6;
+  float d = d0+d1+d2+d3+d4+d5+d6;
+
+  c *= e;
+  d *= e;
+
+  float sinC = sin(c);
+  float sinD = sin(d);
+
+  return normalize((a+sinC)*c+(b+sinD)*d)/2;
+}
+
 vec2 sdf_terrain_map_detail(in vec3 pos)
 {
 	float h0 = (vNoise * 2.0987);
@@ -158,15 +190,17 @@ void main() {
 
  vec3 col;
   vec3 w_normal = sdf_terrain_normal(normal);
+  vec3 c_normal = calcTangent(normal, w_normal);
   hU = length(normal);
   hL = dot(w_normal, normal);
-  hR = hNoise/length(normal);
-  float Ar = hU - hNoise;
-  hD = hNoise/hU ;
-	float s = smoothstep(.4, 1., hNoise);
+  hR = hNoise/length(c_normal);
+  hD = hNoise / hU;
+  float hN = (hU-hL)/hNoise;
+  vec3 hM = cross(c_normal - normal, w_normal - normal);
+	float s = smoothstep(.4, 1., hN);
 	vec3 rock = mix(
 		c_rock, c_snow,
-		smoothstep(1. - .3*s, 1. - .2*s, hNoise));
+		smoothstep(1. - .3*s, 1. - .2*s, hR*0.4));
 
 	vec3 grass = mix(
 		c_grass, rock,
@@ -181,31 +215,31 @@ void main() {
 		smoothstep(0., l_water, hNoise));
 
 	vec3 L = mat3(1.f) * normalize(lightDir);
-	shoreline *= setup_lights(L, w_normal*hL);
-	vec3 ocean = setup_lights(L, w_normal*hL) * water;
+	shoreline *= setup_lights(L, c_normal);
+	vec3 ocean = setup_lights(L, c_normal) * water;
 
   col = mix(ocean, shoreline,	smoothstep(l_water, l_shore, hNoise));
   col *= 1;
   fColor = vec4(col,1.f);
 
-  vec3 ref = reflect( viewPos, w_normal );
-  float fre = clamp( 1.0+dot(viewPos,w_normal), 0.0, 1.0 );
+  vec3 ref = reflect( viewPos, c_normal );
+  float fre = clamp( 1.0+dot(viewPos,c_normal), 0.0, 1.0 );
   vec3 hal = normalize(lightDir-viewPos);
 //
-  col = (hD*0.25+0.75)*0.9*mix( vec3(0.10,0.05,0.03), vec3(0.13,0.10,0.08), clamp(vertNoise/200.0,0.0,1.0) );
-		col = mix( col, 0.17*vec3(0.5,.23,0.04)*(0.50+0.50*hD),smoothstep(0.70,0.9,hNoise-w_normal.y) );
-        col = mix( col, 0.10*vec3(0.2,.30,0.00)*(0.25+0.75*hD),smoothstep(0.95,1.0,hNoise-w_normal.y) );
+  col = (hNoise*0.25+0.75)*0.9*mix( vec3(0.10,0.05,0.03), vec3(0.13,0.10,0.08), clamp(vertNoise/200.0,0.0,1.0) );
+		col = mix( col, 0.17*vec3(0.5,.23,0.04)*(0.50+0.50*hD),smoothstep(0.70,0.9,hNoise-c_normal.y) );
+        col = mix( col, 0.10*vec3(0.2,.30,0.00)*(0.25+0.75*hD),smoothstep(0.95,1.0,hNoise-c_normal.y) );
 
   float h = smoothstep(55.0,80.0,vcPos.y/SC + 25.0*hNoise );
-  float e = smoothstep(1.0-0.5*h,1.0-0.1*h,hD-w_normal.y);
-  float o = 0.3 + 0.7*smoothstep(0.0,0.1,hD-w_normal.x+h*h);
+  float e = smoothstep(1.0-0.5*h,1.0-0.1*h,hD-c_normal.y);
+  float o = 0.3 + 0.7*smoothstep(0.0,0.1,hD-c_normal.x+h*h);
         s = h*e*o;
   col = mix( col, 0.29*vec3(0.62,0.65,0.7), smoothstep( 0.1, 0.9, s ) );
   col *= 1;
 
-  float amb = clamp(0.5+0.5*dot(ambient,w_normal),0.0,1.0);
-  float dif = clamp( dot( diffuse, w_normal ), 0.0, 1.0 );
-  float bac = clamp( 0.2 + 0.8*dot( normalize( vec3(-diffuse.x, 0.0, diffuse.z ) ), w_normal ), 0.0, 1.0 );
+  float amb = clamp(0.5+0.5*dot(ambient,c_normal),0.0,1.0);
+  float dif = clamp( dot( diffuse, c_normal ), 0.0, 1.0 );
+  float bac = clamp( 0.2 + 0.8*dot( normalize( vec3(-diffuse.x, 0.0, diffuse.z ) ), c_normal ), 0.0, 1.0 );
   float sh = 1.0;
 //
   vec3 lin  = vec3(0.0);
@@ -215,10 +249,10 @@ void main() {
   col *= s*
        (0.04+0.96*pow(clamp(1.0+dot(hal,viewPos),0.0,1.0),5.0))*
        vec3(7.0,5.0,3.0)*dif*sh*
-       pow( clamp(dot(normal,hal), 0.0, 1.0),16.0);
+       pow( clamp(dot(c_normal,hal), 0.0, 1.0),16.0);
   col *= col;
   fColor = vec4(mix(col,fColor.rgb,0.2666f),1);
-  if(fColor.x<0.05&&fColor.y<0.05&&fColor.z<0.05)
+  if(fColor.x<0.04&&fColor.y<0.04&&fColor.z<0.04)
     fColor /= 2;
   //fColor *= vec4(lin,1);
   fColor *= 1.77773;

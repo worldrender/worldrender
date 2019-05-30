@@ -84,6 +84,8 @@ public:
 
 	VolumeCheck ContainsPoint(const vec3 &point) const;
 	VolumeCheck ContainsSphere(const Sphere &sphere) const;
+	VolumeCheck ContainsQuad(vec3 &a, vec3 &b, vec3 &c, vec3 &d);
+	VolumeCheck ContainsQuadByIndex(GLuint a, GLuint b, GLuint c, GLuint d);
 	VolumeCheck ContainsTriangle(vec3 &a, vec3 &b, vec3 &c);
 	VolumeCheck ContainsTriangleByIndex(GLuint a, GLuint b, GLuint c);
 	VolumeCheck ContainsTriVolume(vec3 &a, vec3 &b, vec3 &c, float height);

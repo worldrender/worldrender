@@ -162,6 +162,23 @@ VolumeCheck Frustum::ContainsTriangleByIndex(const GLuint a, const GLuint b, con
 	}
 	return ret;
 }
+
+VolumeCheck Frustum::ContainsQuadByIndex(GLuint a, GLuint b, GLuint c, GLuint d)
+{
+	VolumeCheck ret = VolumeCheck::CONTAINS;
+	for (auto plane : m_Planes)
+	{
+		char rejects = 0;
+		if (dot(plane.n, QuadTree::verts.lookupIndexRequired(a) - plane.d) < 0)rejects++;
+		if (dot(plane.n, QuadTree::verts.lookupIndexRequired(b) - plane.d) < 0)rejects++;
+		if (dot(plane.n, QuadTree::verts.lookupIndexRequired(c) - plane.d) < 0)rejects++;
+		// if all three are outside a plane the triangle is outside the frustrum
+		if (rejects >= 3)return VolumeCheck::OUTSIDE;
+		// if at least one is outside the triangle intersects at least one plane
+		else if (rejects > 0)ret = VolumeCheck::INTERSECT;
+	}
+	return ret;
+}
 //same as above but with a volume generated above the triangle
 VolumeCheck Frustum::ContainsTriVolume(vec3 &a, vec3 &b, vec3 &c, float height)
 {

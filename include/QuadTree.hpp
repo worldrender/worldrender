@@ -32,22 +32,23 @@ struct Quad
 class QuadTree
 {
   private:
-    std::unique_ptr<Quad> quad   = nullptr;
-    std::unique_ptr<QuadTree> nw = nullptr;
-    std::unique_ptr<QuadTree> sw = nullptr;
-    std::unique_ptr<QuadTree> ne = nullptr;
-    std::unique_ptr<QuadTree> se = nullptr;
+    std::unique_ptr<Quad>     quad   = nullptr;
+    std::unique_ptr<QuadTree> nw     = nullptr;
+    std::unique_ptr<QuadTree> sw     = nullptr;
+    std::unique_ptr<QuadTree> ne     = nullptr;
+    std::unique_ptr<QuadTree> se     = nullptr;
 
     QuadTree* parent = nullptr;
 
     GLuint index;
   public:
     static Verts verts;
-    static std::vector<glm::vec3> normals;
-    static std::vector<GLuint> indices;
-    static std::vector<GLuint> normalIndices;
-    static std::vector<GLfloat> noises;
-    static std::vector<QuadTree*> quadTreeList;
+    static std::vector<glm::vec3>   normals;
+    static std::vector<GLuint>      indices;
+    static std::vector<GLuint>      normalIndices;
+    static std::vector<GLfloat>     noises;
+    static std::vector<QuadTree*>   quadTreeList;
+    static std::vector<signed char>        visibility;
 
     QuadTree();
     QuadTree(std::unique_ptr<Quad> quad, QuadTree* parent);

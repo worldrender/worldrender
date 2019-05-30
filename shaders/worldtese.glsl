@@ -216,7 +216,8 @@ void main(){
     vec3 n2 = gl_TessCoord.z * tcNormal[2];
     vcNormal = normalize(n0 + n1 + n2);
 //    vNoise = vNoise*clamp(cubeNoise(vcPos),0,1);
-    vNoise = (fbm(vcPos*10f))*0.2f;
+    vNoise = (fbm(vcPos*10f))*0.37777776f;
+    vNoise *= sin(cubeVal(vNoise));
     float mountains = (ridgedNoise(vcPos));
 
 //     float h1 = hyrbidMultifractal(p/8.0, H, lacunarity, octaves, offset, gain);
@@ -228,7 +229,7 @@ void main(){
     float f3 = ridgedNoise(vcPos/2.f, 5, 0.7, 0.4f, 4.f, 0.03f, 0.5f, 0.05f)*0.3f;
 
 
-    vNoise += cubeVal(mountains)*clamp((f1),-1.5f,1.5f)+clamp((f2),-1.5f,1.5f)+clamp((f3),-1.5f,1.5f)-0.8;
+    vNoise += cubeVal(mountains)*clamp((f1),-1.777f,1.777f)+clamp((f2),-1.777f,1.777f)+clamp((f3),-1.777f,1.777f)-0.8;
     vNoise += (vertexNoise);
     vcPos = vcPos + vcNormal * (vNoise);
     vcNormal = normalize(vcPos);

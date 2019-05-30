@@ -28,10 +28,11 @@ using namespace std;
  *
  */
 std::vector<glm::vec3> QuadTree::normals;
-std::vector<GLfloat> QuadTree::noises;
-std::vector<GLuint> QuadTree::indices;
-std::vector<GLuint> QuadTree::normalIndices;
+std::vector<GLfloat>   QuadTree::noises;
+std::vector<GLuint>    QuadTree::indices;
+std::vector<GLuint>    QuadTree::normalIndices;
 std::vector<QuadTree*> QuadTree::quadTreeList;
+std::vector<signed char>      QuadTree::visibility;
 Verts QuadTree::verts;
 
 static glm::vec3 lookup(GLuint idx)
@@ -151,8 +152,9 @@ void QuadTree::verticalSplit(GLuint lod){
     {
       tmp[j]->split();
     }
-
   }
+
+  QuadTree::visibility.resize(QuadTree::verts.size(),-1);
 }
 
 void QuadTree::instanceNoise() {
