@@ -12,6 +12,7 @@
 #define PositionSlot 0u
 #define WIDTH 1280u
 #define HEIGHT 1024u
+#define ASPECT_RATIO (float)WIDTH/(float)HEIGHT
 #define meshSize 128
 #define PLANET_SCALE 1.f
 #define PI 3.14f

@@ -11,6 +11,15 @@
 
 class QuadTree;
 
+struct Visibility
+{
+  float boundary;
+  Visibility(float boundary)
+  {
+    this->boundary = boundary;
+  }
+};
+
 struct Quad
 {
   GLuint c0 = 0u; //northWest
@@ -40,20 +49,20 @@ class QuadTree
 
     QuadTree* parent = nullptr;
 
+    bool culling;
+
     GLuint index;
   public:
     static Verts verts;
-    static std::vector<glm::vec3>   normals;
-    static std::vector<GLuint>      indices;
-    static std::vector<GLuint>      normalIndices;
-    static std::vector<GLfloat>     noises;
-    static std::vector<QuadTree*>   quadTreeList;
-    static std::vector<signed char>        visibility;
+    static std::vector<glm::vec3>    normals;
+    static std::vector<GLuint>       indices;
+    static std::vector<GLuint>       normalIndices;
+    static std::vector<GLfloat>      noises;
+    static std::vector<QuadTree*>    quadTreeList;
+    static std::vector<Visibility*>  visibility;
 
     QuadTree();
     QuadTree(std::unique_ptr<Quad> quad, QuadTree* parent);
-
-    ~QuadTree();
 
     void split();
     void nSplit();
@@ -63,6 +72,20 @@ class QuadTree
     static void instanceNoise();
     static void instanceNoiseR(int start, int end);
     static void threadedInstanceNoise();
+
+    void setCulling(){this->culling=true;}
+    bool getCulling(){return this->culling;}
+
+    bool isLeaf(){return (this->nw==nullptr||this->sw==nullptr||this->ne==nullptr||this->se==nullptr);}
+
+    QuadTree *getNw() const {return this->nw.get();}
+    QuadTree *getSw() const {return this->sw.get();}
+    QuadTree *getNe() const {return this->ne.get();}
+    QuadTree *getSe() const {return this->se.get();}
+
+    virtual inline const Quad &getQuad() const {return *this->quad;}
+
+    ~QuadTree();
 };
 #endif
 

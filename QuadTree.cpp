@@ -27,12 +27,12 @@ using namespace std;
  * \return
  *
  */
-std::vector<glm::vec3> QuadTree::normals;
-std::vector<GLfloat>   QuadTree::noises;
-std::vector<GLuint>    QuadTree::indices;
-std::vector<GLuint>    QuadTree::normalIndices;
-std::vector<QuadTree*> QuadTree::quadTreeList;
-std::vector<signed char>      QuadTree::visibility;
+std::vector<glm::vec3>    QuadTree::normals;
+std::vector<GLfloat>      QuadTree::noises;
+std::vector<GLuint>       QuadTree::indices;
+std::vector<GLuint>       QuadTree::normalIndices;
+std::vector<QuadTree*>    QuadTree::quadTreeList;
+std::vector<Visibility*>  QuadTree::visibility;
 Verts QuadTree::verts;
 
 static glm::vec3 lookup(GLuint idx)
@@ -50,7 +50,8 @@ QuadTree::QuadTree():
     nw{nullptr},
     sw{nullptr},
     ne{nullptr},
-    se{nullptr}
+    se{nullptr},
+    culling{false}
 {
 }
 
@@ -65,7 +66,8 @@ QuadTree::QuadTree(std::unique_ptr<Quad> quad, QuadTree* parent):
     nw{nullptr},
     sw{nullptr},
     ne{nullptr},
-    se{nullptr}
+    se{nullptr},
+    culling{false}
 {
   this->quad = std::move(quad);
   this->index = this->quadTreeList.size();
@@ -154,7 +156,7 @@ void QuadTree::verticalSplit(GLuint lod){
     }
   }
 
-  QuadTree::visibility.resize(QuadTree::verts.size(),-1);
+  QuadTree::visibility.resize(QuadTree::verts.size(),nullptr);
 }
 
 void QuadTree::instanceNoise() {

@@ -1,5 +1,4 @@
 #include "include/Frustum.hpp"
-#include "include/Camera.hpp"
 
 #include <GL/gl.h>
 
@@ -21,7 +20,7 @@ void FrustumCorners::Transform(mat4 space)
 
 Frustum::Frustum()
 {
-	this->m_Corners = FrustumCorners();
+	this->Corners = FrustumCorners();
 }
 Frustum::~Frustum()
 {
@@ -30,176 +29,106 @@ Frustum::~Frustum()
 //create transforms to prevent transforming every triangle into world space
 void Frustum::SetCullTransform(mat4 objectWorld)
 {
-	m_CullWorld = objectWorld;
-	m_CullInverse = glm::inverse(objectWorld);
+	CullWorld = objectWorld;
+	CullInverse = glm::inverse(objectWorld);
 }
 
 void Frustum::SetToCamera(Camera* camera)
 {
-	m_Position = camera->Position;
-	m_Forward = camera->Front;
-	m_Up = camera->Up;
-	m_Right = camera->Right;
-	m_NearPlane = camera->Near;
-	m_FarPlane = camera->Far;
-	m_FOV = camera->Zoom;
+	Position = camera->Position;
+	Forward = camera->Front;
+	Up = camera->Up;
+	Right = camera->Right;
+	NearPlane = camera->Near;
+	FarPlane = camera->Far;
+	FOV = camera->Zoom;
 }
 
 void Frustum::Update()
-{/*
-	//calculate generalized relative width and aspect ratio
-	float normHalfWidth = glm::tan(glm::radians(m_FOV));
-	float aspectRatio = WINDOW.GetAspectRatio();
+{
+	float normHalfWidth = glm::tan(glm::radians(FOV));
+	float aspectRatio = ASPECT_RATIO;
 
 	//calculate width and height for near and far plane
-	float nearHW = normHalfWidth*m_NearPlane;
+	float nearHW = normHalfWidth*NearPlane;
 	float nearHH = nearHW / aspectRatio;
-	float farHW = normHalfWidth*m_FarPlane;// *0.5f;
+	float farHW = normHalfWidth*FarPlane;// *0.5f;
 	float farHH = farHW / aspectRatio;
 
 	//calculate near and far plane centers
-	auto nCenter = m_Position + m_Forward*m_NearPlane;
-	auto fCenter = m_Position + m_Forward*m_FarPlane *0.5f;
+	auto nCenter = Position + Forward*NearPlane;
+	auto fCenter = Position + Forward*FarPlane *0.5f;
 
 	//construct corners of the near plane in the culled objects world space
-	m_Corners.na = nCenter + m_Up*nearHH - m_Right*nearHW;
-	m_Corners.nb = nCenter + m_Up*nearHH + m_Right*nearHW;
-	m_Corners.nc = nCenter - m_Up*nearHH - m_Right*nearHW;
-	m_Corners.nd = nCenter - m_Up*nearHH + m_Right*nearHW;
-	//construct corners of the far plane
-	m_Corners.fa = fCenter + m_Up*farHH - m_Right*farHW;
-	m_Corners.fb = fCenter + m_Up*farHH + m_Right*farHW;
-	m_Corners.fc = fCenter - m_Up*farHH - m_Right*farHW;
-	m_Corners.fd = fCenter - m_Up*farHH + m_Right*farHW;
+	Corners.na = nCenter + Up*nearHH - Right*nearHW;
+	Corners.nb = nCenter + Up*nearHH + Right*nearHW;
+	Corners.nc = nCenter - Up*nearHH - Right*nearHW;
+	Corners.nd = nCenter - Up*nearHH + Right*nearHW;
 
-	//float yFac = tanf( radians(m_FOV) / 2 );
-	//float xFac = yFac*WINDOW.GetAspectRatio();
-	//vec3 nCenter = m_Position + m_Forward*m_NearPlane;
-	//vec3 fCenter = m_Position + m_Forward*m_FarPlane;
-	//vec3 nearHW = m_Right*m_FarPlane*xFac;
-	//vec3 nearHH = m_Up*m_FarPlane*yFac;
-	//vec3 farHW = m_Right*m_FarPlane*xFac;
-	//vec3 farHH = m_Up*m_FarPlane*yFac;
+	Corners.fa = fCenter + Up*farHH - Right*farHW;
+	Corners.fb = fCenter + Up*farHH + Right*farHW;
+	Corners.fc = fCenter - Up*farHH - Right*farHW;
+	Corners.fd = fCenter - Up*farHH + Right*farHW;
 
-	////construct corners of the near plane in the culled objects world space
-	//m_Corners.na = nCenter + nearHH - nearHW;
-	//m_Corners.nb = nCenter + nearHH + nearHW;
-	//m_Corners.nc = nCenter - nearHH - nearHW;
-	//m_Corners.nd = nCenter - nearHH + nearHW;
-	////construct corners of the far plane
-	//m_Corners.fa = fCenter + farHH - farHW;
-	//m_Corners.fb = fCenter + farHH + farHW;
-	//m_Corners.fc = fCenter - farHH - farHW;
-	//m_Corners.fd = fCenter - farHH + farHW;
-	m_Corners.Transform(m_CullInverse);
+	Corners.Transform(CullInverse);
 
-	m_PositionObject = (m_CullInverse*vec4(m_Position, 0)).xyz;
-	m_RadInvFOV = 1 / radians(m_FOV);
+	PositionObject = (CullInverse*vec4(Position, 0)).xyz();
+	RadInvFOV = 1 / radians(FOV);
 
 	//construct planes
-	m_Planes.clear();
+	Planes.clear();
 	//winding in an outside perspective so the cross product creates normals pointing inward
-	m_Planes.push_back(Plane(m_Corners.na, m_Corners.nb, m_Corners.nc));//Near
-	m_Planes.push_back(Plane(m_Corners.fb, m_Corners.fa, m_Corners.fd));//Far
-	m_Planes.push_back(Plane(m_Corners.fa, m_Corners.na, m_Corners.fc));//Left
-	m_Planes.push_back(Plane(m_Corners.nb, m_Corners.fb, m_Corners.nd));//Right
-	m_Planes.push_back(Plane(m_Corners.fa, m_Corners.fb, m_Corners.na));//Top
-	m_Planes.push_back(Plane(m_Corners.nc, m_Corners.nd, m_Corners.fc));//Bottom*/
+	Planes.push_back(Plane(Corners.na, Corners.nb, Corners.nc));//Near
+	Planes.push_back(Plane(Corners.fb, Corners.fa, Corners.fd));//Far
+	Planes.push_back(Plane(Corners.fa, Corners.na, Corners.fc));//Left
+	Planes.push_back(Plane(Corners.nb, Corners.fb, Corners.nd));//Right
+	Planes.push_back(Plane(Corners.fa, Corners.fb, Corners.na));//Top
+	Planes.push_back(Plane(Corners.nc, Corners.nd, Corners.fc));//Bottom*/
 }
 
-VolumeCheck Frustum::ContainsPoint(const vec3 &point) const
+void Frustum::ContainsQuad(QuadTree *quad)
 {
-	for (auto plane : m_Planes)
+	float a = quad->getQuad().c0;
+	float b = quad->getQuad().c1;
+	float c = quad->getQuad().c2;
+	float d = quad->getQuad().c3;
+	char rejects = 0;
+	for (auto plane : Planes)
 	{
-		if (dot(plane.n, point - plane.d) < 0)return VolumeCheck::OUTSIDE;
-	}
-	return VolumeCheck::CONTAINS;
-}
-VolumeCheck Frustum::ContainsSphere(const Sphere &sphere) const
-{
-	VolumeCheck ret = VolumeCheck::CONTAINS;
-	for (auto plane : m_Planes)
-	{
-		float dist = dot(plane.n, sphere.pos - plane.d);
-		if (dist < -sphere.radius)return VolumeCheck::OUTSIDE;
-		else if (dist < 0) ret = VolumeCheck::INTERSECT;
-	}
-	return ret;
-}
-//this method will treat triangles as intersecting even though they may be outside
-//but it is faster then performing a proper intersection test with every plane
-//and it does not reject triangles that are inside but with all corners outside
-VolumeCheck Frustum::ContainsTriangle(vec3 &a, vec3 &b, vec3 &c)
-{
-	VolumeCheck ret = VolumeCheck::CONTAINS;
-	for (auto plane : m_Planes)
-	{
-		char rejects = 0;
-		if (dot(plane.n, a - plane.d) < 0)rejects++;
-		if (dot(plane.n, b - plane.d) < 0)rejects++;
-		if (dot(plane.n, c - plane.d) < 0)rejects++;
-		// if all three are outside a plane the triangle is outside the frustrum
-		if (rejects >= 3)return VolumeCheck::OUTSIDE;
-		// if at least one is outside the triangle intersects at least one plane
-		else if (rejects > 0)ret = VolumeCheck::INTERSECT;
-	}
-	return ret;
-}
+		rejects = 0;
 
-VolumeCheck Frustum::ContainsTriangleByIndex(const GLuint a, const GLuint b, const GLuint c)
-{
-	VolumeCheck ret = VolumeCheck::CONTAINS;
-	for (auto plane : m_Planes)
-	{
-		char rejects = 0;
-		if (dot(plane.n, QuadTree::verts.lookupIndexRequired(a) - plane.d) < 0)rejects++;
-		if (dot(plane.n, QuadTree::verts.lookupIndexRequired(b) - plane.d) < 0)rejects++;
-		if (dot(plane.n, QuadTree::verts.lookupIndexRequired(c) - plane.d) < 0)rejects++;
-		// if all three are outside a plane the triangle is outside the frustrum
-		if (rejects >= 3)return VolumeCheck::OUTSIDE;
-		// if at least one is outside the triangle intersects at least one plane
-		else if (rejects > 0)ret = VolumeCheck::INTERSECT;
-	}
-	return ret;
-}
+		if(QuadTree::visibility[a]==nullptr)
+		  QuadTree::visibility[a] = new Visibility(dot(plane.n, QuadTree::verts.lookupIndexRequired(a) - plane.d));
+    if(QuadTree::visibility[a] < 0)
+      rejects++;
 
-VolumeCheck Frustum::ContainsQuadByIndex(GLuint a, GLuint b, GLuint c, GLuint d)
-{
-	VolumeCheck ret = VolumeCheck::CONTAINS;
-	for (auto plane : m_Planes)
-	{
-		char rejects = 0;
-		if (dot(plane.n, QuadTree::verts.lookupIndexRequired(a) - plane.d) < 0)rejects++;
-		if (dot(plane.n, QuadTree::verts.lookupIndexRequired(b) - plane.d) < 0)rejects++;
-		if (dot(plane.n, QuadTree::verts.lookupIndexRequired(c) - plane.d) < 0)rejects++;
-		// if all three are outside a plane the triangle is outside the frustrum
-		if (rejects >= 3)return VolumeCheck::OUTSIDE;
-		// if at least one is outside the triangle intersects at least one plane
-		else if (rejects > 0)ret = VolumeCheck::INTERSECT;
+		if(QuadTree::visibility[b]==nullptr)
+		  QuadTree::visibility[b] = new Visibility(dot(plane.n, QuadTree::verts.lookupIndexRequired(b) - plane.d));
+    if(QuadTree::visibility[b] < 0)
+      rejects++;
+
+		if(QuadTree::visibility[c]==nullptr)
+		  QuadTree::visibility[c] = new Visibility(dot(plane.n, QuadTree::verts.lookupIndexRequired(c) - plane.d));
+    if(QuadTree::visibility[c] < 0)
+      rejects++;
+
+		if(QuadTree::visibility[d]==nullptr)
+		  QuadTree::visibility[d] = new Visibility(dot(plane.n, QuadTree::verts.lookupIndexRequired(d) - plane.d));
+    if(QuadTree::visibility[d] < 0)
+      rejects++;
 	}
-	return ret;
-}
-//same as above but with a volume generated above the triangle
-VolumeCheck Frustum::ContainsTriVolume(vec3 &a, vec3 &b, vec3 &c, float height)
-{
-	VolumeCheck ret = VolumeCheck::CONTAINS;
-	for (auto plane : m_Planes)
-	{
-		char rejects = 0;
-		if (dot(plane.n, a - plane.d) < 0)rejects++;
-		if (dot(plane.n, b - plane.d) < 0)rejects++;
-		if (dot(plane.n, c - plane.d) < 0)rejects++;
-		// if all three are outside a plane the triangle is outside the frustrum
-		if (rejects >= 3)
-		{
-			if (dot(plane.n, (a*height) - plane.d) < 0)rejects++;
-			if (dot(plane.n, (b*height) - plane.d) < 0)rejects++;
-			if (dot(plane.n, (c*height) - plane.d) < 0)rejects++;
-			if (rejects >= 6)return VolumeCheck::OUTSIDE;
-			else ret = VolumeCheck::INTERSECT;
-		}
-		// if at least one is outside the triangle intersects at least one plane
-		else if (rejects > 0)ret = VolumeCheck::INTERSECT;
-	}
-	return ret;
+    // if all three are outside a plane the triangle is outside the frustrum
+  if (rejects >= 4)
+  {
+    quad->setCulling();
+    return;
+  }
+  else if(quad->isLeaf())
+  {
+    this->ContainsQuad(quad->getNw());
+    this->ContainsQuad(quad->getSw());
+    this->ContainsQuad(quad->getNe());
+    this->ContainsQuad(quad->getSe());
+  }
+  QuadTree::quadTreeList.push_back(quad);
 }

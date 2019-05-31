@@ -1,9 +1,13 @@
-#ifndef FRUSTUM_HPP_INCLUDED
-#define FRUSTUM_HPP_INCLUDED
+#ifndef FRUSTUHPP_INCLUDED
+#define FRUSTUHPP_INCLUDED
+
+#define GLM_FORCE_SWIZZLE
+#include <glm/glm.hpp>
 
 #include <vector>
-#include <glm/glm.hpp>
+
 #include "QuadTree.hpp"
+#include "Camera.hpp"
 
 using std::vector;
 using namespace glm;
@@ -82,36 +86,30 @@ public:
 	void SetToCamera(Camera* pCamera);
 	void SetCullTransform(mat4 objectWorld);
 
-	VolumeCheck ContainsPoint(const vec3 &point) const;
-	VolumeCheck ContainsSphere(const Sphere &sphere) const;
-	VolumeCheck ContainsQuad(vec3 &a, vec3 &b, vec3 &c, vec3 &d);
-	VolumeCheck ContainsQuadByIndex(GLuint a, GLuint b, GLuint c, GLuint d);
-	VolumeCheck ContainsTriangle(vec3 &a, vec3 &b, vec3 &c);
-	VolumeCheck ContainsTriangleByIndex(GLuint a, GLuint b, GLuint c);
-	VolumeCheck ContainsTriVolume(vec3 &a, vec3 &b, vec3 &c, float height);
+	void ContainsQuad(QuadTree *quad);
 
-	const vec3 &GetPositionOS() { return m_PositionObject; }
-	const float GetFOV() { return m_FOV; }
-	const float GetRadInvFOV() { return m_RadInvFOV; }
+	const vec3 &GetPositionOS() { return PositionObject; }
+	const float GetFOV() { return FOV; }
+	const float GetRadInvFOV() { return RadInvFOV; }
 
-	FrustumCorners GetCorners() { return m_Corners; }
+	FrustumCorners GetCorners() { return Corners; }
 
 private:
 	//transform to the culled objects object space and back to world space
-	mat4 m_CullWorld, m_CullInverse;
+	mat4 CullWorld, CullInverse;
 
 	//stuff in the culled objects object space
-	std::vector<Plane> m_Planes;
-	FrustumCorners m_Corners;
-	vec3 m_PositionObject;
+	std::vector<Plane> Planes;
+	FrustumCorners Corners;
+	vec3 PositionObject;
 
-	float m_RadInvFOV;
+	float RadInvFOV;
 
 	//camera parameters for locking
-	vec3 m_Position;
-	vec3 m_Forward;
-	vec3 m_Up;
-	vec3 m_Right;
-	float m_NearPlane, m_FarPlane, m_FOV;
+	vec3 Position;
+	vec3 Forward;
+	vec3 Up;
+	vec3 Right;
+	float NearPlane, FarPlane, FOV;
 };
 #endif
