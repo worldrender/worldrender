@@ -53,6 +53,10 @@ public:
     glm::vec3 Up;
     glm::vec3 Right;
     glm::vec3 WorldUp;
+
+    glm::vec3 lastPosition1;
+    glm::vec3 lastPosition2;
+    glm::vec3 lastPosition3;
     // Euler Angles
     float Yaw;
     float Pitch;

@@ -216,7 +216,7 @@ void main(){
     vec3 n2 = gl_TessCoord.z * tcNormal[2];
     vcNormal = normalize(n0 + n1 + n2);
 //    vNoise = vNoise*clamp(cubeNoise(vcPos),0,1);
-    vNoise = (fbm(vcPos*10f))*0.37777776f;
+    vNoise = (fbm(vcPos*10f))*0.4f;
     vNoise *= sin(cubeVal(vNoise));
     float mountains = (ridgedNoise(vcPos));
 
