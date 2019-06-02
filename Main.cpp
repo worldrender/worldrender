@@ -305,6 +305,8 @@ void draw() {
     glBindVertexArray(0);
     gl::enableCullFace();
     glDepthFunc(GL_LESS); // set depth function back to default
+
+    QuadTree::quadTreeList.clear();
 }
 
 void setSkybox(){

@@ -10,6 +10,7 @@
 #include "Utils.hpp"
 #include "Transformation.hpp"
 #include "Planet.hpp"
+#include "Frustum.hpp"
 
 extern bool tIsPressed;
 extern bool pIsPressed;
@@ -57,6 +58,8 @@ public:
     glm::vec3 lastPosition1;
     glm::vec3 lastPosition2;
     glm::vec3 lastPosition3;
+
+    Frustum frustum;
     // Euler Angles
     float Yaw;
     float Pitch;
@@ -80,6 +83,7 @@ public:
     void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
     void ProcessMouseScroll(float yoffset);
     void pressButtons();
+    void CameraFrustum();
 
 private:
     // Calculates the front vector from the Camera's (updated) Euler Angles
@@ -94,6 +98,7 @@ private:
         // Also re-calculate the Right and Up vector
         Right = glm::normalize(glm::cross(Front, WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
         Up    = glm::normalize(glm::cross(Right, Front));
+        CameraFrustum();
     }
 };
 

@@ -5,6 +5,7 @@
 
 #include <vector>
 #include "include/Camera.hpp"
+#include "include/Frustum.hpp"
 // Default camera values
 
 bool tIsPressed,      pIsPressed,
@@ -28,6 +29,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front
   Yaw = yaw;
   Pitch = pitch;
   updateCameraVectors();
+  frustum = Frustum();
 }
 
 Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, 0.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
@@ -37,6 +39,7 @@ Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float u
   Yaw = yaw;
   Pitch = pitch;
   updateCameraVectors();
+  frustum = Frustum();
 }
 
 glm::mat4 Camera::getViewMatrix()
@@ -184,13 +187,13 @@ void Camera::pressButtons()
   }
   pUpIsPressed = pUpIsCurrentlyPressed;
 
-  if ((glfwGetKey( window, GLFW_KEY_PAGE_DOWN ) == GLFW_PRESS)){
-
-  }
-
-  if ((glfwGetKey( window, GLFW_KEY_PAGE_UP ) == GLFW_PRESS)){
-
-  }
+//  if ((glfwGetKey( window, GLFW_KEY_PAGE_DOWN ) == GLFW_PRESS)){
+//
+//  }
+//
+//  if ((glfwGetKey( window, GLFW_KEY_PAGE_UP ) == GLFW_PRESS)){
+//
+//  }
 
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     this->ProcessKeyboard(FORWARD, deltaTime);
@@ -219,4 +222,13 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     lastY = ypos;
 
     planetCamera.ProcessMouseMovement(xoffset, yoffset);
+}
+
+void CameraFrustum(){
+    frustum.SetCullTransform(); //inserir matriz de transformação
+    frustum.SetToCamera(planetCamera);
+
+    //frustum.Transform(space);
+    frustum.Update();
+    frustum.ContainsQuad();
 }
