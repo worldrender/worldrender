@@ -132,7 +132,3 @@ void Frustum::ContainsQuad(QuadTree *quad)
   }
   QuadTree::quadTreeList.push_back(quad);
 }
-
-void Triangulator(){
-    Quadtree::triangulator();
-}

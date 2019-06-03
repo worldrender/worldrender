@@ -5,7 +5,6 @@
 
 #include <vector>
 #include "include/Camera.hpp"
-#include "include/Frustum.hpp"
 // Default camera values
 
 bool tIsPressed,      pIsPressed,
@@ -22,24 +21,28 @@ float lastY = (float)HEIGHT / 2.0;
 float deltaTime = 0.0f;
 std::chrono::high_resolution_clock::time_point lastFrame = {};
 
-Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, 0.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+Camera::Camera(Planet *planet, glm::vec3 position, glm::vec3 up, float yaw, float pitch):
+  Front(glm::vec3(0.0f, 0.0f, 0.0f)),
+  MovementSpeed(SPEED),
+  MouseSensitivity(SENSITIVITY),
+  Zoom(ZOOM)
 {
   this->Position = position;
-  WorldUp = up;
-  Yaw = yaw;
-  Pitch = pitch;
+  this->planet   = planet;
+  this->WorldUp  = up;
+  this->Yaw      = yaw;
+  this->Pitch    = pitch;
   updateCameraVectors();
-  frustum = Frustum();
 }
 
-Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, 0.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+Camera::Camera(Planet *planet, float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, 0.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 {
   Position = glm::vec3(posX, posY, posZ);
+  this->planet   = planet;
   WorldUp = glm::vec3(upX, upY, upZ);
   Yaw = yaw;
   Pitch = pitch;
   updateCameraVectors();
-  frustum = Frustum();
 }
 
 glm::mat4 Camera::getViewMatrix()
@@ -205,7 +208,6 @@ void Camera::pressButtons()
     this->ProcessKeyboard(RIGHT, deltaTime);
 }
 
-
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
     if (firstMouse)
@@ -224,11 +226,3 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     planetCamera.ProcessMouseMovement(xoffset, yoffset);
 }
 
-void CameraFrustum(){
-    frustum.SetCullTransform(); //inserir matriz de transformação
-    frustum.SetToCamera(planetCamera);
-
-    //frustum.Transform(space);
-    frustum.Update();
-    frustum.ContainsQuad();
-}

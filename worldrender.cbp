@@ -80,6 +80,7 @@
 		</Compiler>
 		<Unit filename="Camera.cpp" />
 		<Unit filename="Frustum.cpp" />
+		<Unit filename="FrustumProc.cpp" />
 		<Unit filename="LoadShaders.cpp" />
 		<Unit filename="Main.cpp" />
 		<Unit filename="NoiseFeedback.cpp" />
@@ -88,11 +89,11 @@
 		<Unit filename="Transformation.cpp" />
 		<Unit filename="include/Camera.hpp" />
 		<Unit filename="include/Frustum.hpp" />
+		<Unit filename="include/FrustumProc.hpp" />
 		<Unit filename="include/LoadShaders.hpp" />
 		<Unit filename="include/NoiseFeedback.hpp" />
 		<Unit filename="include/Planet.hpp" />
 		<Unit filename="include/QuadTree.hpp" />
-		<Unit filename="include/QuadTreeProcedurus.h" />
 		<Unit filename="include/Textures.hpp" />
 		<Unit filename="include/Transformation.hpp" />
 		<Unit filename="include/Utils.hpp" />

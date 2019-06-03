@@ -1,5 +1,5 @@
-#ifndef FRUSTUHPP_INCLUDED
-#define FRUSTUHPP_INCLUDED
+#ifndef FRUSTUM_HPP_INCLUDED
+#define FRUSTUM_HPP_INCLUDED
 
 #define GLM_FORCE_SWIZZLE
 #include <glm/glm.hpp>

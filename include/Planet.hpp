@@ -28,6 +28,7 @@ class Planet
        GLfloat radius);
     Planet(Cube* cube, GLfloat radius);
     GLfloat getRadius();
+    Cube *getCube(){return this->cube;}
 };
 
 #endif

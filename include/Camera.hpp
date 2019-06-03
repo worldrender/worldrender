@@ -8,9 +8,7 @@
 
 #include <vector>
 #include "Utils.hpp"
-#include "Transformation.hpp"
 #include "Planet.hpp"
-#include "Frustum.hpp"
 
 extern bool tIsPressed;
 extern bool pIsPressed;
@@ -59,7 +57,7 @@ public:
     glm::vec3 lastPosition2;
     glm::vec3 lastPosition3;
 
-    Frustum frustum;
+    Planet *planet;
     // Euler Angles
     float Yaw;
     float Pitch;
@@ -71,10 +69,10 @@ public:
     float Zoom;
 
     // Constructor with vectors
-    Camera(glm::vec3 position, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
+    Camera(Planet *planet, glm::vec3 position, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
 
     // Constructor with scalar values
-    Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
+    Camera(Planet *planet, float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
     // Returns the view matrix calculated using Euler Angles and the LookAt Matrix
     glm::mat4 getViewMatrix();
@@ -83,7 +81,6 @@ public:
     void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
     void ProcessMouseScroll(float yoffset);
     void pressButtons();
-    void CameraFrustum();
 
 private:
     // Calculates the front vector from the Camera's (updated) Euler Angles
@@ -98,7 +95,6 @@ private:
         // Also re-calculate the Right and Up vector
         Right = glm::normalize(glm::cross(Front, WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
         Up    = glm::normalize(glm::cross(Right, Front));
-        CameraFrustum();
     }
 };
 
