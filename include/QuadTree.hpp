@@ -82,6 +82,8 @@ class QuadTree
     std::shared_ptr<QuadTree> getSw(){ return this->sw;}
     std::shared_ptr<QuadTree> getNe(){ return this->ne;}
     std::shared_ptr<QuadTree> getSe(){ return this->se;}
+
+    QuadTree *getParent(){return this->parent;}
     ~QuadTree();
 };
 #endif

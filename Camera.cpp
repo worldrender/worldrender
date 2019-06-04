@@ -31,7 +31,6 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch):
 {
   this->Position = position;
   this->WorldUp  = up;
-  this->frustum  = new Frustum();
   this->Yaw      = yaw;
   this->Pitch    = pitch;
   updateCameraVectors();
@@ -44,7 +43,6 @@ Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float u
   Zoom(ZOOM)
 {
   Position       = glm::vec3(posX, posY, posZ);
-  this->frustum  = new Frustum();
   WorldUp        = glm::vec3(upX, upY, upZ);
   Yaw            = yaw;
   Pitch          = pitch;
@@ -215,11 +213,7 @@ void Camera::pressButtons()
 
 void Camera::calculateFrustum()
 {
-  frustum->SetCullTransform(glm::mat4(1.0f)); //inserir matriz de transformação
-  frustum->SetToCamera(this);
-
-  //frustum->Transform(space);
-  frustum->Update();
+  frustum = new Frustum(this->getViewMatrix()*mat4(1.f), this->getProjectionMatrix(WIDTH,HEIGHT) );
 
   QuadTree::indices.clear();
   QuadTree::visibleVerts.clear();
@@ -231,6 +225,8 @@ void Camera::calculateFrustum()
   frustum->ContainsQuad(this->planet->getCube()->Left);
   frustum->ContainsQuad(this->planet->getCube()->Right);
   frustum->ContainsQuad(this->planet->getCube()->Top);
+
+  frustum->~Frustum();
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)

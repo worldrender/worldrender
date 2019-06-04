@@ -28,19 +28,17 @@ class Frustum
       PLANE_BOTTOM
     };
 
-  public:
     Frustum( const mat4 &viewMatrix, const mat4 &projectionMatrix );
+    ~Frustum() = default;
 
     const vec4 &getPlane( const int plane ) const;
 
-    ContainsQuad(std::shared_ptr<QuadTree> quad);
-
-  TestResult testIntersection( const vec3 &point ) const;
-  TestResult testIntersection( shared_ptr<const BoundingBox> box ) const;
-  TestResult testIntersection( shared_ptr<const BoundingSphere> sphere ) const;
+    void ContainsQuad(std::shared_ptr<QuadTree> quad);
 
   protected:
 
   vec4 m_planes[6];
+
+
 };
 #endif
