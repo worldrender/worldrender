@@ -69,10 +69,10 @@ public:
     float Zoom;
 
     // Constructor with vectors
-    Camera(Planet *planet, glm::vec3 position, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
+    Camera(glm::vec3 position, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
 
     // Constructor with scalar values
-    Camera(Planet *planet, float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
+    Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
     // Returns the view matrix calculated using Euler Angles and the LookAt Matrix
     glm::mat4 getViewMatrix();
@@ -85,6 +85,8 @@ public:
 
     void setFrustum(Frustum *frustum){this->frustum = frustum;}
     Frustum *getFrustum(){return this->frustum;}
+
+    void setPlanet(Planet *planet){this->planet = planet;}
 
 private:
     Planet *planet;

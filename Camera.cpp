@@ -23,14 +23,13 @@ float lastY = (float)HEIGHT / 2.0;
 float deltaTime = 0.0f;
 std::chrono::high_resolution_clock::time_point lastFrame = {};
 
-Camera::Camera(Planet *planet, glm::vec3 position, glm::vec3 up, float yaw, float pitch):
+Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch):
   Front(glm::vec3(0.0f, 0.0f, 0.0f)),
   MovementSpeed(SPEED),
   MouseSensitivity(SENSITIVITY),
   Zoom(ZOOM)
 {
   this->Position = position;
-  this->planet   = planet;
   this->WorldUp  = up;
   this->frustum  = new Frustum();
   this->Yaw      = yaw;
@@ -38,14 +37,13 @@ Camera::Camera(Planet *planet, glm::vec3 position, glm::vec3 up, float yaw, floa
   updateCameraVectors();
 }
 
-Camera::Camera(Planet *planet, float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch):
+Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch):
   Front(glm::vec3(0.0f, 0.0f, 0.0f)),
   MovementSpeed(SPEED),
   MouseSensitivity(SENSITIVITY),
   Zoom(ZOOM)
 {
   Position       = glm::vec3(posX, posY, posZ);
-  this->planet   = planet;
   this->frustum  = new Frustum();
   WorldUp        = glm::vec3(upX, upY, upZ);
   Yaw            = yaw;
@@ -227,12 +225,12 @@ void Camera::calculateFrustum()
   QuadTree::visibleVerts.clear();
   QuadTree::vNoises.clear();
 
-  frustum->ContainsQuad(*(this->planet->getCube()->Back));
-  frustum->ContainsQuad(*(this->planet->getCube()->Bottom));
-  frustum->ContainsQuad(*(this->planet->getCube()->Front));
-  frustum->ContainsQuad(*(this->planet->getCube()->Left));
-  frustum->ContainsQuad(*(this->planet->getCube()->Right));
-  frustum->ContainsQuad(*(this->planet->getCube()->Top));
+  frustum->ContainsQuad(this->planet->getCube()->Back);
+  frustum->ContainsQuad(this->planet->getCube()->Bottom);
+  frustum->ContainsQuad(this->planet->getCube()->Front);
+  frustum->ContainsQuad(this->planet->getCube()->Left);
+  frustum->ContainsQuad(this->planet->getCube()->Right);
+  frustum->ContainsQuad(this->planet->getCube()->Top);
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)

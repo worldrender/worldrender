@@ -8,19 +8,19 @@
 
 struct Cube
 {
-  QuadTree* Front = nullptr;
-  QuadTree* Back = nullptr;
-  QuadTree* Top = nullptr;
-  QuadTree* Bottom = nullptr;
-  QuadTree* Left = nullptr;
-  QuadTree* Right = nullptr;
+  std::shared_ptr<QuadTree> Front = nullptr;
+  std::shared_ptr<QuadTree> Back = nullptr;
+  std::shared_ptr<QuadTree> Top = nullptr;
+  std::shared_ptr<QuadTree> Bottom = nullptr;
+  std::shared_ptr<QuadTree> Left = nullptr;
+  std::shared_ptr<QuadTree> Right = nullptr;
 };
 
 class Planet
 {
   private:
-    Cube* cube;
     GLfloat radius;
+    Cube* cube;
   public:
     Planet();
     Planet(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3,
@@ -28,7 +28,7 @@ class Planet
        GLfloat radius);
     Planet(Cube* cube, GLfloat radius);
     GLfloat getRadius();
-    Cube *getCube(){return this->cube;}
+    Cube* getCube(){return this->cube;}
 };
 
 #endif

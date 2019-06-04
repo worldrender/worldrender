@@ -41,18 +41,17 @@ struct Quad
 class QuadTree
 {
   private:
-    std::unique_ptr<Quad>     quad   = nullptr;
-    std::unique_ptr<QuadTree> nw     = nullptr;
-    std::unique_ptr<QuadTree> sw     = nullptr;
-    std::unique_ptr<QuadTree> ne     = nullptr;
-    std::unique_ptr<QuadTree> se     = nullptr;
-
-
+    std::shared_ptr<Quad>     quad   = nullptr;
+    std::shared_ptr<QuadTree> nw     = nullptr;
+    std::shared_ptr<QuadTree> sw     = nullptr;
+    std::shared_ptr<QuadTree> ne     = nullptr;
+    std::shared_ptr<QuadTree> se     = nullptr;
 
     QuadTree* parent = nullptr;
 
     GLuint index;
   public:
+
     static Verts verts;
     static Verts visibleVerts;
     static std::vector<glm::vec3>    transformedVertices;
@@ -76,15 +75,13 @@ class QuadTree
     static void instanceNoiseR(int start, int end);
     static void threadedInstanceNoise();
 
-    bool isLeaf() const {return (nw==nullptr||sw==nullptr||ne==nullptr||se==nullptr);}
+    bool isLeaf() {return (nw==nullptr||sw==nullptr||ne==nullptr||se==nullptr);}
 
-    virtual inline const QuadTree &getNw() const {return *this->nw;}
-    virtual inline const QuadTree &getSw() const {return *this->sw;}
-    virtual inline const QuadTree &getNe() const {return *this->ne;}
-    virtual inline const QuadTree &getSe() const {return *this->se;}
-
-    virtual inline const Quad &getQuad() const {return *this->quad;}
-
+    std::shared_ptr<Quad>     getQuad(){ return this->quad;}
+    std::shared_ptr<QuadTree> getNw(){ return this->nw;}
+    std::shared_ptr<QuadTree> getSw(){ return this->sw;}
+    std::shared_ptr<QuadTree> getNe(){ return this->ne;}
+    std::shared_ptr<QuadTree> getSe(){ return this->se;}
     ~QuadTree();
 };
 #endif

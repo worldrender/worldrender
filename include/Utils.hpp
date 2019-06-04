@@ -5,6 +5,7 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <GL/gl.h>
+#include <iostream>
 
 #define RADIUS 7.f
 #define SCALE 100.f
@@ -75,6 +76,13 @@ namespace gl
   inline void polygonModeFBLine()
   {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  }
+
+  inline void consolePosition(glm::vec3 pos)
+  {
+    std::cout << pos.x << "," <<
+                 pos.y << "," <<
+                 pos.z << "," << std::endl;
   }
 }
 
