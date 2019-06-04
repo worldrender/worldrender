@@ -29,6 +29,12 @@ public:
     }
   };
 
+  void clear()
+  {
+    this->verts_.clear();
+    this->vert_index_.clear();
+  }
+
   AddVertexResult addVertex(const glm::vec3 &vert) {
     auto it = vert_index_.find(vert);
     if (it != vert_index_.end())

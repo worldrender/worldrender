@@ -1,8 +1,12 @@
 #include "include/Frustum.hpp"
 
 #include <GL/gl.h>
+#include <iostream>
 
 using namespace glm;
+using namespace std;
+
+int counter = 0;
 
 void FrustumCorners::Transform(mat4 space)
 {
@@ -46,6 +50,7 @@ void Frustum::SetToCamera(Camera* camera)
 
 void Frustum::Update()
 {
+cout << "OI" << counter++ << endl;
 	float normHalfWidth = glm::tan(glm::radians(FOV));
 	float aspectRatio = ASPECT_RATIO;
 
@@ -86,49 +91,91 @@ void Frustum::Update()
 	Planes.push_back(Plane(Corners.nc, Corners.nd, Corners.fc));//Bottom*/
 }
 
-void Frustum::ContainsQuad(QuadTree *quad)
+void Frustum::ContainsQuad(const QuadTree &quad)
 {
-	float a = quad->getQuad().c0;
-	float b = quad->getQuad().c1;
-	float c = quad->getQuad().c2;
-	float d = quad->getQuad().c3;
+  cout << "OI" << counter++ << endl;
+	float a = quad.getQuad().c0;
+	float b = quad.getQuad().c1;
+	float c = quad.getQuad().c2;
+	float d = quad.getQuad().c3;
+	cout << "OI" << counter++ << endl;
+	const glm::vec3 v0 = QuadTree::transformedVertices.at(a);
+	const glm::vec3 v1 = QuadTree::transformedVertices.at(b);
+	const glm::vec3 v2 = QuadTree::transformedVertices.at(c);
+	const glm::vec3 v3 = QuadTree::transformedVertices.at(d);
 	char rejects = 0;
 	for (auto plane : Planes)
 	{
 		rejects = 0;
 
 		if(QuadTree::visibility[a]==nullptr)
-		  QuadTree::visibility[a] = new Visibility(dot(plane.n, QuadTree::verts.lookupIndexRequired(a) - plane.d));
+		  QuadTree::visibility[a] = new Visibility(dot(plane.n, v0 - plane.d));
     if(QuadTree::visibility[a] < 0)
       rejects++;
 
 		if(QuadTree::visibility[b]==nullptr)
-		  QuadTree::visibility[b] = new Visibility(dot(plane.n, QuadTree::verts.lookupIndexRequired(b) - plane.d));
+		  QuadTree::visibility[b] = new Visibility(dot(plane.n, v1 - plane.d));
     if(QuadTree::visibility[b] < 0)
       rejects++;
 
 		if(QuadTree::visibility[c]==nullptr)
-		  QuadTree::visibility[c] = new Visibility(dot(plane.n, QuadTree::verts.lookupIndexRequired(c) - plane.d));
+		  QuadTree::visibility[c] = new Visibility(dot(plane.n, v2 - plane.d));
     if(QuadTree::visibility[c] < 0)
       rejects++;
 
 		if(QuadTree::visibility[d]==nullptr)
-		  QuadTree::visibility[d] = new Visibility(dot(plane.n, QuadTree::verts.lookupIndexRequired(d) - plane.d));
+		  QuadTree::visibility[d] = new Visibility(dot(plane.n, v3 - plane.d));
     if(QuadTree::visibility[d] < 0)
       rejects++;
 	}
     // if all three are outside a plane the triangle is outside the frustrum
   if (rejects >= 4)
   {
-    quad->setCulling();
     return;
   }
-  else if(quad->isLeaf())
+  else if(quad.isLeaf())
   {
-    this->ContainsQuad(quad->getNw());
-    this->ContainsQuad(quad->getSw());
-    this->ContainsQuad(quad->getNe());
-    this->ContainsQuad(quad->getSe());
+    this->ContainsQuad(quad.getNw());
+    this->ContainsQuad(quad.getSw());
+    this->ContainsQuad(quad.getNe());
+    this->ContainsQuad(quad.getSe());
   }
-  QuadTree::quadTreeList.push_back(quad);
+
+  cout << "OI" << counter++ << endl;
+
+  GLuint i0 = QuadTree::visibleVerts.addVertex(v0).index;
+    if(i0>=QuadTree::vNoises.size())
+    {
+      cout << "OI" << counter++ << endl;
+      QuadTree::vNoises.push_back(QuadTree::noises.at(a));
+    }
+
+  GLuint i1 = QuadTree::visibleVerts.addVertex(v1).index;
+    if(i1>=QuadTree::vNoises.size())
+    {
+      cout << "OI" << counter++ << endl;
+      QuadTree::vNoises.push_back(QuadTree::noises.at(b));
+    }
+  GLuint i2 = QuadTree::visibleVerts.addVertex(v2).index;
+    if(i2>=QuadTree::vNoises.size())
+    {
+      cout << "OI" << counter++ << endl;
+      QuadTree::vNoises.push_back(QuadTree::noises.at(c));
+    }
+  GLuint i3 = QuadTree::visibleVerts.addVertex(v3).index;
+    if(i3>=QuadTree::vNoises.size())
+    {
+      cout << "OI" << counter++ << endl;
+      QuadTree::vNoises.push_back(QuadTree::noises.at(d));
+    }
+
+  QuadTree::indices.push_back(i0);
+  QuadTree::indices.push_back(i1);
+  QuadTree::indices.push_back(i2);
+
+  QuadTree::indices.push_back(i2);
+  QuadTree::indices.push_back(i3);
+  QuadTree::indices.push_back(i0);
+
+
 }

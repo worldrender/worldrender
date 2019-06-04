@@ -7,7 +7,6 @@
 #include "include/Utils.hpp"
 
 std::vector<InstancedNoise> transformedData;
-std::vector<glm::vec3> transformedVertices;
 
 void instanceNoise(GLuint shader)
 {
@@ -65,7 +64,7 @@ void instanceNoise(GLuint shader)
 
   for(InstancedNoise &elem : transformedData)
   {
-    transformedVertices.push_back(elem.vertex);
+    QuadTree::transformedVertices.push_back(elem.vertex);
     QuadTree::noises.push_back(elem.noiseValue);
   }
   std::cout << "Vertex Size: " << quadVecSize << std::endl;

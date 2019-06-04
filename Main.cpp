@@ -59,7 +59,8 @@ int main(int argv, char ** argc) {
     planetCamera.pressButtons();
 
     setUniforms();
-
+    //planetCamera.calculateFrustum();
+    //updateBuffer();
     draw();
 
     glDisableVertexAttribArray(0);
@@ -211,15 +212,27 @@ void createBuffer() {
 
   glGenBuffers(1, & vertexbuffer);
   glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-  glBufferData(GL_ARRAY_BUFFER, transformedVertices.size() * sizeof(glm::vec3), transformedVertices.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, QuadTree::transformedVertices.size() * sizeof(glm::vec3), QuadTree::transformedVertices.data(), GL_DYNAMIC_DRAW);
 
   glGenBuffers(1, & noiseBuffer);
   glBindBuffer(GL_ARRAY_BUFFER, noiseBuffer);
-  glBufferData(GL_ARRAY_BUFFER, transformedVertices.size() * sizeof(GLfloat), QuadTree::noises.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, QuadTree::transformedVertices.size() * sizeof(GLfloat), QuadTree::noises.data(), GL_STATIC_DRAW);
 
   glGenBuffers(1, & elementbuffer);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, QuadTree::indices.size() * sizeof(GLuint), QuadTree::indices.data(), GL_STATIC_DRAW);
+}
+
+void updateBuffer() {
+  glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+  glBufferData(GL_ARRAY_BUFFER, QuadTree::visibleVerts.size() * sizeof(glm::vec3), QuadTree::visibleVerts.data(), GL_DYNAMIC_DRAW);
+
+  glBindBuffer(GL_ARRAY_BUFFER, noiseBuffer);
+  glBufferData(GL_ARRAY_BUFFER, QuadTree::vNoises.size() * sizeof(GLfloat), QuadTree::vNoises.data(), GL_STATIC_DRAW);
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, QuadTree::indices.size() * sizeof(GLuint), QuadTree::indices.data(), GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void applyingTextures() {

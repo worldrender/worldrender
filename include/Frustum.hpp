@@ -86,7 +86,7 @@ public:
 	void SetToCamera(Camera* pCamera);
 	void SetCullTransform(mat4 objectWorld);
 
-	void ContainsQuad(QuadTree *quad);
+	void ContainsQuad(const QuadTree &quad);
 
 	const vec3 &GetPositionOS() { return PositionObject; }
 	const float GetFOV() { return FOV; }

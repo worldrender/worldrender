@@ -10,6 +10,7 @@
 #include "Utils.hpp"
 #include "Planet.hpp"
 
+
 extern bool tIsPressed;
 extern bool pIsPressed;
 extern bool cIsPressed;
@@ -42,6 +43,8 @@ enum Camera_Movement {
     RIGHT
 };
 
+class Frustum;
+
 // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
 class Camera
 {
@@ -53,16 +56,13 @@ public:
     glm::vec3 Right;
     glm::vec3 WorldUp;
 
-    glm::vec3 lastPosition1;
-    glm::vec3 lastPosition2;
-    glm::vec3 lastPosition3;
+    std::vector<glm::vec3> lastPosition;
 
-    Planet *planet;
     // Euler Angles
     float Yaw;
     float Pitch;
     float Near = 0.0001f;
-    float Far = 1000.f;
+    float Far = 2500.f;
     // Camera options
     float MovementSpeed;
     float MouseSensitivity;
@@ -81,8 +81,14 @@ public:
     void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
     void ProcessMouseScroll(float yoffset);
     void pressButtons();
+    void calculateFrustum();
+
+    void setFrustum(Frustum *frustum){this->frustum = frustum;}
+    Frustum *getFrustum(){return this->frustum;}
 
 private:
+    Planet *planet;
+    Frustum *frustum;
     // Calculates the front vector from the Camera's (updated) Euler Angles
     void updateCameraVectors()
     {

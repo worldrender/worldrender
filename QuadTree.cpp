@@ -33,7 +33,11 @@ std::vector<GLuint>       QuadTree::indices;
 std::vector<GLuint>       QuadTree::normalIndices;
 std::vector<QuadTree*>    QuadTree::quadTreeList;
 std::vector<Visibility*>  QuadTree::visibility;
+std::vector<glm::vec3>    QuadTree::transformedVertices;
+std::vector<GLfloat>      QuadTree::vNoises;
+
 Verts QuadTree::verts;
+Verts QuadTree::visibleVerts;
 
 static glm::vec3 lookup(GLuint idx)
 {
@@ -50,8 +54,7 @@ QuadTree::QuadTree():
     nw{nullptr},
     sw{nullptr},
     ne{nullptr},
-    se{nullptr},
-    culling{false}
+    se{nullptr}
 {
 }
 
@@ -66,8 +69,7 @@ QuadTree::QuadTree(std::unique_ptr<Quad> quad, QuadTree* parent):
     nw{nullptr},
     sw{nullptr},
     ne{nullptr},
-    se{nullptr},
-    culling{false}
+    se{nullptr}
 {
   this->quad = std::move(quad);
   this->index = this->quadTreeList.size();

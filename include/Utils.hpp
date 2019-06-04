@@ -38,8 +38,6 @@ T size(T* t)
 extern int enableTess;
 extern GLuint frame_index;
 
-extern std::vector<glm::vec3> transformedVertices;
-
 namespace gl
 {
   inline void clearColor(glm::vec4 color)
@@ -95,6 +93,7 @@ void deleteProgram(const GLuint programs[]);
 void deleteBuffers();
 void CPUfbm();
 void setSkybox();
+void updateBuffer();
 unsigned int loadCubemap(std::vector<std::string> faces);
 
 #endif
