@@ -217,6 +217,8 @@ void Camera::calculateFrustum()
 
   QuadTree::indices.clear();
   QuadTree::visibleVerts.clear();
+  QuadTree::visibility.clear();
+  QuadTree::visibility.resize(QuadTree::verts.size(),nullptr);
   QuadTree::vNoises.clear();
 
   frustum->ContainsQuad(this->planet->getCube()->Back);

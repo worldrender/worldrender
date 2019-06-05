@@ -70,10 +70,10 @@ Frustum::Frustum( const mat4 &viewMatrix, const mat4 &projectionMatrix )
 
 void Frustum::ContainsQuad(std::shared_ptr<QuadTree> quad)
 {
-	float a = quad->getQuad()->c0;
-	float b = quad->getQuad()->c1;
-	float c = quad->getQuad()->c2;
-	float d = quad->getQuad()->c3;
+	const float a = quad->getQuad()->c0;
+	const float b = quad->getQuad()->c1;
+	const float c = quad->getQuad()->c2;
+	const float d = quad->getQuad()->c3;
 
 	const glm::vec3 v0 = QuadTree::transformedVertices.at(a);
 	const glm::vec3 v1 = QuadTree::transformedVertices.at(b);
@@ -84,18 +84,25 @@ void Frustum::ContainsQuad(std::shared_ptr<QuadTree> quad)
 
 	for (GLuint i=0;i<6;i++)
 	{
-
-    if (m_planes[i][0] * v0.x + m_planes[i][1] * v0.y + m_planes[i][2] * v0.z + m_planes[i][3] <= 0)
+    if(!QuadTree::visibility[a])
+      QuadTree::visibility[a] = new Visibility(m_planes[i][0] * v0.x + m_planes[i][1] * v0.y + m_planes[i][2] * v0.z + m_planes[i][3]);
+    if(QuadTree::visibility[a]->boundary < 0)
       rejects++;
-    if (m_planes[i][0] * v1.x + m_planes[i][1] * v1.y + m_planes[i][2] * v1.z + m_planes[i][3] <= 0)
+    if(!QuadTree::visibility[b])
+      QuadTree::visibility[b] = new Visibility(m_planes[i][0] * v1.x + m_planes[i][1] * v1.y + m_planes[i][2] * v1.z + m_planes[i][3]);
+    if(QuadTree::visibility[b]->boundary < 0)
       rejects++;
-    if (m_planes[i][0] * v2.x + m_planes[i][1] * v2.y + m_planes[i][2] * v2.z + m_planes[i][3] <= 0)
+    if(!QuadTree::visibility[c])
+      QuadTree::visibility[c] = new Visibility(m_planes[i][0] * v2.x + m_planes[i][1] * v2.y + m_planes[i][2] * v2.z + m_planes[i][3]);
+    if(QuadTree::visibility[c]->boundary < 0)
       rejects++;
-    if (m_planes[i][0] * v3.x + m_planes[i][1] * v3.y + m_planes[i][2] * v3.z + m_planes[i][3] <= 0)
+    if(!QuadTree::visibility[d])
+      QuadTree::visibility[d] = new Visibility(m_planes[i][0] * v3.x + m_planes[i][1] * v3.y + m_planes[i][2] * v3.z + m_planes[i][3]);
+    if(QuadTree::visibility[d]->boundary < 0)
       rejects++;
 	}
     // if all three are outside a plane the triangle is outside the frustrum
-  if (rejects >= 8)
+  if (rejects > 4)
   {
     return;
   }
@@ -109,19 +116,19 @@ void Frustum::ContainsQuad(std::shared_ptr<QuadTree> quad)
   }
   else
   {
-    GLuint i0 = QuadTree::visibleVerts.addVertex(v0).index;
+    const GLuint i0 = QuadTree::visibleVerts.addVertex(v0).index;
     if(i0>=QuadTree::vNoises.size())
       QuadTree::vNoises.push_back(QuadTree::noises.at(a));
 
-    GLuint i1 = QuadTree::visibleVerts.addVertex(v1).index;
+    const GLuint i1 = QuadTree::visibleVerts.addVertex(v1).index;
     if(i1>=QuadTree::vNoises.size())
       QuadTree::vNoises.push_back(QuadTree::noises.at(b));
 
-    GLuint i2 = QuadTree::visibleVerts.addVertex(v2).index;
+    const GLuint i2 = QuadTree::visibleVerts.addVertex(v2).index;
     if(i2>=QuadTree::vNoises.size())
       QuadTree::vNoises.push_back(QuadTree::noises.at(c));
 
-    GLuint i3 = QuadTree::visibleVerts.addVertex(v3).index;
+    const GLuint i3 = QuadTree::visibleVerts.addVertex(v3).index;
     if(i3>=QuadTree::vNoises.size())
       QuadTree::vNoises.push_back(QuadTree::noises.at(d));
 

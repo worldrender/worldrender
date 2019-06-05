@@ -13,10 +13,10 @@ class QuadTree;
 
 struct Visibility
 {
-  float boundary;
-  Visibility(float boundary)
+  const float boundary;
+  Visibility(const float boundary):
+    boundary(boundary)
   {
-    this->boundary = boundary;
   }
 };
 
