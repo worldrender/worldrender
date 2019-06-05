@@ -9,7 +9,7 @@
 
 #define RADIUS 7.f
 #define SCALE 100.f
-#define LODVALUE 8 //safe number is 6
+#define LODVALUE 6 //safe number is 6
 #define PositionSlot 0u
 #define WIDTH 1280u
 #define HEIGHT 1024u

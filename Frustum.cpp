@@ -102,7 +102,7 @@ void Frustum::ContainsQuad(std::shared_ptr<QuadTree> quad)
       rejects++;
 	}
     // if all three are outside a plane the triangle is outside the frustrum
-  if (rejects > 4)
+  if (rejects >= 4)
   {
     return;
   }
