@@ -4,6 +4,10 @@
 #define M_PI 3.14159265358979323844f
 #define WIDTH 1280u
 #define GRANULARITY 1.7777f
+#define M_SEED1 1e4
+#define M_SEED2 17.f
+#define M_SEED3 0.1f
+#define M_SEED4 13.f
 
 
 layout(triangles, equal_spacing, ccw) in;
@@ -30,8 +34,8 @@ out float fNoise;
 
 out vec3 vcPos;
 
-float hash(float n) { return fract(sin(n) * 1e4); }
-float hash(vec2 p) { return fract(1e4 * sin(17.0 * p.x + p.y * 0.1) * (0.1 + abs(sin(p.y * 13.0 + p.x)))); }
+float hash(float n) { return fract(sin(n) * M_SEED1); }
+float hash(vec2 p) { return fract(M_SEED1 * sin(M_SEED2 * p.x + p.y * M_SEED3) * (M_SEED3 + abs(sin(p.y * 13.0 + p.x)))); }
 
 float noise(vec3 x) {
 	const vec3 step = vec3(110, 241, 171);
@@ -198,6 +202,13 @@ vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
     return vec3(gl_TessCoord.x) * v0 + vec3(gl_TessCoord.y) * v1 + vec3(gl_TessCoord.z) * v2;
 }
 
+float smoothing(float p1, float p2)
+{
+  float p = cubeVal(cos(sin(cos(sin(sqrt(abs(cubeVal(p1)+sqrt(abs(sin(cubeVal(p2)))))))))));
+  p *= p*sin(1/p);
+  return abs(noise(vec3(p)));
+}
+
 void main(){
     vec3 tcPos0 = (tcPosition[0]);// tcPos0.y = iqfBm(tcPos0, 3, 8, 8)*radius;
     vec3 tcPos1 = (tcPosition[1]);// tcPos1.y = iqfBm(tcPos1, 3, 8, 8)*radius;
@@ -232,7 +243,13 @@ void main(){
 
     vNoise += cubeVal(mountains)*clamp((f1),-(GRANULARITY),GRANULARITY)+clamp((f2),-(GRANULARITY),GRANULARITY)+clamp((f3),-(GRANULARITY),GRANULARITY)-0.8;
     vNoise += (vertexNoise);
-    vNoise *= 1.3;
+    vNoise *= 1.1784f;
+    if(vNoise>2.69)
+    {
+      vNoise += smoothing(mountains, f2);
+    }
+
+
 //    float signal = 1;
 //    if(vNoise<0)
 //      signal = -1;
