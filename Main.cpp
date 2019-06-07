@@ -36,7 +36,7 @@ unsigned int skyboxVAO, skyboxVBO, cubemapTexture;
 GLuint planetShader, skyboxShader, activeShader, transformFeedbackShader, cullingShader;
 int enableTess = 0;
 
-Camera planetCamera(glm::vec3(-120.f, 780.f, 0.0f));
+Camera planetCamera(glm::vec3(-2000.f, 300.f, 500.0f));
 
 int main(int argv, char ** argc) {
   init();
@@ -62,8 +62,8 @@ int main(int argv, char ** argc) {
     planetCamera.pressButtons();
 
     setUniforms();
-    planetCamera.calculateFrustum();
-    updateBuffer();
+//    planetCamera.calculateFrustum();
+//    updateBuffer();
     draw();
 
     glDisableVertexAttribArray(0);

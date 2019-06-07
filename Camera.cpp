@@ -56,8 +56,9 @@ glm::mat4 Camera::getViewMatrix()
 
 glm::mat4 Camera::getProjectionMatrix(int SCR_WIDTH, int SCR_HEIGHT)
 {
-  if(Far < 2460.f)
-    Position = lastPosition.at(0);
+  if(Far < 2*RADIUS*SCALE)
+    std::cout << Far << "\n";
+  //  Position = lastPosition.at(0);
 
   GLfloat fLength  = fAbs(Position.x);
           fLength += fAbs(Position.y);

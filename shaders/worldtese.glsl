@@ -3,6 +3,7 @@
 #define G3 0.166666667
 #define M_PI 3.14159265358979323844f
 #define WIDTH 1280u
+#define GRANULARITY 5.f
 
 
 layout(triangles, equal_spacing, ccw) in;
@@ -229,8 +230,13 @@ void main(){
     float f3 = ridgedNoise(vcPos/2.f, 5, 0.7, 0.4f, 4.f, 0.03f, 0.5f, 0.05f)*0.3f;
 
 
-    vNoise += cubeVal(mountains)*clamp((f1),-1.777f,1.777f)+clamp((f2),-1.777f,1.777f)+clamp((f3),-1.777f,1.777f)-0.8;
+    vNoise += cubeVal(mountains)*clamp((f1),-(GRANULARITY),GRANULARITY)+clamp((f2),-(GRANULARITY)/3,GRANULARITY/3)+clamp((f3),-(GRANULARITY),GRANULARITY)-0.8;
     vNoise += (vertexNoise);
+    vNoise *= 1.1;
+//    float signal = 1;
+//    if(vNoise<0)
+//      signal = -1;
+//      vNoise += signal*(sin(vNoise));
     vcPos = vcPos + vcNormal * (vNoise);
     vcNormal = normalize(vcPos);
     ///PASSAR O DELTA antes depois da normal
