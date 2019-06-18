@@ -277,6 +277,7 @@ void setUniforms() {
   glUniformMatrix4fv(glGetUniformLocation(planetShader, "projection"), 1, GL_FALSE, & ProjectionMatrix[0][0]);
   glUniform1f(glGetUniformLocation(planetShader, "radius"), planet -> getRadius());
   glUniform1i(glGetUniformLocation(planetShader, "tess"), enableTess);
+  glUniform1i(glGetUniformLocation(planetShader, "wireframe"), enablePolygon);
   glUniform1i(glGetUniformLocation(planetShader, "pTexture"), 0);
   glUniform1i(glGetUniformLocation(planetShader, "dTexture"), 1);
   glUniform1i(glGetUniformLocation(planetShader, "nTexture"), 2);
@@ -406,9 +407,3 @@ void CPUfbm() {
   diff = end - start;
   std::cout << "CPU fBm: " << diff.count() << "s\n";
 }
-
-//void extras(){
-//    GLuint warn[] = {TessLevelInnerID, TessLevelOuterID};
-//    if(warn);
-//    if(IndexCount);
-//}

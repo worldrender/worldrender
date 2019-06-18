@@ -30,6 +30,7 @@ uniform sampler2D nTexture;
 
 uniform mat4 model;
 uniform vec3 viewPos;
+uniform bool wireframe;
 uniform float radius;
 
 uniform vec3 lightDir = vec3(-1, -0.3, 1);
@@ -179,6 +180,10 @@ vec3 setup_lights(
 }
 
 void main() {
+  if(!wireframe){
+	fColor = vec4(0.f, 0.f, 0.f, 1.f);
+ 	return;
+  }
   float hNoise = (vNoise)/2;
   vec3 normal = normalize(vcNormal);
   vec3 fragPos = vec3(model*vec4(vcPos,1.0f));

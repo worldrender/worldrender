@@ -200,7 +200,7 @@ void Camera::pressButtons()
     this->MovementSpeed = sp;
 
   }
-  pUpIsPressed = pUpIsCurrentlyPressed;
+  pUpIsPressed = pUpIsCurrentlyPressed; 
 
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     this->ProcessKeyboard(FORWARD, deltaTime);

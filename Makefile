@@ -19,7 +19,7 @@ LIBPATH =
 
 LDFLAGS =	$(THREAD_LIBS) $(GLFW_LIBS) $(OPENGL_LIBS)
 
-OBJFILES = Main.o Planet.o LoadShaders.o NoiseFeedback.o QuadTree.o Camera.o
+OBJFILES = Main.o Planet.o LoadShaders.o NoiseFeedback.o QuadTree.o Camera.o Frustum.o
 
 
 # ***********************************************************************************
