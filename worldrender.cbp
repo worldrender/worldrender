@@ -85,6 +85,7 @@
 		<Unit filename="NoiseFeedback.cpp" />
 		<Unit filename="Planet.cpp" />
 		<Unit filename="QuadTree.cpp" />
+		<Unit filename="include/Atmosphere.hpp" />
 		<Unit filename="include/Camera.hpp" />
 		<Unit filename="include/Frustum.hpp" />
 		<Unit filename="include/LoadShaders.hpp" />
@@ -97,6 +98,10 @@
 		<Unit filename="include/shader.hpp" />
 		<Unit filename="include/simplex.h" />
 		<Unit filename="include/stb_image.hpp" />
+		<Unit filename="shaders/atmospherefrag.glsl" />
+		<Unit filename="shaders/atmospheretesc.glsl" />
+		<Unit filename="shaders/atmospheretese.glsl" />
+		<Unit filename="shaders/atmospherevert.glsl" />
 		<Unit filename="shaders/cullingfrag.glsl" />
 		<Unit filename="shaders/cullinggeo.glsl" />
 		<Unit filename="shaders/cullingvert.glsl" />
