@@ -1,5 +1,5 @@
-#ifndef QUADTREE_H_
-#define QUADTREE_H_
+#ifndef QUADTREE_HPP_INCLUDED
+#define QUADTREE_HPP_INCLUDED
 
 #include <vector>
 #include <iostream>

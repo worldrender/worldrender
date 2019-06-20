@@ -13,6 +13,7 @@
 #include "include/Textures.hpp"
 #include "include/Camera.hpp"
 #include "include/Utils.hpp"
+#include "include/Atmosphere.hpp"
 #include <chrono>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -33,7 +34,7 @@ Planet * planet;
 chrono::duration < double > diff;
 GLuint VertexArrayID, feedbackVAO, vertexbuffer, noiseBuffer, elementbuffer;
 unsigned int skyboxVAO, skyboxVBO, cubemapTexture;
-GLuint planetShader, skyboxShader, activeShader, transformFeedbackShader, cullingShader;
+GLuint planetShader, skyboxShader, activeShader, transformFeedbackShader;
 int enableTess = 0;
 
 Camera planetCamera(glm::vec3(-2000.f, 300.f, 500.0f));
@@ -46,6 +47,10 @@ int main(int argv, char ** argc) {
   setSkybox();
   createBuffer();
   applyingTextures();
+
+  /**ATMOSFERA**/
+  bufferAtmosphere();
+  /**ATMOSFERA**/
 
 
   planetCamera.setPlanet(planet);
@@ -65,6 +70,10 @@ int main(int argv, char ** argc) {
 //    planetCamera.calculateFrustum();
 //    updateBuffer();
     draw();
+    /**ATMOSFERA**/
+    renderAtmosphere(Atmosphere::innerIndex, 1);
+    renderAtmosphere(Atmosphere::outerIndex, 0);
+    /**ATMOSFERA**/
 
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
@@ -139,9 +148,13 @@ void init() {
 
 void createProgram() {
 
-  planetShader = LoadShaders("shaders/worldvert.glsl", "shaders/worldtesc.glsl", "shaders/worldtese.glsl", "shaders/worldfrag.glsl");
-  skyboxShader = LoadShaders("shaders/skyboxvert.glsl", "shaders/skyboxfrag.glsl");
+  planetShader            = LoadShaders("shaders/worldvert.glsl", "shaders/worldtesc.glsl", "shaders/worldtese.glsl", "shaders/worldfrag.glsl");
+
+  skyboxShader            = LoadShaders("shaders/skyboxvert.glsl", "shaders/skyboxfrag.glsl");
   transformFeedbackShader = LoadShader("shaders/transform.glsl");
+
+  /**ATMOSFERA**/
+  Atmosphere::shader      = LoadShaders("shaders/atmospherevert.glsl", "shaders/atmospheretesc.glsl", "shaders/atmospheretese.glsl", "shaders/atmospherefrag.glsl");
   //cullingShader = LoadShaders("culling.vs", "culling.gs", "culling.ps");
   activeShader = planetShader;
 }
@@ -341,6 +354,54 @@ void setSkybox(){
     glUseProgram(skyboxShader);
     glUniform1i(glGetUniformLocation(skyboxShader, "skybox"), 0);
 }
+
+/**ATMOSFERA**/
+void bufferAtmosphere(){
+    // atmosphere VAO
+    glGenVertexArrays(1, &Atmosphere::VAO);
+    glGenBuffers(1, &Atmosphere::VBO);
+    glBindVertexArray(Atmosphere::VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, Atmosphere::VBO);
+    glBufferData(GL_ARRAY_BUFFER, Atmosphere::vertices.size(), Atmosphere::vertices.data(), GL_DYNAMIC_DRAW);
+
+    glGenBuffers(1, &Atmosphere::indices);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::indices);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::innerIndex.size() * sizeof(GLuint), Atmosphere::innerIndex.data(), GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void renderAtmosphere(const vector<GLuint> w_indices, bool io){
+  glUseProgram(Atmosphere::shader);
+
+  glm::mat4 ProjectionMatrix = planetCamera.getProjectionMatrix(WIDTH, HEIGHT);
+  glm::mat4 ViewMatrix = planetCamera.getViewMatrix();
+  glm::mat4 ModelMatrix = glm::mat4(1.0);
+  glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+
+  glUniformMatrix4fv(glGetUniformLocation(Atmosphere::shader, "MVP"), 1, GL_FALSE, & MVP[0][0]);
+  glUniform1f(glGetUniformLocation(Atmosphere::shader, "radius"), planet -> getRadius());
+  glUniform1f(glGetUniformLocation(Atmosphere::shader, "scale"), SCALE-(io?10:(-10)));
+  glUniform1i(glGetUniformLocation(Atmosphere::shader, "io"), io);
+
+  glBindVertexArray(Atmosphere::VAO);
+  glBindBuffer(GL_ARRAY_BUFFER, Atmosphere::VBO);
+  glBufferData(GL_ARRAY_BUFFER, Atmosphere::vertices.size(), Atmosphere::vertices.data(), GL_DYNAMIC_DRAW);
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::indices);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::innerIndex.size() * sizeof(GLuint), w_indices.data(), GL_DYNAMIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  glEnableVertexAttribArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, Atmosphere::VBO);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void * ) 0);
+
+  glDrawElements(GL_PATCHES, Atmosphere::innerIndex.size(), GL_UNSIGNED_INT, (void * ) 0);
+
+  glBindVertexArray(0);
+
+  glUseProgram(0);
+}
+/**ATMOSFERA**/
 
 unsigned int loadCubemap(vector<std::string> faces)
 {

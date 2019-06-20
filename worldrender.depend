@@ -12,7 +12,7 @@
 
 1555948838 
 
-1559881101 source:c:\users\ricardo\desktop\worldrender\main.cpp
+1560995020 source:c:\users\ricardo\desktop\worldrender\main.cpp
 	<iostream>
 	<string>
 	<cstdlib>
@@ -27,6 +27,7 @@
 	"include/Textures.hpp"
 	"include/Camera.hpp"
 	"include/Utils.hpp"
+	"include/Atmosphere.hpp"
 	<chrono>
 	"include/stb_image.hpp"
 
@@ -1534,7 +1535,7 @@
 	<GL/gl.h>
 	<iostream>
 
-1559881101 source:c:\users\ricardo\desktop\worldrender\camera.cpp
+1560973482 source:c:\users\ricardo\desktop\worldrender\camera.cpp
 	<glm/glm.hpp>
 	<glm/gtc/matrix_transform.hpp>
 	<GLFW/glfw3.h>
@@ -1621,7 +1622,7 @@
 	<GL/gl.h>
 	<vector>
 
-1559881102 c:\users\ricardo\desktop\worldrender\include\quadtree.hpp
+1560973698 c:\users\ricardo\desktop\worldrender\include\quadtree.hpp
 	<vector>
 	<iostream>
 	<glm/glm.hpp>
@@ -2049,4 +2050,11 @@
 	"QuadTree.hpp"
 	"Frustum.hpp"
 	"Planet.hpp"
+
+1560994617 c:\users\ricardo\desktop\worldrender\include\atmosphere.hpp
+	<vector>
+	<iostream>
+	<glm/glm.hpp>
+	<GL/gl.h>
+	"Utils.hpp"
 
