@@ -33,14 +33,8 @@ class Atmosphere{
     ~Atmosphere(){}
 };
 
-const vector<vec3> Atmosphere::vertices       {vec3(-1.f,-1.f,-1.f)*PLANET_SCALE,
-                                               vec3(1.f,-1.f,-1.f) *PLANET_SCALE,
-                                               vec3(1.f,1.f,-1.f)  *PLANET_SCALE,
-                                               vec3(-1.f,1.f,-1.f) *PLANET_SCALE,
-                                               vec3(-1.f,-1.f,1.f) *PLANET_SCALE,
-                                               vec3(1.f,-1.f,1.f)  *PLANET_SCALE,
-                                               vec3(1.f,1.f,1.f)   *PLANET_SCALE,
-                                               vec3(-1.f,1.f,1.f)  *PLANET_SCALE};
+const vector<vec3> Atmosphere::vertices       {cubeVerts::v0, cubeVerts::v1, cubeVerts::v2, cubeVerts::v3,
+                                               cubeVerts::v4, cubeVerts::v5, cubeVerts::v6, cubeVerts::v7};
 
 const vector<GLuint> Atmosphere::innerIndex    {2, 1, 0, 2, 3, 0,
                                                 6, 2, 3, 6, 7, 3,

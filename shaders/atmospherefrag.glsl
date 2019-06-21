@@ -20,7 +20,7 @@ float fAbs(float t)
 }
 
 void main() {
-  
+
   fColor = vec4(0.f, 0.f, 0.f, 1.f);
 }
 

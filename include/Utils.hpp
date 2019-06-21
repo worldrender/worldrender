@@ -24,6 +24,9 @@
 #define SENSITIVITY    0.1f
 #define ZOOM           45.0f
 
+using namespace std;
+using namespace glm;
+
 template<typename T>
 T fAbs(T t)
 {
@@ -85,6 +88,25 @@ namespace gl
                  pos.z << "," << std::endl;
   }
 }
+
+class cubeVerts{
+  public:
+    static const vec3 v0;// = vec3(-1,-1,-1);
+    static const vec3 v1;// = vec3(1,-1,-1);
+    static const vec3 v2;// = vec3(1,1,-1);
+    static const vec3 v3;// = vec3(-1,1,-1);
+    static const vec3 v4;// = vec3(-1,-1,1);
+    static const vec3 v5;// = vec3(1,-1,1);
+    static const vec3 v6;// = vec3(1,1,1);
+    static const vec3 v7;// = vec3(-1,1,1);
+  private:
+    void * operator new      (size_t);
+    void * operator new[]    (size_t);
+    void   operator delete   (void *);
+    void   operator delete[] (void*);
+    cubeVerts(){}
+    ~cubeVerts(){}
+};
 
 void initGL();
 void init();
