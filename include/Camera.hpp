@@ -50,7 +50,7 @@ class Camera
 {
 public:
     // Camera Attributes
-    glm::vec3 Position;
+    glm::vec3 Position = initialPos;
     glm::vec3 Front;
     glm::vec3 Up;
     glm::vec3 Right;
@@ -69,7 +69,7 @@ public:
     float Zoom;
 
     // Constructor with vectors
-    Camera(glm::vec3 position, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
+    Camera(glm::vec3 position, glm::vec3 up = glm::vec3(0.17f, .98f, -0.03f), float yaw = YAW, float pitch = PITCH);
 
     // Constructor with scalar values
     Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);

@@ -1,8 +1,8 @@
 #version 430 core
 
-in vec4 vcColor;
-in vec3 vcNormal;
-in vec3 vcPos;
+//in vec4 vcColor;
+//in vec3 vcNormal;
+//in vec3 vcPos;
 
 uniform bool wireframe;
 
@@ -21,7 +21,7 @@ float fAbs(float t)
 
 void main() {
 
-  fColor = vec4(0.f, 0.f, 0.f, 1.f);
+  fColor = vec4(1.f, 0.f, 0.f, 1.f);
 }
 
 

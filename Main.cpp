@@ -47,7 +47,7 @@ unsigned int skyboxVAO, skyboxVBO, cubemapTexture;
 GLuint planetShader, skyboxShader, activeShader, transformFeedbackShader;
 int enableTess = 0;
 
-Camera planetCamera(glm::vec3(-2000.f, 300.f, 500.0f));
+Camera planetCamera(glm::vec3(-1800.f, 200.f, 200.0f));
 
 int main(int argv, char ** argc) {
   init();
@@ -67,8 +67,6 @@ int main(int argv, char ** argc) {
 
   do {
     // Clear the screen
-    glBindVertexArray(VertexArrayID);
-
     std::chrono::high_resolution_clock::time_point currentFrame = std::chrono::high_resolution_clock::now();
     std::chrono::duration < float > diff = currentFrame - lastFrame;
     deltaTime = diff.count();
@@ -80,9 +78,6 @@ int main(int argv, char ** argc) {
 //    planetCamera.calculateFrustum();
 //    updateBuffer();
     draw();
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(2);
 
     swapBuffers();
 
@@ -92,11 +87,9 @@ int main(int argv, char ** argc) {
 
   deleteBuffers();
 
-  deleteProgram(new GLuint[3]{planetShader,transformFeedbackShader,skyboxShader});
+  deleteProgram(new GLuint[4]{planetShader,transformFeedbackShader,skyboxShader,Atmosphere::shader});
 
-  //CPUfbm();
   glfwTerminate();
-  //extras();
 
   return 0;
 }
@@ -160,7 +153,7 @@ void createProgram() {
 
   /**ATMOSFERA**/
   Atmosphere::shader      = LoadShaders("shaders/atmospherevert.glsl", "shaders/atmospheretesc.glsl", "shaders/atmospheretese.glsl", "shaders/atmospherefrag.glsl");
-  //cullingShader = LoadShaders("culling.vs", "culling.gs", "culling.ps");
+  //Atmosphere::shader      = LoadShaders("shaders/atmospherevert.glsl", "shaders/atmospherefrag.glsl");
   activeShader = planetShader;
 }
 
@@ -262,6 +255,7 @@ void setUniforms() {
 }
 
 void draw() {
+    glBindVertexArray(VertexArrayID);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glPatchParameteri(GL_PATCH_VERTICES, 3);
@@ -282,12 +276,9 @@ void draw() {
     glDrawElements(GL_TRIANGLES, QuadTree::indices.size(), GL_UNSIGNED_INT, (void * ) 0);
   }
 
-
-    /**ATMOSFERA**/
-    renderAtmosphere(Atmosphere::innerIndex, 1);
-    renderAtmosphere(Atmosphere::outerIndex, 0);
-    /**ATMOSFERA**/
-
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
 
   // draw skybox as last
     glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
@@ -297,15 +288,20 @@ void draw() {
     glm::mat4 ViewMatrix = glm::mat4(glm::mat3(planetCamera.getViewMatrix())); // remove translation from the view matrix
     glUniformMatrix4fv(glGetUniformLocation(skyboxShader, "view"), 1, GL_FALSE, & ViewMatrix[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(skyboxShader, "projection"), 1, GL_FALSE, & ProjectionMatrix[0][0]);
-
+    glUniform1i(glGetUniformLocation(skyboxShader, "wireframe"), enablePolygon);
     // skybox cube
     glBindVertexArray(skyboxVAO);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
     glDrawArrays(GL_TRIANGLES, 0, 36);
-    glBindVertexArray(0);
+
     gl::enableCullFace();
     glDepthFunc(GL_LESS); // set depth function back to default
+
+    /**ATMOSFERA**/
+    renderAtmosphere(Atmosphere::innerIndex, 1);
+    renderAtmosphere(Atmosphere::outerIndex, 0);
+    /**ATMOSFERA**/
 
     QuadTree::quadTreeList.clear();
 }
@@ -342,7 +338,8 @@ void bufferAtmosphere(){
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::innerIndex.size() * sizeof(GLuint), Atmosphere::innerIndex.data(), GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    glBindVertexArray(0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 }
 
 void renderAtmosphere(const vector<GLuint> w_indices, bool io){
@@ -372,6 +369,7 @@ void renderAtmosphere(const vector<GLuint> w_indices, bool io){
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::indices);
 
+  glBindVertexArray(Atmosphere::VAO);
   glPatchParameteri(GL_PATCH_VERTICES, 3);
   glDrawElements(GL_PATCHES, Atmosphere::innerIndex.size(), GL_UNSIGNED_INT, (void * ) 0);
 

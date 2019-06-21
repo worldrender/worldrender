@@ -24,7 +24,7 @@ float deltaTime = 0.0f;
 std::chrono::high_resolution_clock::time_point lastFrame = {};
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch):
-  Front(glm::vec3(0.0f, 0.0f, 0.0f)),
+  Front(glm::vec3(0.98f, -0.16f, -0.13f)),
   MovementSpeed(SPEED),
   MouseSensitivity(SENSITIVITY),
   Zoom(ZOOM)
@@ -37,7 +37,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch):
 }
 
 Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch):
-  Front(glm::vec3(0.0f, 0.0f, 0.0f)),
+  Front(glm::vec3(0.98f, -0.16f, -0.13f)),
   MovementSpeed(SPEED),
   MouseSensitivity(SENSITIVITY),
   Zoom(ZOOM)
@@ -200,7 +200,7 @@ void Camera::pressButtons()
     this->MovementSpeed = sp;
 
   }
-  pUpIsPressed = pUpIsCurrentlyPressed; 
+  pUpIsPressed = pUpIsCurrentlyPressed;
 
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     this->ProcessKeyboard(FORWARD, deltaTime);

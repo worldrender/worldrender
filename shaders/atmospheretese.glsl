@@ -8,7 +8,7 @@ layout(triangles, equal_spacing, ccw) in;
 
 uniform mat4 MVP;
 uniform float radius;
-uniform float scale=0.f;
+uniform float scale;
 
 in vec3 tcPosition[];
 in vec3 tcNormal[];
@@ -16,7 +16,6 @@ in float tNoise[];
 //in vec2 tcTexCoord[];
 
 out vec3 vcNormal;
-out vec4 vcColor;
 //out vec2 vcTexCoord;
 
 out vec3 vcPos;
@@ -34,10 +33,10 @@ void main(){
     vec3 n0 = gl_TessCoord.x * tcNormal[0];
     vec3 n1 = gl_TessCoord.y * tcNormal[1];
     vec3 n2 = gl_TessCoord.z * tcNormal[2];
-    vcNormal = normalize(n0 + n1 + n2);
+
     vec3 sphereCoord = normalize(vcPos);
     vcPos = mix(vcPos, sphereCoord*radius, 1)*scale*10;
-
+    vcNormal = normalize(vcPos);
     gl_Position = MVP * vec4(vcPos, 1.0);
 }
 

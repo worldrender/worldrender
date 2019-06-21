@@ -18,8 +18,8 @@
 #define PLANET_SCALE 1.f
 #define PI 3.14f
 
-#define YAW           -10.0f
-#define PITCH         -10.0f
+#define YAW           -8.f
+#define PITCH         -8.f
 #define SPEED          2.5f
 #define SENSITIVITY    0.1f
 #define ZOOM           45.0f
@@ -107,6 +107,8 @@ class cubeVerts{
     cubeVerts(){}
     ~cubeVerts(){}
 };
+
+const vec3 initialPos = glm::vec3(-1800.f, 200.f, 200.0f);
 
 void initGL();
 void init();
