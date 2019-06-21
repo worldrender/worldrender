@@ -1,9 +1,5 @@
 #version 430 core
 
-//in vec4 vcColor;
-//in vec3 vcNormal;
-//in vec3 vcPos;
-
 uniform bool wireframe;
 
 uniform vec3 lightDir = vec3(-1, -0.3, 1);
@@ -20,8 +16,8 @@ float fAbs(float t)
 }
 
 void main() {
-
-  fColor = vec4(1.f, 0.f, 0.f, 1.f);
+  fColor.rgb = vec3(0.f, 2.f, 7.f);
+  fColor.a   = 0.3f;
 }
 
 

@@ -3,12 +3,12 @@
 #define G3 0.166666667
 #define M_PI 3.14159265358979323844f
 
-uniform bool io;
 layout(triangles, equal_spacing, ccw) in;
 
 uniform mat4 MVP;
 uniform float radius;
 uniform float scale;
+uniform bool io;
 
 in vec3 tcPosition[];
 in vec3 tcNormal[];
@@ -35,7 +35,7 @@ void main(){
     vec3 n2 = gl_TessCoord.z * tcNormal[2];
 
     vec3 sphereCoord = normalize(vcPos);
-    vcPos = mix(vcPos, sphereCoord*radius, 1)*scale*10;
+    vcPos = mix(vcPos, sphereCoord*radius, 1)*(scale-40);
     vcNormal = normalize(vcPos);
     gl_Position = MVP * vec4(vcPos, 1.0);
 }

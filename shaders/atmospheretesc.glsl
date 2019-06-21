@@ -5,7 +5,6 @@ layout(vertices = 3) out;
 in vec3 vPosition[];
 in vec3 vNormal[];
 
-//out vec2 tcTexCoord[];
 out vec3 tcPosition[];
 out vec3 tcNormal[];
 
@@ -13,10 +12,10 @@ out vec3 tcNormal[];
 
 
 void main(){
-  float TessLevelInner = 3;
+  float TessLevelInner = 6;
   float e0, e1, e2;
 
-  e0 = e1 = e2 = 3;
+  e0 = e1 = e2 = TessLevelInner;
   // tcTexCoord[ID]  = TexCoord[ID];
   tcPosition[ID]  = vPosition[ID];
   tcNormal[ID]    = vNormal[ID];

@@ -51,3 +51,9 @@ Planet::Planet(Cube* cube, GLfloat radius)
 GLfloat Planet::getRadius(){
     return this->radius;
 }
+
+GLuint Planet::shader;
+GLuint Planet::VAI;
+GLuint Planet::VAO;
+GLuint Planet::VBO;
+GLuint Planet::VNI;

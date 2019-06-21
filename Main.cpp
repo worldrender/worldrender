@@ -42,9 +42,8 @@ vec4 color = vec4(0.5f, 0.5f, 0.8f, 1.0f);
 
 Planet * planet;
 chrono::duration < double > diff;
-GLuint VertexArrayID, feedbackVAO, vertexbuffer, noiseBuffer, elementbuffer;
-unsigned int skyboxVAO, skyboxVBO, cubemapTexture;
-GLuint planetShader, skyboxShader, activeShader, transformFeedbackShader;
+GLuint feedbackVAO, skyboxVAO, skyboxVBO, cubemapTexture;
+GLuint activeShader, skyboxShader, transformFeedbackShader;
 int enableTess = 0;
 
 Camera planetCamera(glm::vec3(-1800.f, 200.f, 200.0f));
@@ -62,13 +61,14 @@ int main(int argv, char ** argc) {
   bufferAtmosphere();
   /**ATMOSFERA**/
 
-
+  const vector<GLuint> buffers  = {Atmosphere::VBO, Planet::VBO, Planet::VNI, skyboxVBO},
+                       aob      = {Atmosphere::VAO, Planet::VAO, skyboxVAO, feedbackVAO};
   planetCamera.setPlanet(planet);
 
   do {
     // Clear the screen
-    std::chrono::high_resolution_clock::time_point currentFrame = std::chrono::high_resolution_clock::now();
-    std::chrono::duration < float > diff = currentFrame - lastFrame;
+    chrono::high_resolution_clock::time_point currentFrame = chrono::high_resolution_clock::now();
+    chrono::duration < float > diff = currentFrame - lastFrame;
     deltaTime = diff.count();
     lastFrame = currentFrame;
 
@@ -85,9 +85,11 @@ int main(int argv, char ** argc) {
   while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
     glfwWindowShouldClose(window) == 0);
 
-  deleteBuffers();
+  glDeleteTextures(2, textures);
+  deleteBuffers(buffers);
+  deleteArrayBuffers(aob);
 
-  deleteProgram(new GLuint[4]{planetShader,transformFeedbackShader,skyboxShader,Atmosphere::shader});
+  deleteProgram(new GLuint[4]{Planet::shader,transformFeedbackShader,skyboxShader,Atmosphere::shader});
 
   glfwTerminate();
 
@@ -117,7 +119,6 @@ void initGL() {
     glfwTerminate();
     exit(-1);
   }
-
 }
 
 void init() {
@@ -146,7 +147,7 @@ void init() {
 
 void createProgram() {
 
-  planetShader            = LoadShaders("shaders/worldvert.glsl", "shaders/worldtesc.glsl", "shaders/worldtese.glsl", "shaders/worldfrag.glsl");
+  Planet::shader            = LoadShaders("shaders/worldvert.glsl", "shaders/worldtesc.glsl", "shaders/worldtese.glsl", "shaders/worldfrag.glsl");
 
   skyboxShader            = LoadShaders("shaders/skyboxvert.glsl", "shaders/skyboxfrag.glsl");
   transformFeedbackShader = LoadShader("shaders/transform.glsl");
@@ -154,7 +155,7 @@ void createProgram() {
   /**ATMOSFERA**/
   Atmosphere::shader      = LoadShaders("shaders/atmospherevert.glsl", "shaders/atmospheretesc.glsl", "shaders/atmospheretese.glsl", "shaders/atmospherefrag.glsl");
   //Atmosphere::shader      = LoadShaders("shaders/atmospherevert.glsl", "shaders/atmospherefrag.glsl");
-  activeShader = planetShader;
+  activeShader = Planet::shader;
 }
 
 void createPlanet() {
@@ -180,30 +181,30 @@ void feedbackBuffer() {
 }
 
 void createBuffer() {
-  glGenVertexArrays(1, & VertexArrayID);
-  glBindVertexArray(VertexArrayID);
+  glGenVertexArrays(1, & Planet::VAO);
+  glBindVertexArray(Planet::VAO);
 
-  glGenBuffers(1, & vertexbuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+  glGenBuffers(1, & Planet::VBO);
+  glBindBuffer(GL_ARRAY_BUFFER, Planet::VBO);
   glBufferData(GL_ARRAY_BUFFER, QuadTree::transformedVertices.size() * sizeof(glm::vec3), QuadTree::transformedVertices.data(), GL_DYNAMIC_DRAW);
 
-  glGenBuffers(1, & noiseBuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, noiseBuffer);
+  glGenBuffers(1, & Planet::VNI);
+  glBindBuffer(GL_ARRAY_BUFFER, Planet::VNI);
   glBufferData(GL_ARRAY_BUFFER, QuadTree::transformedVertices.size() * sizeof(GLfloat), QuadTree::noises.data(), GL_STATIC_DRAW);
 
-  glGenBuffers(1, & elementbuffer);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  glGenBuffers(1, & Planet::VAI);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Planet::VAI);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, QuadTree::indices.size() * sizeof(GLuint), QuadTree::indices.data(), GL_STATIC_DRAW);
 }
 
 void updateBuffer() {
-  glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, Planet::VBO);
   glBufferData(GL_ARRAY_BUFFER, QuadTree::visibleVerts.size() * sizeof(glm::vec3), QuadTree::visibleVerts.data(), GL_DYNAMIC_DRAW);
 
-  glBindBuffer(GL_ARRAY_BUFFER, noiseBuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, Planet::VNI);
   glBufferData(GL_ARRAY_BUFFER, QuadTree::vNoises.size() * sizeof(GLfloat), QuadTree::vNoises.data(), GL_STATIC_DRAW);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Planet::VAI);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, QuadTree::indices.size() * sizeof(GLuint), QuadTree::indices.data(), GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -213,7 +214,7 @@ void applyingTextures() {
 
     glGenTextures(1, & textures[i]);
 
-    glUseProgram(planetShader);
+    glUseProgram(Planet::shader);
 
     glActiveTexture(GL_TEXTURE0 + i);
 
@@ -232,45 +233,46 @@ void applyingTextures() {
 }
 
 void setUniforms() {
-  glUseProgram(planetShader);
+  glUseProgram(Planet::shader);
 
   glm::mat4 ProjectionMatrix = planetCamera.getProjectionMatrix(WIDTH, HEIGHT);
   glm::mat4 ViewMatrix = planetCamera.getViewMatrix();
   glm::mat4 ModelMatrix = glm::mat4(1.0);
-  glUniform3f(glGetUniformLocation(planetShader, "viewPos"), planetCamera.Position.x, planetCamera.Position.y, planetCamera.Position.z);
+  glUniform3f(glGetUniformLocation(Planet::shader, "viewPos"), planetCamera.Position.x, planetCamera.Position.y, planetCamera.Position.z);
 
   glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
   //    glm::mat4 MVP = camera.getProjectionMatrix(WIDTH, HEIGHT) * camera.getViewMatrix() * glm::mat4(1.0);
 
-  glUniformMatrix4fv(glGetUniformLocation(planetShader, "MVP"), 1, GL_FALSE, & MVP[0][0]);
-  glUniformMatrix4fv(glGetUniformLocation(planetShader, "model"), 1, GL_FALSE, & ModelMatrix[0][0]);
-  glUniformMatrix4fv(glGetUniformLocation(planetShader, "view"), 1, GL_FALSE, & ViewMatrix[0][0]);
-  glUniformMatrix4fv(glGetUniformLocation(planetShader, "projection"), 1, GL_FALSE, & ProjectionMatrix[0][0]);
-  glUniform1f(glGetUniformLocation(planetShader, "radius"), planet -> getRadius());
-  glUniform1i(glGetUniformLocation(planetShader, "tess"), enableTess);
-  glUniform1i(glGetUniformLocation(planetShader, "wireframe"), enablePolygon);
-  glUniform1i(glGetUniformLocation(planetShader, "pTexture"), 0);
-  glUniform1i(glGetUniformLocation(planetShader, "dTexture"), 1);
-  glUniform1i(glGetUniformLocation(planetShader, "nTexture"), 2);
+  glUniformMatrix4fv(glGetUniformLocation(Planet::shader, "MVP"), 1, GL_FALSE, & MVP[0][0]);
+  glUniformMatrix4fv(glGetUniformLocation(Planet::shader, "model"), 1, GL_FALSE, & ModelMatrix[0][0]);
+  glUniformMatrix4fv(glGetUniformLocation(Planet::shader, "view"), 1, GL_FALSE, & ViewMatrix[0][0]);
+  glUniformMatrix4fv(glGetUniformLocation(Planet::shader, "projection"), 1, GL_FALSE, & ProjectionMatrix[0][0]);
+  glUniform1f(glGetUniformLocation(Planet::shader, "radius"), planet -> getRadius());
+  glUniform1i(glGetUniformLocation(Planet::shader, "tess"), enableTess);
+  glUniform1i(glGetUniformLocation(Planet::shader, "wireframe"), enablePolygon);
+  glUniform1i(glGetUniformLocation(Planet::shader, "pTexture"), 0);
+  glUniform1i(glGetUniformLocation(Planet::shader, "dTexture"), 1);
+  glUniform1i(glGetUniformLocation(Planet::shader, "nTexture"), 2);
 }
 
 void draw() {
-    glBindVertexArray(VertexArrayID);
+
+    glBindVertexArray(Planet::VAO);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glPatchParameteri(GL_PATCH_VERTICES, 3);
 
   glEnableVertexAttribArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, Planet::VBO);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void * ) 0);
 
   glEnableVertexAttribArray(1);
-  glBindBuffer(GL_ARRAY_BUFFER, noiseBuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, Planet::VNI);
   glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 0, (void * ) 0);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Planet::VAI);
 
-  if (activeShader == planetShader) {
+  if (activeShader == Planet::shader) {
     glDrawElements(GL_PATCHES, QuadTree::indices.size(), GL_UNSIGNED_INT, (void * ) 0);
   } else {
     glDrawElements(GL_TRIANGLES, QuadTree::indices.size(), GL_UNSIGNED_INT, (void * ) 0);
@@ -279,6 +281,7 @@ void draw() {
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
+    glUseProgram(0);
 
   // draw skybox as last
     glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
@@ -297,52 +300,60 @@ void draw() {
 
     gl::enableCullFace();
     glDepthFunc(GL_LESS); // set depth function back to default
-
-    /**ATMOSFERA**/
-    renderAtmosphere(Atmosphere::innerIndex, 1);
-    renderAtmosphere(Atmosphere::outerIndex, 0);
-    /**ATMOSFERA**/
+    glUseProgram(0);
 
     QuadTree::quadTreeList.clear();
+
+    /**ATMOSFERA**/
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    renderAtmosphere(Atmosphere::innerIndex, 1);
+    //renderAtmosphere(Atmosphere::outerIndex, 0);
+    glDisable(GL_BLEND);
+    /**ATMOSFERA**/
 }
 
 void setSkybox(){
 
-    // skybox VAO
-    glGenVertexArrays(1, &skyboxVAO);
-    glGenBuffers(1, &skyboxVBO);
-    glBindVertexArray(skyboxVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  // skybox VAO
+  glGenVertexArrays(1, &skyboxVAO);
+  glGenBuffers(1, &skyboxVBO);
+  glBindVertexArray(skyboxVAO);
 
-    cubemapTexture = loadCubemap(skybox);
+  glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
 
-    glUseProgram(skyboxShader);
-    glUniform1i(glGetUniformLocation(skyboxShader, "skybox"), 0);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+  cubemapTexture = loadCubemap(skybox);
+
+  glUseProgram(skyboxShader);
+  glUniform1i(glGetUniformLocation(skyboxShader, "skybox"), 0);
+  glUseProgram(0);
 }
 
 /**ATMOSFERA**/
 void bufferAtmosphere(){
     // atmosphere VAO
-    glGenVertexArrays(1, &Atmosphere::VAO);
-    glBindVertexArray(Atmosphere::VAO);
-    glGenBuffers(1, &Atmosphere::VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, Atmosphere::VBO);
-    glBufferData(GL_ARRAY_BUFFER, Atmosphere::vertices.size(), Atmosphere::vertices.data(), GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glGenVertexArrays(1, &Atmosphere::VAO);
+  glGenBuffers(1, &Atmosphere::VBO);
+  glGenBuffers(1, &Atmosphere::indices);
 
-    glGenBuffers(1, &Atmosphere::indices);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::indices);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::innerIndex.size() * sizeof(GLuint), Atmosphere::innerIndex.data(), GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindVertexArray(Atmosphere::VAO);
+  glUseProgram(skyboxShader);
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glBindBuffer(GL_ARRAY_BUFFER, Atmosphere::VBO);
+  glBufferData(GL_ARRAY_BUFFER, Atmosphere::vertices.size() * sizeof(glm::vec3), &Atmosphere::vertices[0], GL_DYNAMIC_DRAW);
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::indices);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::innerIndex.size() * sizeof(GLuint), &Atmosphere::innerIndex[0], GL_DYNAMIC_DRAW);
+
+  glUseProgram(0);
+
 }
 
-void renderAtmosphere(const vector<GLuint> w_indices, bool io){
+void renderAtmosphere(const vector<GLuint>& w_indices, bool io){
 
   glm::mat4 ProjectionMatrix = planetCamera.getProjectionMatrix(WIDTH, HEIGHT);
   glm::mat4 ViewMatrix = planetCamera.getViewMatrix();
@@ -350,22 +361,22 @@ void renderAtmosphere(const vector<GLuint> w_indices, bool io){
   glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
   glBindVertexArray(Atmosphere::VAO);
-  glBindBuffer(GL_ARRAY_BUFFER, Atmosphere::VBO);
-  glBufferData(GL_ARRAY_BUFFER, Atmosphere::vertices.size(), Atmosphere::vertices.data(), GL_DYNAMIC_DRAW);
-
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::indices);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::innerIndex.size() * sizeof(GLuint), w_indices.data(), GL_DYNAMIC_DRAW);
 
   glUseProgram(Atmosphere::shader);
+  glBindBuffer(GL_ARRAY_BUFFER, Atmosphere::VBO);
+  glBufferData(GL_ARRAY_BUFFER, Atmosphere::vertices.size() * sizeof(glm::vec3), &Atmosphere::vertices[0], GL_DYNAMIC_DRAW);
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::indices);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::innerIndex.size() * sizeof(GLuint), &w_indices[0], GL_DYNAMIC_DRAW);
 
   glUniformMatrix4fv(glGetUniformLocation(Atmosphere::shader, "MVP"), 1, GL_FALSE, & MVP[0][0]);
   glUniform1f(glGetUniformLocation(Atmosphere::shader, "radius"), planet -> getRadius());
-  glUniform1f(glGetUniformLocation(Atmosphere::shader, "scale"), SCALE-(io?10:(-10)));
+  glUniform1f(glGetUniformLocation(Atmosphere::shader, "scale"), SCALE+50);
   glUniform1i(glGetUniformLocation(Atmosphere::shader, "io"), io);
 
   glEnableVertexAttribArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, Atmosphere::VBO);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void * ) 0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::indices);
 
@@ -376,6 +387,7 @@ void renderAtmosphere(const vector<GLuint> w_indices, bool io){
   glDisableVertexAttribArray(0);
 
   glUseProgram(0);
+
 }
 /**ATMOSFERA**/
 
@@ -415,12 +427,14 @@ void deleteProgram(const GLuint programs[]) {
   delete programs;
 }
 
-void deleteBuffers() {
-  glDeleteTextures(2, textures);
-  glDeleteBuffers(1, & vertexbuffer);
-  glDeleteBuffers(1, & elementbuffer);
-  glDeleteVertexArrays(1, & VertexArrayID);
-  glDeleteVertexArrays(1, & feedbackVAO);
+void deleteBuffers(const vector<GLuint> params) {
+  for(const GLuint &abo : params)
+    glDeleteBuffers(1, &abo);
+}
+
+void deleteArrayBuffers(const vector<GLuint> params){
+  for(const GLuint &abo : params)
+    glDeleteVertexArrays(1, &abo);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)

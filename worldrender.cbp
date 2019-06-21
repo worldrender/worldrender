@@ -7,6 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Release">
+				<Option platforms="Windows;" />
 				<Option output="bin/Release/worldrender" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
@@ -17,6 +18,7 @@
 				<Linker>
 					<Add option="-s" />
 					<Add option="-std=c++17" />
+					<Add option="-static-libstdc++" />
 					<Add library="glew32" />
 					<Add library="glfw3" />
 					<Add library="opengl32" />
@@ -25,6 +27,7 @@
 				</Linker>
 			</Target>
 			<Target title="Debug">
+				<Option platforms="Windows;" />
 				<Option output="bin/Debug/worldrender" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
@@ -34,6 +37,8 @@
 				</Compiler>
 				<Linker>
 					<Add option="-std=c++17" />
+					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
 					<Add library="glew32" />
 					<Add library="glfw3" />
 					<Add library="opengl32" />
@@ -42,6 +47,7 @@
 				</Linker>
 			</Target>
 			<Target title="Linux Release">
+				<Option platforms="Unix;" />
 				<Option output="bin/linux/worldrender" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/linux/" />
 				<Option type="1" />
@@ -59,6 +65,7 @@
 				</Linker>
 			</Target>
 			<Target title="Linux Debug">
+				<Option platforms="Unix;" />
 				<Option output="bin/linux/worldrender" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/linux/" />
 				<Option type="1" />
@@ -102,9 +109,6 @@
 		<Unit filename="shaders/atmospheretesc.glsl" />
 		<Unit filename="shaders/atmospheretese.glsl" />
 		<Unit filename="shaders/atmospherevert.glsl" />
-		<Unit filename="shaders/cullingfrag.glsl" />
-		<Unit filename="shaders/cullinggeo.glsl" />
-		<Unit filename="shaders/cullingvert.glsl" />
 		<Unit filename="shaders/skyboxfrag.glsl" />
 		<Unit filename="shaders/skyboxvert.glsl" />
 		<Unit filename="shaders/transform.glsl" />

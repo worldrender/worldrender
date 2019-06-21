@@ -108,7 +108,7 @@ class cubeVerts{
     ~cubeVerts(){}
 };
 
-const vec3 initialPos = glm::vec3(-1800.f, 200.f, 200.0f);
+const vec3 initialPos = vec3(-1800.f, 200.f, 200.0f);
 
 void initGL();
 void init();
@@ -121,8 +121,9 @@ void setUniforms();
 void draw();
 void disableVertexAttribs();
 void swapBuffers();
+void deleteArrayBuffers(const vector<GLuint> params);
 void deleteProgram(const GLuint programs[]);
-void deleteBuffers();
+void deleteBuffers(const vector<GLuint> params);
 void CPUfbm();
 void setSkybox();
 void updateBuffer();
