@@ -16,8 +16,8 @@ float fAbs(float t)
 }
 
 void main() {
-  fColor.rgb = vec3(0.f, 2.f, 7.f);
-  fColor.a   = 0.3f;
+  fColor.rgb = vec3(0.4f, 0.5f, .94f);
+  fColor.a   = 0.4f;
 }
 
 
