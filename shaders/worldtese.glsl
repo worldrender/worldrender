@@ -152,7 +152,7 @@ float sNoise(vec3 v){
 }
 
 
-float ridgedNoise(in vec3 p, int octaves = 11, float H=0.7, float gain=0.03f, float amplitude = 1.f, float frequency = 0.03f, float persistence = 0.5f, float offset=0.01f)
+float ridgedNoise(in vec3 p, int octaves, float H, float gain, float amplitude, float frequency, float persistence, float offset)
 {
   float total = 0.f;
   float exponent = pow(amplitude, -H);
@@ -182,7 +182,7 @@ const mat3 m3i = mat3( 0.00, -0.80, -0.60,
                        0.80,  0.36, -0.48,
                        0.60, -0.48,  0.64 );
 
-float fbm( in vec3 p, int octaves=16, float gain=1, float amplitude=0.93753125f, float frequency=1.f, float size=1){
+float fbm( in vec3 p, int octaves, float gain, float amplitude, float frequency, float size){
     float f = 0.0;
     for(int i=0;i<octaves;i++)
     {
@@ -228,9 +228,9 @@ void main(){
     vec3 n2 = gl_TessCoord.z * tcNormal[2];
     vcNormal = normalize(n0 + n1 + n2);
 //    vNoise = vNoise*clamp(cubeNoise(vcPos),0,1);
-    vNoise = (fbm(vcPos*10f))*0.4f;
+    vNoise = (fbm(vcPos*10f,16, 1.f, .93753125f, 1.f, 1))*0.4f;
     vNoise *= sin(cubeVal(vNoise));
-    float mountains = (ridgedNoise(vcPos));
+    float mountains = (ridgedNoise(vcPos,11,.7f,.03f,1.f,.03f,.5f,.01f));
 
 //     float h1 = hyrbidMultifractal(p/8.0, H, lacunarity, octaves, offset, gain);
 //    float h2 = hyrbidMultifractal(p/3.0, H, lacunarity, octaves, offset, gain/2.0)*2.0;

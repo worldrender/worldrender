@@ -36,7 +36,7 @@ const mat3 m3i = mat3( 0.00, -0.80, -0.60,
                        0.60, -0.48,  0.64 );
 
 
-float fbm( in vec3 p, int octaves=16, float gain=1, float amplitude=0.93753125f, float frequency=0.5, float size=1){
+float fbm( in vec3 p, int octaves, float gain, float amplitude, float frequency, float size){
     float f = 0.0;
     for(int i=0;i<octaves;i++)
     {
@@ -59,5 +59,5 @@ void main() {
 	sphereCoord = mix(vertex, sphereCoord*radius, 1)*scale;
 
   outValue.vertex = sphereCoord;
-  outValue.noiseValue = fbm(sphereCoord);
+  outValue.noiseValue = fbm(sphereCoord,16, 1.f, .93753125f, .5f, 1);
 }
