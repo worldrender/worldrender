@@ -307,8 +307,8 @@ void draw() {
     /**ATMOSFERA**/
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    renderAtmosphere(Atmosphere::innerIndex, 1);
-    //renderAtmosphere(Atmosphere::outerIndex, 0);
+    //renderAtmosphere(Atmosphere::innerIndex, 1);
+    renderAtmosphere(Atmosphere::outerIndex, 0);
     glDisable(GL_BLEND);
     /**ATMOSFERA**/
 }
@@ -367,7 +367,7 @@ void renderAtmosphere(const vector<GLuint>& w_indices, bool io){
   glBufferData(GL_ARRAY_BUFFER, Atmosphere::vertices.size() * sizeof(glm::vec3), &Atmosphere::vertices[0], GL_DYNAMIC_DRAW);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::indices);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::innerIndex.size() * sizeof(GLuint), &w_indices[0], GL_DYNAMIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, w_indices.size() * sizeof(GLuint), &w_indices[0], GL_DYNAMIC_DRAW);
 
   glUniformMatrix4fv(glGetUniformLocation(Atmosphere::shader, "MVP"), 1, GL_FALSE, & MVP[0][0]);
   glUniform1f(glGetUniformLocation(Atmosphere::shader, "radius"), planet -> getRadius());
@@ -382,7 +382,7 @@ void renderAtmosphere(const vector<GLuint>& w_indices, bool io){
 
   glBindVertexArray(Atmosphere::VAO);
   glPatchParameteri(GL_PATCH_VERTICES, 3);
-  glDrawElements(GL_PATCHES, Atmosphere::innerIndex.size(), GL_UNSIGNED_INT, (void * ) 0);
+  glDrawElements(GL_PATCHES, w_indices.size(), GL_UNSIGNED_INT, (void * ) 0);
 
   glDisableVertexAttribArray(0);
 
