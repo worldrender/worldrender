@@ -12,7 +12,7 @@ out vec3 tcNormal[];
 
 
 void main(){
-  float TessLevelInner = 10;
+  float TessLevelInner = 30;
   float e0, e1, e2;
 
   e0 = e1 = e2 = TessLevelInner;

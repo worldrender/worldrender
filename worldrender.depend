@@ -38,7 +38,7 @@
 
 1559503759 hpp"
 
-1557963279 source:c:\users\iagop\documents\projetomz\worldrender\main.cpp
+1561174622 source:c:\users\iagop\documents\projetomz\worldrender\main.cpp
 	<iostream>
 	<string>
 	<cstdlib>
@@ -46,15 +46,16 @@
 	<glm/gtc/matrix_transform.hpp>
 	<GL/glew.h>
 	<GLFW/glfw3.h>
-	"LoadShaders.hpp"
-	"Planet.hpp"
-	"QuadTree.hpp"
-	"NoiseFeedback.hpp"
-	"Textures.hpp"
-	"Camera.hpp"
-	"Utils.hpp"
+	"include/LoadShaders.hpp"
+	"include/Planet.hpp"
+	"include/QuadTree.hpp"
+	"include/NoiseFeedback.hpp"
+	"include/Textures.hpp"
+	"include/Camera.hpp"
+	"include/Utils.hpp"
+	"include/Atmosphere.hpp"
 	<chrono>
-	"stb_image.hpp"
+	"include/stb_image.hpp"
 
 1557368360 c:\users\iagop\documents\projetomz\worldrender\loadshaders.hpp
 
@@ -68,7 +69,7 @@
 	"controls.hpp"
 	"Utils.hpp"
 
-1557368319 source:c:\users\iagop\documents\projetomz\worldrender\loadshaders.cpp
+1560996769 source:c:\users\iagop\documents\projetomz\worldrender\loadshaders.cpp
 	<stdlib.h>
 	<GL/glew.h>
 	<GLFW/glfw3.h>
@@ -78,7 +79,7 @@
 	<iostream>
 	<fstream>
 	<algorithm>
-	"LoadShaders.hpp"
+	"include/LoadShaders.hpp"
 
 1555013223 rs.hpp"
 
@@ -132,9 +133,9 @@
 
 1558378398 2.hpp>
 
-1554944332 source:c:\users\iagop\documents\projetomz\worldrender\planet.cpp
-	"QuadTree.hpp"
-	"Planet.hpp"
+1561167392 source:c:\users\iagop\documents\projetomz\worldrender\planet.cpp
+	"include/QuadTree.hpp"
+	"include/Planet.hpp"
 	<iostream>
 
 1553141226 c:\users\iagop\documents\projetomz\worldrender\planet.hpp
@@ -197,10 +198,10 @@
 	<memory>
 	"Verts.hpp"
 
-1557094398 source:c:\users\iagop\documents\projetomz\worldrender\quadtree.cpp
-	"QuadTree.hpp"
-	"Utils.hpp"
-	"simplex.h"
+1560996769 source:c:\users\iagop\documents\projetomz\worldrender\quadtree.cpp
+	"include/QuadTree.hpp"
+	"include/Utils.hpp"
+	"include/simplex.h"
 	<iostream>
 	<thread>
 	<chrono>
@@ -1184,14 +1185,14 @@
 	<glm/glm.hpp>
 	<GL/gl.h>
 
-1556911151 source:c:\users\iagop\documents\projetomz\worldrender\noisefeedback.cpp
-	"NoiseFeedback.hpp"
-	"QuadTree.hpp"
-	"LoadShaders.hpp"
+1560996769 source:c:\users\iagop\documents\projetomz\worldrender\noisefeedback.cpp
+	"include/NoiseFeedback.hpp"
+	"include/QuadTree.hpp"
+	"include/LoadShaders.hpp"
 	<iostream>
 	<vector>
 	<numeric>
-	"Utils.hpp"
+	"include/Utils.hpp"
 
 1553886897 c:\users\iagop\documents\projetomz\worldrender\noisefeedback.hpp
 	<GL/glew.h>
@@ -1412,12 +1413,14 @@
 	<stdlib.h>
 	<vector>
 
-1557286408 source:c:\users\iagop\documents\projetomz\worldrender\camera.cpp
+1561167392 source:c:\users\iagop\documents\projetomz\worldrender\camera.cpp
 	<glm/glm.hpp>
 	<glm/gtc/matrix_transform.hpp>
 	<GLFW/glfw3.h>
 	<vector>
-	"Camera.hpp"
+	<cmath>
+	"include/Camera.hpp"
+	"include/Frustum.hpp"
 
 1556911151 c:\users\iagop\documents\projetomz\worldrender\camera.hpp
 	<glm/glm.hpp>
@@ -1447,8 +1450,10 @@
 	<intrin.h>
 	<arm_neon.h>
 
-1557465467 source:c:\users\iagop\documents\projetomz\worldrender\frustum.cpp
-	"Frustum.hpp"
+1560996769 source:c:\users\iagop\documents\projetomz\worldrender\frustum.cpp
+	"include/Frustum.hpp"
+	<GL/gl.h>
+	<iostream>
 
 1559509861 pp"
 
@@ -2057,4 +2062,96 @@
 	<glm/glm.hpp>
 	<GL/gl.h>
 	"Utils.hpp"
+
+1561167392 c:\users\iagop\documents\projetomz\worldrender\include\camera.hpp
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	<GLFW/glfw3.h>
+	<chrono>
+	<vector>
+	"Utils.hpp"
+	"Planet.hpp"
+
+1561174665 c:\users\iagop\documents\projetomz\worldrender\include\utils.hpp
+	<vector>
+	<string>
+	<glm/glm.hpp>
+	<GL/gl.h>
+	<iostream>
+
+1561167392 c:\users\iagop\documents\projetomz\worldrender\include\planet.hpp
+	<iostream>
+	<glm/glm.hpp>
+	<GL/gl.h>
+	"QuadTree.hpp"
+
+1560996769 c:\users\iagop\documents\projetomz\worldrender\include\quadtree.hpp
+	<vector>
+	<iostream>
+	<glm/glm.hpp>
+	<GL/gl.h>
+	<memory>
+	"Verts.hpp"
+
+1560996769 c:\users\iagop\documents\projetomz\worldrender\include\verts.hpp
+	<cstring>
+	<unordered_map>
+	<vector>
+	<experimental/optional>
+	<glm/glm.hpp>
+	<glm/gtx/hash.hpp>
+
+1560996769 c:\users\iagop\documents\projetomz\worldrender\include\frustum.hpp
+	<glm/glm.hpp>
+	<vector>
+	"QuadTree.hpp"
+	"Camera.hpp"
+
+1560996769 c:\users\iagop\documents\projetomz\worldrender\include\loadshaders.hpp
+
+1560996769 c:\users\iagop\documents\projetomz\worldrender\include\noisefeedback.hpp
+	<GL/glew.h>
+	<glm/glm.hpp>
+	<GL/gl.h>
+	<vector>
+
+1560996769 c:\users\iagop\documents\projetomz\worldrender\include\simplex.h
+	<functional>
+	<array>
+	<random>
+	<math.h>
+	<stdlib.h>
+	<glm/geometric.hpp>
+	<glm/vec2.hpp>
+	<glm/vec3.hpp>
+	<glm/vec4.hpp>
+	<glm/mat2x2.hpp>
+
+1560996769 c:\users\iagop\documents\projetomz\worldrender\include\textures.hpp
+	<stdlib.h>
+	<vector>
+
+1561171189 c:\users\iagop\documents\projetomz\worldrender\include\atmosphere.hpp
+	<vector>
+	<iostream>
+	<glm/glm.hpp>
+	<GL/gl.h>
+	"Utils.hpp"
+
+1560996769 c:\users\iagop\documents\projetomz\worldrender\include\stb_image.hpp
+	"include/stb_image.h"
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<stddef.h>
+	<stdlib.h>
+	<string.h>
+	<limits.h>
+	<math.h>
+	<stdio.h>
+	<assert.h>
+	<stdint.h>
+	<emmintrin.h>
+	<intrin.h>
+	<arm_neon.h>
 

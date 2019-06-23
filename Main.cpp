@@ -38,7 +38,7 @@ bool adapt = true;
 bool unif = false;
 bool geom = false;
 
-vec4 color = vec4(0.5f, 0.5f, 0.8f, 1.0f);
+vec4 color = vec4(1.f, 1.f, 1.f, 1.0f);
 
 Planet * planet;
 chrono::duration < double > diff;
@@ -75,8 +75,8 @@ int main(int argv, char ** argc) {
     planetCamera.pressButtons();
 
     setUniforms();
-//    planetCamera.calculateFrustum();
-//    updateBuffer();
+    planetCamera.calculateFrustum();
+    updateBuffer();
     draw();
 
     swapBuffers();
@@ -248,6 +248,7 @@ void setUniforms() {
   glUniformMatrix4fv(glGetUniformLocation(Planet::shader, "view"), 1, GL_FALSE, & ViewMatrix[0][0]);
   glUniformMatrix4fv(glGetUniformLocation(Planet::shader, "projection"), 1, GL_FALSE, & ProjectionMatrix[0][0]);
   glUniform1f(glGetUniformLocation(Planet::shader, "radius"), planet -> getRadius());
+  glUniform1f(glGetUniformLocation(Planet::shader, "scale"), SCALE);
   glUniform1i(glGetUniformLocation(Planet::shader, "tess"), enableTess);
   glUniform1i(glGetUniformLocation(Planet::shader, "wireframe"), enablePolygon);
   glUniform1i(glGetUniformLocation(Planet::shader, "pTexture"), 0);
@@ -370,8 +371,8 @@ void renderAtmosphere(const vector<GLuint>& w_indices, bool io){
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, w_indices.size() * sizeof(GLuint), &w_indices[0], GL_DYNAMIC_DRAW);
 
   glUniformMatrix4fv(glGetUniformLocation(Atmosphere::shader, "MVP"), 1, GL_FALSE, & MVP[0][0]);
-  glUniform1f(glGetUniformLocation(Atmosphere::shader, "radius"), planet -> getRadius());
-  glUniform1f(glGetUniformLocation(Atmosphere::shader, "scale"), SCALE+50);
+  glUniform1f(glGetUniformLocation(Atmosphere::shader, "radius"), planet -> getRadius()*1.05);
+  glUniform1f(glGetUniformLocation(Atmosphere::shader, "scale"), SCALE);
   glUniform1i(glGetUniformLocation(Atmosphere::shader, "io"), io);
 
   glEnableVertexAttribArray(0);

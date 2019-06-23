@@ -22,26 +22,18 @@ uniform float dx;
 uniform float dy;
 uniform float dz;
 uniform float radius;
+uniform float scale;
 
 #define ID gl_InvocationID
 
 float LOD(vec3 posV, vec3 cam){
   float dist = distance(posV, cam);
-  if(dist<=75) return 32.0;
-  else if(dist>75 && dist<=150) return 16.0;
-  else if(dist>150 && dist<=200) return 8.0;
-  else if(dist>200 && dist<=300) return 4.0;
-  else if(dist>300 && dist<=400) return 2.0;
-  else if(dist>400) return 1.0;
-}
-
-float dirLOD(vec3 posV, float posCX, float posCY, float posCZ){
-  float param = radius*100/4;
-  vec3 direction = vec3(posCX, posCY, posCZ);
-  float normal = dot(direction, posV);
-  if(normal > param) return 8.0;
-  else if(normal >= -param && normal <= param) return 4.0;
-  else if(normal < -param) return 1.0;
+  if(dist<=radius*1.05*scale/5) return 32.0;
+  else if(dist>radius*1.05*scale/5 && dist<=radius*1.05*scale/4) return 16.0;
+  else if(dist>radius*1.05*scale/4 && dist<=radius*1.05*scale/3) return 8.0;
+  else if(dist>radius*1.05*scale/3 && dist<=radius*1.05*scale/2) return 4.0;
+  else if(dist>radius*1.05*scale/2 && dist<=radius*1.05*scale) return 2.0;
+  else if(dist>radius*1.05*scale) return 1.0;
 }
 
 void main(){

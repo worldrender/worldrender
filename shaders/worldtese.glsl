@@ -219,7 +219,7 @@ void main(){
     vec3 p2 = gl_TessCoord.z * tcPos2;
     vcPos = (p0 + p1 + p2);
     float vertexNoise = gl_TessCoord.x*tNoise[0]+gl_TessCoord.y*tNoise[1]+gl_TessCoord.z*tNoise[2];
-
+    fNoise = vertexNoise;
     //tePosition*= radius;
     //tePosition.y = iqfBm(tePosition, 1,2,0.5);
 

@@ -21,7 +21,7 @@ in vec4 vcColor;
 in vec3 vcNormal;
 in vec3 vcPos;
 in float vNoise;
-in float vertNoise;
+//in float vertNoise;
 in float fNoise;
 
 uniform sampler2D pTexture;
@@ -231,7 +231,7 @@ void main() {
   float fre = clamp( 1.0+dot(viewPos,c_normal), 0.0, 1.0 );
   vec3 hal = normalize(lightDir-viewPos);
 //
-  col = (hNoise*0.25+0.75)*0.9*mix( vec3(0.10,0.05,0.03), vec3(0.13,0.10,0.08), clamp(vertNoise/200.0,0.0,1.0) );
+  col = (hNoise*0.25+0.75)*0.9*mix( vec3(0.10,0.05,0.03), vec3(0.13,0.10,0.08), clamp(fNoise/200.0,0.0,1.0) );
 		col = mix( col, 0.17*vec3(0.5,.23,0.04)*(0.50+0.50*hD),smoothstep(0.70,0.9,hNoise-c_normal.y) );
         col = mix( col, 0.10*vec3(0.2,.30,0.00)*(0.25+0.75*hD),smoothstep(0.95,1.0,hNoise-c_normal.y) );
 
