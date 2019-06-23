@@ -75,8 +75,8 @@ int main(int argv, char ** argc) {
     planetCamera.pressButtons();
 
     setUniforms();
-    planetCamera.calculateFrustum();
-    updateBuffer();
+//    planetCamera.calculateFrustum();
+//    updateBuffer();
     draw();
 
     swapBuffers();
@@ -309,7 +309,7 @@ void draw() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //renderAtmosphere(Atmosphere::innerIndex, 1);
-    renderAtmosphere(Atmosphere::outerIndex, 0);
+    renderAtmosphere(Atmosphere::arrayIndex, 0);
     glDisable(GL_BLEND);
     /**ATMOSFERA**/
 }
@@ -348,7 +348,7 @@ void bufferAtmosphere(){
   glBufferData(GL_ARRAY_BUFFER, Atmosphere::vertices.size() * sizeof(glm::vec3), &Atmosphere::vertices[0], GL_DYNAMIC_DRAW);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::indices);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::innerIndex.size() * sizeof(GLuint), &Atmosphere::innerIndex[0], GL_DYNAMIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, Atmosphere::arrayIndex.size() * sizeof(GLuint), &Atmosphere::arrayIndex[0], GL_DYNAMIC_DRAW);
 
   glUseProgram(0);
 
@@ -374,6 +374,7 @@ void renderAtmosphere(const vector<GLuint>& w_indices, bool io){
   glUniform1f(glGetUniformLocation(Atmosphere::shader, "radius"), planet -> getRadius()*1.05);
   glUniform1f(glGetUniformLocation(Atmosphere::shader, "scale"), SCALE);
   glUniform1i(glGetUniformLocation(Atmosphere::shader, "io"), io);
+  glUniformMatrix4fv(glGetUniformLocation(Atmosphere::shader, "model"), 1, GL_FALSE, & ModelMatrix[0][0]);
 
   glEnableVertexAttribArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, Atmosphere::VBO);

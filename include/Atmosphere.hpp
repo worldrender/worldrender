@@ -17,8 +17,7 @@ class Atmosphere{
   public:
     static GLuint       shader;
     static const vector<vec3> vertices;
-    static const vector<GLuint> innerIndex;
-    static const vector<GLuint> outerIndex;
+    static const vector<GLuint> arrayIndex;
 
     static GLuint        VBO;
     static GLuint        VAO;
@@ -36,13 +35,7 @@ class Atmosphere{
 const vector<vec3> Atmosphere::vertices       {cubeVerts::v0, cubeVerts::v1, cubeVerts::v2, cubeVerts::v3,
                                                cubeVerts::v4, cubeVerts::v5, cubeVerts::v6, cubeVerts::v7};
 
-const vector<GLuint> Atmosphere::innerIndex    {2, 1, 0, 2, 3, 0,
-                                                6, 2, 3, 6, 7, 3,
-                                                5, 6, 7, 5, 4, 7,
-                                                1, 5, 4, 1, 0, 4,
-                                                2, 6, 5, 2, 1, 5,
-                                                0, 4, 7, 0, 3, 7};
-const vector<GLuint> Atmosphere::outerIndex    {0, 1, 2, 0, 2, 3,
+const vector<GLuint> Atmosphere::arrayIndex    {0, 1, 2, 0, 2, 3,
                                                 3, 2, 6, 3, 6, 7,
                                                 7, 6, 5, 7, 5, 4,
                                                 4, 5, 1, 4, 1, 0,

@@ -6,6 +6,7 @@
 layout(triangles, equal_spacing, ccw) in;
 
 uniform mat4 MVP;
+uniform mat4 model;
 uniform float radius;
 uniform float scale;
 uniform bool io;
@@ -13,11 +14,8 @@ uniform bool io;
 in vec3 tcPosition[];
 in vec3 tcNormal[];
 in float tNoise[];
-//in vec2 tcTexCoord[];
 
 out vec3 vcNormal;
-//out vec2 vcTexCoord;
-
 out vec3 vcPos;
 
 void main(){
@@ -36,6 +34,8 @@ void main(){
 
     vec3 sphereCoord = normalize(vcPos);
     vcPos = mix(vcPos, sphereCoord*radius, 1)*(scale);
+    vcPos /= 1.03;
+    vcPos = vec3(model * vec4(vcPos, 1.0));
     vcNormal = normalize(vcPos);
     gl_Position = MVP * vec4(vcPos, 1.0);
 }
