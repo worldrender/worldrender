@@ -25,9 +25,9 @@ float fAbs(float t)
 void main() {
   vec3 normal = normalize(vcNormal);
 
-  float ambientStrength = 0.5;
+  float ambientStrength = 1;
   vec3 ambient = ambientStrength * lightColor;
-  vec3 lightDir = normalize(lightPos*radius*scale*2 - vcPos);
+  vec3 lightDir = normalize(lightPos*radius*scale*2.5 - vcPos);
   float diff = max(dot(normal, lightDir), 0.0);
   vec3 diffuse = diff * specular;
 
@@ -35,7 +35,8 @@ void main() {
   vec3 result = (ambient + diffuse) * objectColor;
 
   fColor.rgb = result;
-  fColor.a   = 0.5f*(fColor.b+0.01);
+  fColor.a   = 0.5f;
+  fColor.a  *= (fColor.b);
 }
 
 
