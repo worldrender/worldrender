@@ -67,6 +67,12 @@ namespace gl
     glCullFace(GL_FRONT);
   }
 
+  inline void backCullFace()
+  {
+    glCullFace(GL_BACK);
+  }
+
+
   inline void lessDepthFunction()
   {
     glDepthFunc(GL_LESS);

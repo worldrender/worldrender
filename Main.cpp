@@ -308,9 +308,14 @@ void draw() {
     /**ATMOSFERA**/
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //renderAtmosphere(Atmosphere::innerIndex, 1);
-    renderAtmosphere(Atmosphere::arrayIndex, 0);
+    glFrontFace(GL_CW);
+    renderAtmosphere(Atmosphere::arrayIndex, 1, 0);
+    glFrontFace(GL_CCW);
+
+    for(GLuint i=0;i<Atmosphere::glow;i++)
+      renderAtmosphere(Atmosphere::arrayIndex, 1, i);
     glDisable(GL_BLEND);
+
     /**ATMOSFERA**/
 }
 
@@ -354,7 +359,7 @@ void bufferAtmosphere(){
 
 }
 
-void renderAtmosphere(const vector<GLuint>& w_indices, bool io){
+void renderAtmosphere(const vector<GLuint>& w_indices, bool io, int size){
 
   glm::mat4 ProjectionMatrix = planetCamera.getProjectionMatrix(WIDTH, HEIGHT);
   glm::mat4 ViewMatrix = planetCamera.getViewMatrix();
@@ -374,6 +379,7 @@ void renderAtmosphere(const vector<GLuint>& w_indices, bool io){
   glUniform1f(glGetUniformLocation(Atmosphere::shader, "radius"), planet -> getRadius()*1.05);
   glUniform1f(glGetUniformLocation(Atmosphere::shader, "scale"), SCALE);
   glUniform1i(glGetUniformLocation(Atmosphere::shader, "io"), io);
+  glUniform1i(glGetUniformLocation(Atmosphere::shader, "size"), size);
   glUniformMatrix4fv(glGetUniformLocation(Atmosphere::shader, "model"), 1, GL_FALSE, & ModelMatrix[0][0]);
 
   glEnableVertexAttribArray(0);

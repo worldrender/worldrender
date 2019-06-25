@@ -5,6 +5,7 @@ uniform bool wireframe;
 uniform float radius;
 uniform float scale;
 uniform bool io;
+uniform int size;
 
 uniform vec3 viewPos;
 uniform vec3 lightColor = vec3(0.1f, 0.1f, 0.2f);
@@ -38,6 +39,8 @@ void main() {
   fColor.rgb = result;
   fColor.a   = 0.5f;
   fColor.a  *= (fColor.b);
+  if(size!=0)
+    fColor.a /= 1+size;
 
   if(io)
   {

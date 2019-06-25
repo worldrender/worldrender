@@ -9,6 +9,7 @@ uniform mat4 MVP;
 uniform mat4 model;
 uniform float radius;
 uniform float scale;
+uniform int size=0;
 uniform bool io;
 
 in vec3 tcPosition[];
@@ -33,7 +34,7 @@ void main(){
     vec3 n2 = gl_TessCoord.z * tcNormal[2];
 
     vec3 sphereCoord = normalize(vcPos);
-    vcPos = mix(vcPos, sphereCoord*radius, 1)*(scale);
+    vcPos = mix(vcPos, sphereCoord*radius, 1)*(scale+size/2);
     vcPos /= 1.03;
     vcPos = vec3(model * vec4(vcPos, 1.0));
     vcNormal = normalize(vcPos);

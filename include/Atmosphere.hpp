@@ -11,7 +11,7 @@ using namespace std;
 using namespace glm;
 
 void bufferAtmosphere();
-void renderAtmosphere(const vector<GLuint>& w_indices, bool io);
+void renderAtmosphere(const vector<GLuint>& w_indices, bool io, int size);
 
 class Atmosphere{
   public:
@@ -22,6 +22,7 @@ class Atmosphere{
     static GLuint        VBO;
     static GLuint        VAO;
     static GLuint        indices;
+    static const GLuint  glow = 20;
 
   private:
     void * operator new      (size_t);
