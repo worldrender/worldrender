@@ -22,7 +22,7 @@ class Atmosphere{
     static GLuint        VBO;
     static GLuint        VAO;
     static GLuint        indices;
-    static const GLuint  glow = 20;
+    static const GLuint  glow = 40;
 
   private:
     void * operator new      (size_t);
