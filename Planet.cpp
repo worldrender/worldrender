@@ -1,6 +1,4 @@
-#include "include/QuadTree.hpp"
 #include "include/Planet.hpp"
-#include <iostream>
 
 
 using namespace std;

@@ -3,7 +3,15 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <GL/gl.h>
+
+
+#include "QuadTree.hpp"
+#include "LoadShaders.hpp"
+#include <iostream>
 #include <vector>
+#include <numeric>
+#include "Utils.hpp"
+
 
 using namespace glm;
 

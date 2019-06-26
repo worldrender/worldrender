@@ -1,7 +1,5 @@
 #include "include/Frustum.hpp"
 
-#include <GL/gl.h>
-#include <iostream>
 
 using namespace glm;
 using namespace std;

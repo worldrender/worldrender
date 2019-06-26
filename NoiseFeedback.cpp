@@ -1,10 +1,4 @@
 #include "include/NoiseFeedback.hpp"
-#include "include/QuadTree.hpp"
-#include "include/LoadShaders.hpp"
-#include <iostream>
-#include <vector>
-#include <numeric>
-#include "include/Utils.hpp"
 
 std::vector<InstancedNoise> transformedData;
 

@@ -1,14 +1,4 @@
 #include "include/QuadTree.hpp"
-#include "include/Utils.hpp"
-#include "include/simplex.h"
-#include <iostream>
-#include <thread>
-#include <chrono>
-#include <unordered_map>
-
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/hash.hpp>
-
 
 using namespace std;
 

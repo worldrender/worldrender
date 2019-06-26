@@ -3,9 +3,18 @@
 
 #include <vector>
 #include <iostream>
+#include <thread>
+#include <chrono>
+#include <unordered_map>
 #include <glm/glm.hpp>
 #include <GL/gl.h>
 #include <memory>
+
+#include "Utils.hpp"
+#include "simplex.h"
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/hash.hpp>
 
 #include "Verts.hpp"
 

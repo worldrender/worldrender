@@ -9,6 +9,9 @@
 #include "QuadTree.hpp"
 #include "Camera.hpp"
 
+#include <GL/gl.h>
+#include <iostream>
+
 using std::vector;
 using namespace glm;
 

@@ -1,12 +1,4 @@
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-#include <GLFW/glfw3.h>
-
-#include <vector>
-#include <cmath>
 #include "include/Camera.hpp"
-#include "include/Frustum.hpp"
 // Default camera values
 
 bool tIsPressed,      pIsPressed,
@@ -101,10 +93,10 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constr
   // Make sure that when pitch is out of bounds, screen doesn't get flipped
   if (constrainPitch)
   {
-    if (Pitch > 89.9f)
-      Pitch = -89.9f;
-    if (Pitch < -89.9f)
-      Pitch = 89.9f;
+    if (Pitch > 360.f)
+      Pitch = -360.f;
+    if (Pitch < -360.f)
+      Pitch = 360.f;
   }
 
   // Update Front, Right and Up Vectors using the updated Euler angles
