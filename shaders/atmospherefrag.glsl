@@ -8,10 +8,10 @@ uniform bool io;
 uniform int size;
 
 uniform vec3 viewPos;
-uniform vec3 lightColor = vec3(0.1f, 0.1f, 0.2f);
-uniform vec3 objectColor = vec3(0.5f, 0.6f, .9f);
-uniform vec3 specular = vec3(0.4f, 0.5f, .9f);
-uniform vec3 lightPos = vec3(-1, -0.3, 1);
+uniform vec3 atmosphereColor = vec3(0.1f, 0.1f, 0.2f);
+uniform vec3 mieScattering = vec3(0.5f, 0.6f, .9f);
+uniform vec3 rayleighScattering = vec3(0.4f, 0.5f, .9f);
+uniform vec3 sunRay = vec3(-1, -0.3, 1);
 
 in vec3 vcNormal;
 in vec3 vcPos;
@@ -27,14 +27,14 @@ float fAbs(float t)
 void main() {
   vec3 normal = normalize(vcNormal);
 
-  float ambientStrength = 1;
-  vec3 ambient = ambientStrength * lightColor;
-  vec3 lightDir = normalize(lightPos*radius*scale*2.5 - vcPos);
-  float diff = max(dot(normal, lightDir), 0.0);
-  vec3 diffuse = diff * specular;
+  float sourceStrength = 1;
+  vec3 ambient = sourceStrength * atmosphereColor;
+  vec3 sunDir = normalize(sunRay*radius*scale*2.5 - vcPos);
+  float diff = max(dot(normal, sunDir), 0.0);
+  vec3 diffuse = diff * rayleighScattering;
 
 
-  vec3 result = (ambient + diffuse) * objectColor;
+  vec3 result = (ambient + diffuse) * mieScattering;
 
   fColor.rgb = result;
   fColor.a   = 0.5f;

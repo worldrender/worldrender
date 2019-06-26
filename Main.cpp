@@ -101,7 +101,8 @@ void initGL() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+  glfwWindowHint(GLFW_DECORATED, GL_FALSE);
   glfwWindowHint(GLFW_SAMPLES, 4);
   glEnable(GL_MULTISAMPLE);
 
@@ -112,6 +113,8 @@ void initGL() {
     exit(-1);
   }
   glfwMakeContextCurrent(window);
+
+  gl::centerWindow(window, gl::getBestMonitor(window));
 
   glewExperimental = true;
   if (glewInit() != GLEW_OK) {
@@ -231,6 +234,8 @@ void applyingTextures() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   }
 }
+
+
 
 void setUniforms() {
   glUseProgram(Planet::shader);

@@ -5,6 +5,7 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <GL/gl.h>
+#include <GLFW/glfw3.h>
 #include <iostream>
 
 #define RADIUS 7.f
@@ -12,17 +13,23 @@
 #define LODVALUE 6 //safe number is 6
 #define PositionSlot 0u
 #define WIDTH 1280u
-#define HEIGHT 1024u
+#define HEIGHT 980u
 #define ASPECT_RATIO (float)WIDTH/(float)HEIGHT
 #define meshSize 128
 #define PLANET_SCALE 1.f
 #define PI 3.14f
+#define MAX(a, b) (((a) < (b)) ? (b) : (a))
+#define MIN(a, b) (((b) < (a)) ? (b) : (a))
 
 #define YAW           -8.f
 #define PITCH         -8.f
 #define SPEED          2.5f
 #define SENSITIVITY    0.1f
 #define ZOOM           45.0f
+
+//renderAtmosphere
+//draw
+//setUniforms
 
 using namespace std;
 using namespace glm;
@@ -92,6 +99,72 @@ namespace gl
     std::cout << pos.x << "," <<
                  pos.y << "," <<
                  pos.z << "," << std::endl;
+  }
+
+  inline GLFWmonitor* getBestMonitor(GLFWwindow *window)
+  {
+    int monitorCount;
+    GLFWmonitor **monitors = glfwGetMonitors(&monitorCount);
+
+    if (!monitors)
+      return NULL;
+
+    int windowX, windowY, windowWidth, windowHeight;
+    glfwGetWindowSize(window, &windowWidth, &windowHeight);
+    glfwGetWindowPos(window, &windowX, &windowY);
+
+    GLFWmonitor *bestMonitor = NULL;
+    int bestArea = 0;
+
+    for (int i = 0; i < monitorCount; ++i)
+    {
+      GLFWmonitor *monitor = monitors[i];
+
+      int monitorX, monitorY;
+      glfwGetMonitorPos(monitor, &monitorX, &monitorY);
+
+      const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+      if (!mode)
+        continue;
+
+      int areaMinX = MAX(windowX, monitorX);
+      int areaMinY = MAX(windowY, monitorY);
+
+      int areaMaxX = MIN(windowX + windowWidth, monitorX + mode->width);
+      int areaMaxY = MIN(windowY + windowHeight, monitorY + mode->height);
+
+      int area = (areaMaxX - areaMinX) * (areaMaxY - areaMinY);
+
+      if (area > bestArea)
+      {
+        bestArea = area;
+        bestMonitor = monitor;
+      }
+    }
+
+      return bestMonitor;
+  }
+  inline void centerWindow(GLFWwindow *window, GLFWmonitor *monitor)
+  {
+    if (!monitor)
+      return;
+
+    const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+    if (!mode)
+      return;
+
+    int monitorX, monitorY;
+    glfwGetMonitorPos(monitor, &monitorX, &monitorY);
+
+    int windowWidth, windowHeight;
+    glfwGetWindowSize(window, &windowWidth, &windowHeight);
+
+    glfwSetWindowPos( window,
+                      monitorX + (mode->width - windowWidth) / 2,
+                      monitorY + (mode->height - windowHeight) / 2);
+    glfwSetCursorPos (window,
+                      monitorX + (mode->width - windowWidth) / 2,
+                      monitorY + (mode->height - windowHeight) / 2);
   }
 }
 
