@@ -2189,12 +2189,8 @@
 	<glm/glm.hpp>
 	<glm/gtx/hash.hpp>
 
-1561578380 /home/ricardo/worldrender/include/Camera.hpp
+1561584817 /home/ricardo/worldrender/include/Camera.hpp
 	<glm/glm.hpp>
-	<glm/gtc/matrix_transform.hpp>
-	<glm/gtx/transform.hpp>
-	<glm/gtc/quaternion.hpp>
-	<glm/gtx/quaternion.hpp>
 	<glm/gtc/matrix_transform.hpp>
 	<glm/gtc/type_ptr.hpp>
 	<GLFW/glfw3.h>
@@ -2284,7 +2280,7 @@
 	<stdlib.h>
 	<vector>
 
-1561577048 /home/ricardo/worldrender/include/Atmosphere.hpp
+1561593303 /home/ricardo/worldrender/include/Atmosphere.hpp
 	<vector>
 	<iostream>
 	<glm/glm.hpp>
@@ -2311,6 +2307,6 @@
 1561577786 source:/home/ricardo/worldrender/Planet.cpp
 	"include/Planet.hpp"
 
-1561577621 source:/home/ricardo/worldrender/Camera.cpp
+1561584766 source:/home/ricardo/worldrender/Camera.cpp
 	"include/Camera.hpp"
 
