@@ -28,7 +28,9 @@ uniform sampler2D pTexture;
 uniform sampler2D dTexture;
 uniform sampler2D nTexture;
 
+uniform float scale;
 uniform mat4 model;
+uniform mat4 MVP;
 uniform vec3 viewPos;
 uniform bool wireframe;
 uniform float radius;
@@ -179,6 +181,33 @@ vec3 setup_lights(
 	return diff;
 }
 
+vec3 GetWaterColorAt(vec3 sourceColor, float depth)
+{
+float rIndex = 7.0f;
+float gIndex = 10.0f;
+float bIndex = 70.0f;
+
+float sandRed = sourceColor.r;
+float sandGreen = sourceColor.g;
+float sandBlue = sourceColor.b;
+
+float lostRed = (depth / rIndex) * (1.0f/3.0f);
+float lostGreen = (depth / gIndex) * (1.0f/3.0f);
+float lostBlue = (depth / bIndex) * (1.0f/3.0f);
+
+sandRed = sandRed - (sandRed * lostRed);
+sandGreen = sandGreen - (sandGreen * lostGreen);
+sandBlue = sandBlue - (sandBlue * lostBlue);
+
+vec3 sandColor = vec3(max(0, sandRed), max(0, sandGreen), max(0, sandBlue));
+return sandColor;
+}
+
+vec4 saturate(vec4 source)
+{
+  return clamp(source, 0.0, 1.0);
+}
+
 void main() {
   if(!wireframe){
 	fColor = vec4(0.f, 0.f, 0.f, 1.f);
@@ -261,6 +290,34 @@ void main() {
     fColor /= 2;
   //fColor *= vec4(lin,1);
   fColor *= 1.77773;
+
+  float d = dot(normal, lightDir);
+
+  vec4 specular = vec4(1.0, 1.0, 1.0,  1.0);
+  vec4 emissive = vec4(GetWaterColorAt(c_water, hNoise), 1.0);
+  float emissive_contribution = 0.80f;
+  float ambient_contribution  = 0.30f;
+  float diffuse_contribution  = 0.30f;
+  float specular_contribution = 0.30f;
+  vec4 final = emissive          * emissive_contribution +
+               vec4(ambient,1.f) * ambient_contribution  +
+               vec4(diffuse,1.f) * diffuse_contribution * max(d, 0);
+  vec3 toEye = normalize(vcPos - viewPos);
+  vec3 lightVec = normalize(-lightDir*radius*scale);
+  vec3 reflection = -reflect(lightVec, normal);
+
+  float shine = dot(normalize(reflection), normalize(vec3(MVP[0][2],MVP[1][3],MVP[2][3])));
+
+  float specularShininess = 20.0f;
+
+  if(shine > 0.0f)
+  {
+    shine = pow(shine, specularShininess);
+    final = saturate(final+shine);
+  }
+
+  fColor = mix(fColor, final/2, fColor.b);
+  fColor *= 0.7f;
 }
 
 
