@@ -12,29 +12,7 @@
 #include "Utils.hpp"
 #include "Planet.hpp"
 
-extern bool tIsPressed;
-extern bool pIsPressed;
-extern bool cIsPressed;
-extern bool plusIsPressed;
-extern bool minusIsPressed;
-extern bool mIsPressed;
-extern bool pos2IsPressed;
-extern bool noise2IsPressed;
-extern bool pDownIsPressed;
-extern bool pUpIsPressed;
-extern bool enablePolygon;
-extern bool enableCull;
-extern bool CPUnoise;
-extern bool noise;
-extern bool modeMouse;
-extern bool firstMouse;
-
 extern GLFWwindow* window;
-
-extern float lastX;
-extern float lastY;
-extern float deltaTime;
-extern std::chrono::high_resolution_clock::time_point lastFrame;
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement {
@@ -68,6 +46,32 @@ public:
     float MovementSpeed;
     float MouseSensitivity;
     float Zoom;
+
+    float lastX;
+    float lastY;
+    float deltaTime;
+    std::chrono::high_resolution_clock::time_point lastFrame;
+
+    bool is0P            = false;
+    bool is1P            = false;
+    bool is2P            = false;
+    bool is3P            = false;
+    bool is4P            = false;
+    bool cIsPressed      = false;
+    bool plusIsPressed   = false;
+    bool minusIsPressed  = false;
+    bool mIsPressed      = false;
+    bool pos2IsPressed   = false;
+    bool isPUP           = false;
+    bool pUpIsPressed    = false;
+    bool firstMouse      = true;
+    bool modeMouse       = false;
+    bool enablePolygon   = true;
+    bool enableCull      = true;
+    bool disableAtm      = false;
+    bool CPUnoise        = true;
+    bool noise           = false;
+    int  enableTess      = 0;
 
     // Constructor with vectors
     Camera(glm::vec3 position, glm::vec3 up = glm::vec3(0.17f, .98f, -0.03f), float yaw = YAW, float pitch = PITCH);

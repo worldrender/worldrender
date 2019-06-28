@@ -46,7 +46,6 @@ T size(T* t)
   return (sizeof(t)/sizeof(t[0]));
 }
 
-extern int enableTess;
 extern GLuint frame_index;
 
 namespace gl

@@ -44,7 +44,6 @@ Planet * planet;
 chrono::duration < double > diff;
 GLuint feedbackVAO, skyboxVAO, skyboxVBO, cubemapTexture;
 GLuint activeShader, skyboxShader, transformFeedbackShader;
-int enableTess = 0;
 
 Camera planetCamera(glm::vec3(-1800.f, 200.f, 200.0f));
 
@@ -68,9 +67,9 @@ int main(int argv, char ** argc) {
   do {
     // Clear the screen
     chrono::high_resolution_clock::time_point currentFrame = chrono::high_resolution_clock::now();
-    chrono::duration < float > diff = currentFrame - lastFrame;
-    deltaTime = diff.count();
-    lastFrame = currentFrame;
+    chrono::duration < float > diff = currentFrame - planetCamera.lastFrame;
+    planetCamera.deltaTime = diff.count();
+    planetCamera.lastFrame = currentFrame;
 
     planetCamera.pressButtons();
 
@@ -254,8 +253,8 @@ void setUniforms() {
   glUniformMatrix4fv(glGetUniformLocation(Planet::shader, "projection"), 1, GL_FALSE, & ProjectionMatrix[0][0]);
   glUniform1f(glGetUniformLocation(Planet::shader, "radius"), planet -> getRadius());
   glUniform1f(glGetUniformLocation(Planet::shader, "scale"), SCALE);
-  glUniform1i(glGetUniformLocation(Planet::shader, "tess"), enableTess);
-  glUniform1i(glGetUniformLocation(Planet::shader, "wireframe"), enablePolygon);
+  glUniform1i(glGetUniformLocation(Planet::shader, "tess"), planetCamera.enableTess);
+  glUniform1i(glGetUniformLocation(Planet::shader, "wireframe"), planetCamera.enablePolygon);
   glUniform1i(glGetUniformLocation(Planet::shader, "pTexture"), 0);
   glUniform1i(glGetUniformLocation(Planet::shader, "dTexture"), 1);
   glUniform1i(glGetUniformLocation(Planet::shader, "nTexture"), 2);
@@ -297,7 +296,7 @@ void draw() {
     glm::mat4 ViewMatrix = glm::mat4(glm::mat3(planetCamera.getViewMatrix())); // remove translation from the view matrix
     glUniformMatrix4fv(glGetUniformLocation(skyboxShader, "view"), 1, GL_FALSE, & ViewMatrix[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(skyboxShader, "projection"), 1, GL_FALSE, & ProjectionMatrix[0][0]);
-    glUniform1i(glGetUniformLocation(skyboxShader, "wireframe"), enablePolygon);
+    glUniform1i(glGetUniformLocation(skyboxShader, "wireframe"), planetCamera.enablePolygon);
     // skybox cube
     glBindVertexArray(skyboxVAO);
     glActiveTexture(GL_TEXTURE0);
@@ -310,7 +309,7 @@ void draw() {
 
     QuadTree::quadTreeList.clear();
 
-    if(enablePolygon)
+    if(planetCamera.enablePolygon&&!planetCamera.disableAtm)
     {
       /**ATMOSFERA**/
       glEnable(GL_BLEND);

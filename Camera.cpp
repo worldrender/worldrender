@@ -1,15 +1,6 @@
 #include "include/Camera.hpp"
 // Default camera values
 
-bool tIsPressed,      pIsPressed,
-     cIsPressed,      plusIsPressed,
-     minusIsPressed,  mIsPressed,
-     pos2IsPressed,   noise2IsPressed,
-     pDownIsPressed = false, pUpIsPressed = false;
-bool firstMouse = true;
-bool enablePolygon = true, enableCull = true,  CPUnoise = true,  noise=false;
-bool modeMouse;
-
 float lastX = (float)WIDTH / 2.0;
 float lastY = (float)HEIGHT / 2.0;
 float deltaTime = 0.0f;
@@ -25,6 +16,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch):
   this->WorldUp  = up;
   this->Yaw      = yaw;
   this->Pitch    = pitch;
+
   updateCameraVectors();
 }
 
@@ -116,11 +108,11 @@ void Camera::ProcessMouseScroll(float yoffset)
 
 void Camera::pressButtons()
 {
-  bool noiseIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_F ) == GLFW_PRESS);
-  if (!noise2IsPressed && noiseIsCurrentlyPressed){
+  bool noiseIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_0 ) == GLFW_PRESS);
+  if (!is0P && noiseIsCurrentlyPressed){
     noise = !noise;
   }
-  noise2IsPressed = noiseIsCurrentlyPressed;
+  is0P = noiseIsCurrentlyPressed;
 
   bool pos2IsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_C ) == GLFW_PRESS);
   if (!pos2IsPressed && pos2IsCurrentlyPressed){
@@ -154,16 +146,23 @@ void Camera::pressButtons()
   }
   cIsPressed = cIsCurrentlyPressed;
 
-  bool tIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_T ) == GLFW_PRESS &&
+  bool is2CP = (glfwGetKey( window, GLFW_KEY_2 ) == GLFW_PRESS &&
                 !(glfwGetKey( window, GLFW_KEY_RIGHT_SHIFT ) == GLFW_PRESS || glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS));
-  if (!tIsPressed && tIsCurrentlyPressed){
+  if (!is2P && is2CP){
     enableTess = (enableTess+1)%3;
   }
-  tIsPressed = tIsCurrentlyPressed;
+  is2P = is2CP;
 
-  bool pIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_T ) == GLFW_PRESS &&
+  bool is4CP = (glfwGetKey( window, GLFW_KEY_4 ) == GLFW_PRESS &&
+                !(glfwGetKey( window, GLFW_KEY_RIGHT_SHIFT ) == GLFW_PRESS || glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS));
+  if (!is4P && is4CP){
+    disableAtm = !disableAtm;
+  }
+  is4P = is4CP;
+
+  bool is3CP = (glfwGetKey( window, GLFW_KEY_3 ) == GLFW_PRESS &&
                 (glfwGetKey( window, GLFW_KEY_RIGHT_SHIFT ) == GLFW_PRESS || glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS));
-  if (!pIsPressed && pIsCurrentlyPressed){
+  if (!is3P && is3CP){
     enablePolygon = !enablePolygon;
     if(enablePolygon)
       gl::polygonModeFBFill();
@@ -173,16 +172,16 @@ void Camera::pressButtons()
     }
 
   }
-  pIsPressed = pIsCurrentlyPressed;
+  is3P = is3CP;
 
   bool pDownIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_PAGE_DOWN ) == GLFW_PRESS);
-  if (!pDownIsPressed && pDownIsCurrentlyPressed){
+  if (!isPUP && pDownIsCurrentlyPressed){
     float sp = this->MovementSpeed/2;
     if(sp<0.5)
       sp = 0.5;
     this->MovementSpeed = sp;
   }
-  pDownIsPressed = pDownIsCurrentlyPressed;
+  isPUP = pDownIsCurrentlyPressed;
 
   bool pUpIsCurrentlyPressed = (glfwGetKey( window, GLFW_KEY_PAGE_UP ) == GLFW_PRESS);
   if (!pUpIsPressed && pUpIsCurrentlyPressed){
@@ -226,11 +225,11 @@ void Camera::calculateFrustum()
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    if (firstMouse)
+    if (planetCamera.firstMouse)
     {
         lastX = xpos;
         lastY = ypos;
-        firstMouse = false;
+        planetCamera.firstMouse = false;
     }
 
     float xoffset = xpos - lastX;

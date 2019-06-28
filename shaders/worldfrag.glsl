@@ -286,8 +286,7 @@ void main() {
        pow( clamp(dot(c_normal,hal), 0.0, 1.0),16.0);
   col *= col;
   fColor = vec4(mix(col,fColor.rgb,0.2666f),1);
-  if(fColor.x<0.04&&fColor.y<0.04&&fColor.z<0.04)
-    fColor /= 2;
+
   //fColor *= vec4(lin,1);
   fColor *= 1.77773;
 
@@ -299,14 +298,14 @@ void main() {
   float ambient_contribution  = 0.30f;
   float diffuse_contribution  = 0.30f;
   float specular_contribution = 0.30f;
-  vec4 final = emissive          * emissive_contribution +
+  vec4 final = fColor * emissive  * emissive_contribution +
                vec4(ambient,1.f) * ambient_contribution  +
                vec4(diffuse,1.f) * diffuse_contribution * max(d, 0);
   vec3 toEye = normalize(vcPos - viewPos);
   vec3 lightVec = normalize(-lightDir*radius*scale);
   vec3 reflection = -reflect(lightVec, normal);
 
-  float shine = dot(normalize(reflection), normalize(vec3(MVP[0][2],MVP[1][3],MVP[2][3])));
+  float shine = dot(normalize(reflection), normalize(vec3(MVP[0][2],MVP[1][2],MVP[2][2])));
 
   float specularShininess = 20.0f;
 
@@ -317,7 +316,9 @@ void main() {
   }
 
   fColor = mix(fColor, final/2, fColor.b);
-  fColor *= 0.7f;
+
+  if(fColor.x<0.055&&fColor.y<0.055&&fColor.z<0.055)
+    fColor /= 2;
 }
 
 
