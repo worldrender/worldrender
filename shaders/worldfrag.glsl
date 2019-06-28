@@ -316,7 +316,6 @@ void main() {
   }
 
   fColor = mix(fColor, final/2, fColor.b);
-  fColor *= 0.7f;
 }
 
 
