@@ -307,7 +307,7 @@ void main() {
 
   float shine = dot(normalize(reflection), normalize(vec3(MVP[0][2],MVP[1][2],MVP[2][2])));
 
-  float specularShininess = 20.0f;
+  float specularShininess = 10.0f;
 
   if(shine > 0.0f)
   {
@@ -316,9 +316,7 @@ void main() {
   }
 
   fColor = mix(fColor, final/2, fColor.b);
-
-  if(fColor.x<0.055&&fColor.y<0.055&&fColor.z<0.055)
-    fColor /= 2;
+  fColor *= 0.7f;
 }
 
 
