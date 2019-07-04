@@ -40,7 +40,7 @@ void main() {
   fColor.a   = 0.5f;
   fColor.a  *= (fColor.b);
   if(size!=0)
-    fColor.a /= 1+size;
+    fColor.a /= size;
   fColor.a /= 2.f;
 
   if(io)

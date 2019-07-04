@@ -420,6 +420,15 @@ void main() {
 
   fColor = mix(fColor, final/2, fColor.b);
   fColor = vec4(fColor.rgb,1.f);
+
+//  float x = smoothstep(0.2,0.5,fColor.x) - smoothstep(0.5,0.8,fColor.x);
+//  float y = smoothstep(0.2,0.5,fColor.y) - smoothstep(0.5,0.8,fColor.y);
+//  float z = smoothstep(0.2,0.5,fColor.z) - smoothstep(0.5,0.8,fColor.z);
+//  vec4 mixture = vec4(x,y,z,1);
+//  fColor = mix(fColor, mixture/2, fColor.r);
+//  fColor = mix(fColor, mixture/3, fColor.g);
+//  fColor = mix(fColor, mixture/4, fColor.b);
+
 //  float gauss2 = (fColor.b-fColor.g)/2;
 //  gauss2 *= gauss2;
 //  float gauss = pow(M_E,gauss2)/(fColor.r*sqrt(2*M_PI));

@@ -34,7 +34,7 @@ void main(){
     vec3 n2 = gl_TessCoord.z * tcNormal[2];
 
     vec3 sphereCoord = normalize(vcPos);
-    vcPos = mix(vcPos, sphereCoord*radius, 1)*(scale+size/3);
+    vcPos = mix(vcPos, sphereCoord*radius, 1)*(scale+size/2.7777f);
     vcPos /= 1.03;
     vcPos = vec3(model * vec4(vcPos, 1.0));
     vcNormal = normalize(vcPos);
