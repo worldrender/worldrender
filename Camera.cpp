@@ -161,7 +161,7 @@ void Camera::pressButtons()
   is4P = is4CP;
 
   bool is3CP = (glfwGetKey( window, GLFW_KEY_3 ) == GLFW_PRESS &&
-                (glfwGetKey( window, GLFW_KEY_RIGHT_SHIFT ) == GLFW_PRESS || glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS));
+                !(glfwGetKey( window, GLFW_KEY_RIGHT_SHIFT ) == GLFW_PRESS || glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS));
   if (!is3P && is3CP){
     enablePolygon = !enablePolygon;
     if(enablePolygon)

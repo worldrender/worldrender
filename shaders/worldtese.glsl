@@ -30,6 +30,7 @@ out vec3 vcNormal;
 out vec4 vcColor;
 out float vNoise;
 out float fNoise;
+out float mNoise;
 //out vec2 vcTexCoord;
 
 out vec3 vcPos;
@@ -227,6 +228,7 @@ void main(){
     vec3 n1 = gl_TessCoord.y * tcNormal[1];
     vec3 n2 = gl_TessCoord.z * tcNormal[2];
     vcNormal = normalize(n0 + n1 + n2);
+    vcNormal = normalize(vcNormal);
 //    vNoise = vNoise*clamp(cubeNoise(vcPos),0,1);
     vNoise = (fbm(vcPos*10f,16, 1.f, .93753125f, 1.f, 1))*0.4f;
     vNoise *= sin(cubeVal(vNoise));
@@ -244,17 +246,23 @@ void main(){
     vNoise += cubeVal(mountains)*clamp((f1),-(GRANULARITY),GRANULARITY)+clamp((f2),-(GRANULARITY),GRANULARITY)+clamp((f3),-(GRANULARITY),GRANULARITY)-0.8;
     vNoise += (vertexNoise);
     vNoise *= 1.1784f;
+//    float oise = smoothstep( -3, 3, vNoise );
+//    oise = mix(vNoise, oise, vNoise);
+//    vNoise -= oise/3;
     if(vNoise>2.69)
     {
       vNoise += smoothing(mountains, f2);
     }
 
 
+
 //    float signal = 1;
 //    if(vNoise<0)
 //      signal = -1;
 //      vNoise += signal*(sin(vNoise));
-    vcPos = vcPos + vcNormal * (vNoise);
+    mNoise = mix(vNoise, vNoise/2, -(f1+f2+f3))/2.5;
+
+    vcPos = vcPos + vcNormal * mNoise;
     vcNormal = normalize(vcPos);
     ///PASSAR O DELTA antes depois da normal
     vec4 c0 = gl_TessCoord.x * tcColor[0];

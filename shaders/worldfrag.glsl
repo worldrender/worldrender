@@ -1,5 +1,6 @@
 #version 430 core
 #define M_PI 3.14159265358979323844f
+#define M_E 2.718281828459045235360f
 #define SC 250.f
 #define RADIUS 200.f
 #define max_height 20.f
@@ -23,6 +24,7 @@ in vec3 vcPos;
 in float vNoise;
 //in float vertNoise;
 in float fNoise;
+in float mNoise;
 
 uniform sampler2D pTexture;
 uniform sampler2D dTexture;
@@ -44,21 +46,87 @@ uniform float maxHeight = 10.7f;
 uniform vec3 texOffset = vec3(1.0f/8192.0f, 1.0f/4096.0f, 0.0f);
 mat2 m2 = mat2(1.6,-1.2,1.2,1.6);
 
-const mat3 m3  = mat3( 0.00,  0.80,  0.60,
-                      -0.80,  0.36, -0.48,
-                      -0.60, -0.48,  0.64 );
-const mat3 m3i = mat3( 0.00, -0.80, -0.60,
-                       0.80,  0.36, -0.48,
-                       0.60, -0.48,  0.64 );
-
 out vec4 fColor;
-
 
 float fAbs(float t)
 {
   return t>0 ? t : -t;
 }
 
+vec3 random3(vec3 c) {
+	float j = 4096.0*sin(dot(c,vec3(17.0, 59.4, 15.0)));
+	vec3 r;
+	r.z = fract(512.0*j);
+	j *= .125;
+	r.x = fract(512.0*j);
+	j *= .125;
+	r.y = fract(512.0*j);
+	return r-0.5;
+}
+
+/* skew constants for 3d simplex functions */
+const float F3 =  0.3333333;
+const float G3 =  0.1666667;
+
+/* 3d simplex noise */
+float simplex3d(vec3 p) {
+	 /* 1. find current tetrahedron T and it's four vertices */
+	 /* s, s+i1, s+i2, s+1.0 - absolute skewed (integer) coordinates of T vertices */
+	 /* x, x1, x2, x3 - unskewed coordinates of p relative to each of T vertices*/
+
+	 /* calculate s and x */
+	 vec3 s = floor(p + dot(p, vec3(F3)));
+	 vec3 x = p - s + dot(s, vec3(G3));
+
+	 /* calculate i1 and i2 */
+	 vec3 e = step(vec3(0.0), x - x.yzx);
+	 vec3 i1 = e*(1.0 - e.zxy);
+	 vec3 i2 = 1.0 - e.zxy*(1.0 - e);
+
+	 /* x1, x2, x3 */
+	 vec3 x1 = x - i1 + G3;
+	 vec3 x2 = x - i2 + 2.0*G3;
+	 vec3 x3 = x - 1.0 + 3.0*G3;
+
+	 /* 2. find four surflets and store them in d */
+	 vec4 w, d;
+
+	 /* calculate surflet weights */
+	 w.x = dot(x, x);
+	 w.y = dot(x1, x1);
+	 w.z = dot(x2, x2);
+	 w.w = dot(x3, x3);
+
+	 /* w fades from 0.6 at the center of the surflet to 0.0 at the margin */
+	 w = max(0.6 - w, 0.0);
+
+	 /* calculate surflet components */
+	 d.x = dot(random3(s), x);
+	 d.y = dot(random3(s + i1), x1);
+	 d.z = dot(random3(s + i2), x2);
+	 d.w = dot(random3(s + 1.0), x3);
+
+	 /* multiply d by w^4 */
+	 w *= w;
+	 w *= w;
+	 d *= w;
+
+	 /* 3. return the sum of the four surflets */
+	 return dot(d, vec4(52.0));
+}
+
+/* const matrices for 3d rotation */
+const mat3 rot1 = mat3(-0.37, 0.36, 0.85,-0.14,-0.93, 0.34,0.92, 0.01,0.4);
+const mat3 rot2 = mat3(-0.55,-0.39, 0.74, 0.33,-0.91,-0.24,0.77, 0.12,0.63);
+const mat3 rot3 = mat3(-0.71, 0.52,-0.47,-0.08,-0.72,-0.68,-0.7,-0.45,0.56);
+
+/* directional artifacts can be reduced by rotating each octave */
+float simplex3d_fractal(vec3 m) {
+    return   0.5333333*simplex3d(m*rot1)
+			+0.2666667*simplex3d(2.0*m*rot2)
+			+0.1333333*simplex3d(4.0*m*rot3)
+			+0.0666667*simplex3d(8.0*m);
+}
 
 float lambertian(vec3 norm, vec3 lightDir)
 {
@@ -222,15 +290,15 @@ void main() {
   float hD;
   float hU;
 
- vec3 col;
-  vec3 w_normal = sdf_terrain_normal(normal);
-  vec3 c_normal = calcTangent(normal, w_normal);
+  vec3 col;
+  vec3 w_normal = normalize(normal*sin(-20));
+  vec3 c_normal = normalize(calcTangent(normal, normal*sin(20)));
+
   hU = length(normal);
   hL = dot(w_normal, normal);
-  hR = hNoise/length(c_normal);
+  hR = hNoise/length(normal);
   hD = hNoise / hU;
   float hN = (hU-hL)/hNoise;
-  vec3 hM = cross(c_normal - normal, w_normal - normal);
 	float s = smoothstep(.4, 1., hN);
 	vec3 rock = mix(
 		c_rock, c_snow,
@@ -256,23 +324,59 @@ void main() {
   col *= 1;
   fColor = vec4(col,1.f);
 
+  float value;
+  value = simplex3d_fractal(vcPos*8.0+8.0);
+	value = 0.5 + 0.5*value;
+	value *= smoothstep(0.0, 0.005, abs(0.6-vcPos.x));
+	vec4 noised = vec4(vec3(value),1.0);
+  fColor -= noised/10;
+
+  value = simplex3d_fractal(normal*8.0+8.0);
+	value = 0.5 + 0.5*value;
+	value *= smoothstep(0.0, 0.005, abs(0.6-normal.x));
+  vec4 map = mix(fColor, noised, smoothstep(-1.f,1.f, hNoise));
+  fColor -= noised/20;
+
+  vec3 grain;
+  grain = random3(vcPos*8.0+8.0);
+	grain = 0.5 + 0.5*grain;
+	grain *= smoothstep(0.0, 0.005, abs(0.6-vcPos.x));
+
+  vec3 T = normalize(vcPos*grain);
+  vec3 B = normalize(-normal*grain);
+  grain = normalize(cross((B*T)*vNoise,noised.rgb));
+  grain = vec3(simplex3d_fractal(grain*vNoise+vNoise));
+  grain *= 0.05;
+
+  fColor -= vec4(grain,1);
+  vec3 normalNoise = normalize(vec3(sin(vNoise/4)/8,cos(vNoise/3)/6,sin(vNoise/4)/8));
+  normalNoise = normalize(normalNoise);
+  fColor += sin(vNoise/4)/8;
+  fColor.rgb -= reflect(cross(fColor.rgb,normalNoise),noised.rgb)/10;
+
+  grain = random3(vec3(vNoise*8.0+8.0));
+	grain = 0.5 + 0.5*grain;
+	grain *= smoothstep(0.0, 0.005, abs(0.6-vcPos.x));
+	grain = normalize(grain);
+	fColor.rgb -= grain/5;
+
   vec3 ref = reflect( viewPos, c_normal );
   float fre = clamp( 1.0+dot(viewPos,c_normal), 0.0, 1.0 );
   vec3 hal = normalize(lightDir-viewPos);
 //
-  col = (hNoise*0.25+0.75)*0.9*mix( vec3(0.10,0.05,0.03), vec3(0.13,0.10,0.08), clamp(fNoise/200.0,0.0,1.0) );
-		col = mix( col, 0.17*vec3(0.5,.23,0.04)*(0.50+0.50*hD),smoothstep(0.70,0.9,hNoise-c_normal.y) );
-        col = mix( col, 0.10*vec3(0.2,.30,0.00)*(0.25+0.75*hD),smoothstep(0.95,1.0,hNoise-c_normal.y) );
+  col = (vNoise*0.25+0.75)*0.9*mix( vec3(0.10,0.05,0.03), vec3(0.13,0.10,0.08), clamp(fNoise/200.0,0.0,1.0) );
+		col = mix( col, 0.17*vec3(0.5,.23,0.04)*(0.50+0.50*hD),smoothstep(0.70,0.9,vNoise-c_normal.y) );
+        col = mix( col, 0.10*vec3(0.2,.30,0.00)*(0.25+0.75*hD),smoothstep(0.95,1.0,vNoise-c_normal.y) );
 
-  float h = smoothstep(55.0,80.0,vcPos.y/SC + 25.0*hNoise );
+  float h = smoothstep(55.0,80.0,vcPos.y/SC + 25.0*vNoise );
   float e = smoothstep(1.0-0.5*h,1.0-0.1*h,hD-c_normal.y);
   float o = 0.3 + 0.7*smoothstep(0.0,0.1,hD-c_normal.x+h*h);
         s = h*e*o;
   col = mix( col, 0.29*vec3(0.62,0.65,0.7), smoothstep( 0.1, 0.9, s ) );
   col *= 1;
 
-  float amb = clamp(0.5+0.5*dot(ambient,c_normal),0.0,1.0);
-  float dif = clamp( dot( diffuse, c_normal ), 0.0, 1.0 );
+  float amb = clamp(0.5+0.5*dot(ambient,normalize(c_normal*mNoise)),0.0,1.0);
+  float dif = clamp( dot( diffuse, normalize(c_normal*mNoise) ), 0.0, 1.0 );
   float bac = clamp( 0.2 + 0.8*dot( normalize( vec3(-diffuse.x, 0.0, diffuse.z ) ), c_normal ), 0.0, 1.0 );
   float sh = 1.0;
 //
@@ -289,8 +393,7 @@ void main() {
 
   //fColor *= vec4(lin,1);
   fColor *= 1.77773;
-
-  float d = dot(normal, lightDir);
+  float d = dot(normalize(normal), lightDir*vNoise);
 
   vec4 specular = vec4(1.0, 1.0, 1.0,  1.0);
   vec4 emissive = vec4(GetWaterColorAt(c_water, hNoise), 1.0);
@@ -316,7 +419,17 @@ void main() {
   }
 
   fColor = mix(fColor, final/2, fColor.b);
-  fColor *= 0.7f;
+  fColor = vec4(fColor.rgb,1.f);
+//  float gauss2 = (fColor.b-fColor.g)/2;
+//  gauss2 *= gauss2;
+//  float gauss = pow(M_E,gauss2)/(fColor.r*sqrt(2*M_PI));
+//  gauss /= M_PI*M_E;
+//  noised = vec4(simplex3d_fractal(fColor.rgb * gauss));
+//  noised = fColor * gauss * noised;
+//  noised /= 10;
+//  noised = mix(fColor,noised,1);
+
+  fColor *= 1.3;
 }
 
 

@@ -1,4 +1,5 @@
 #version 430 core
+#define TESS_LEVEL 2
 
 layout(vertices = 3) out;
 
@@ -71,10 +72,10 @@ void main(){
     }
     //TessLevelOuter = TessLevelInner;//dirLOD(vPos, px, py, pz);
 
-    gl_TessLevelInner[0] = TessLevelInner;
-    gl_TessLevelOuter[0] = e0;
-    gl_TessLevelOuter[1] = e1;
-    gl_TessLevelOuter[2] = e2;
+    gl_TessLevelInner[0] = TessLevelInner*TESS_LEVEL;
+    gl_TessLevelOuter[0] = e0*TESS_LEVEL;
+    gl_TessLevelOuter[1] = e1*TESS_LEVEL;
+    gl_TessLevelOuter[2] = e2*TESS_LEVEL;
   }
   if(TessLevelInner == 8.0 /*|| TessLevelOuter == 8.0*/){
     tcColor[ID] == vec4(1.0, 1.0, 1.0, 1.0);
