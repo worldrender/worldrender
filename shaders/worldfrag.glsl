@@ -362,7 +362,7 @@ void main() {
 
   vec3 ref = reflect( viewPos, c_normal );
   float fre = clamp( 1.0+dot(viewPos,c_normal), 0.0, 1.0 );
-  vec3 hal = normalize(lightDir-viewPos);
+  vec3 hal = normalize(vNoise-lightDir-viewPos);
 //
   col = (vNoise*0.25+0.75)*0.9*mix( vec3(0.10,0.05,0.03), vec3(0.13,0.10,0.08), clamp(fNoise/200.0,0.0,1.0) );
 		col = mix( col, 0.17*vec3(0.5,.23,0.04)*(0.50+0.50*hD),smoothstep(0.70,0.9,vNoise-c_normal.y) );
@@ -438,7 +438,7 @@ void main() {
 //  noised /= 10;
 //  noised = mix(fColor,noised,1);
 
-  fColor *= 1.3;
+  fColor *= 1.3f;
 }
 
 
