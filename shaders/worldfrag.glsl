@@ -1,4 +1,4 @@
-#version 430 core
+#version 430 compatibility
 #define M_PI 3.14159265358979323844f
 #define M_E 2.718281828459045235360f
 #define SC 250.f
@@ -26,6 +26,7 @@ in float vNoise;
 in float fNoise;
 in float mNoise;
 
+uniform float grid_size=25.f;
 uniform sampler2D pTexture;
 uniform sampler2D dTexture;
 uniform sampler2D nTexture;
@@ -170,38 +171,6 @@ vec3 calcNormal( in vec3 pos, float t )
     return normalize(nor);
 }
 
-vec3 calcTangent(in vec3 a, in vec3 b)
-{
-  float c0 = fAbs(a.x)+fAbs(a.y)+fAbs(a.z);
-  float c1 = fAbs(a.x)+fAbs(a.x)+fAbs(a.y);
-  float c2 = fAbs(a.x)+fAbs(a.x)+fAbs(a.z);
-  float c3 = fAbs(a.y)+fAbs(a.y)+fAbs(a.x);
-  float c4 = fAbs(a.y)+fAbs(a.y)+fAbs(a.z);
-  float c5 = fAbs(a.z)+fAbs(a.z)+fAbs(a.x);
-  float c6 = fAbs(a.z)+fAbs(a.z)+fAbs(a.y);
-
-  float d0 = fAbs(b.x)+fAbs(b.y)+fAbs(b.z);
-  float d1 = fAbs(b.x)+fAbs(b.x)+fAbs(b.y);
-  float d2 = fAbs(b.x)+fAbs(b.x)+fAbs(b.z);
-  float d3 = fAbs(b.y)+fAbs(b.y)+fAbs(b.x);
-  float d4 = fAbs(b.y)+fAbs(b.y)+fAbs(b.z);
-  float d5 = fAbs(b.z)+fAbs(b.z)+fAbs(b.x);
-  float d6 = fAbs(b.z)+fAbs(b.z)+fAbs(b.y);
-
-  float e = 0.001;
-
-  float c = c0+c1+c2+c3+c4+c5+c6;
-  float d = d0+d1+d2+d3+d4+d5+d6;
-
-  c *= e;
-  d *= e;
-
-  float sinC = sin(c);
-  float sinD = sin(d);
-
-  return normalize((a+sinC)*c+(b+sinD)*d)/2;
-}
-
 vec2 sdf_terrain_map_detail(in vec3 pos)
 {
 	float h0 = (vNoise * 2.0987);
@@ -226,6 +195,35 @@ vec3 sdf_terrain_normal(in vec3 p)
 		F(p + dt.zzx) - F(p - dt.zzx)
 	));
 #undef F
+}
+
+mat3 cotangent_frame(vec3 N, vec3 p, vec2 uv)
+{
+    // get edge vectors of the pixel triangle
+    vec3 dp1 = dFdx( p );
+    vec3 dp2 = dFdy( p );
+    vec2 duv1 = dFdx( uv );
+    vec2 duv2 = dFdy( uv );
+
+    // solve the linear system
+    vec3 dp2perp = cross( dp2, N );
+    vec3 dp1perp = cross( N, dp1 );
+    vec3 T = dp2perp * duv1.x + dp1perp * duv2.x;
+    vec3 B = dp2perp * duv1.y + dp1perp * duv2.y;
+
+    // construct a scale-invariant frame
+    float invmax = inversesqrt( max( dot(T,T), dot(B,B) ) );
+    return mat3( T * invmax, B * invmax, N );
+}
+
+vec3 perturb_normal( vec3 N, vec3 V, vec2 texcoord )
+{
+    // assume N, the interpolated vertex normal and
+    // V, the view vector (vertex to eye)
+   vec3 map = texture(nTexture, texcoord ).xyz;
+   map = map * 255./127. - 128./127.;
+    mat3 TBN = cotangent_frame(N, -V, texcoord);
+    return normalize(TBN * map);
 }
 
 vec3 setup_lights(
@@ -281,9 +279,27 @@ void main() {
 	fColor = vec4(0.f, 0.f, 0.f, 1.f);
  	return;
   }
+
   float hNoise = (vNoise)/2;
   vec3 normal = normalize(vcNormal);
   vec3 fragPos = vec3(model*vec4(vcPos,1.0f));
+
+  vec2 uv;
+
+  uv.s = (M_PI+atan(normal.x, normal.z)/2) / (2*M_PI) + 0.5;
+  uv.t = 0.5 - asin(normal.y)/ M_PI;
+
+  if(uv.s > 0.7)
+    uv.s += 1;
+  else if(uv.s < 0.7)
+    uv.s -= 1;
+  if(uv.t > 0.7)
+    uv.t += 1;
+  else if(uv.t < 0.7)
+    uv.t -= 1;
+
+
+  vec3 PN = perturb_normal(normal, vcPos, uv);
 
   float hL;
   float hR;
@@ -291,8 +307,8 @@ void main() {
   float hU;
 
   vec3 col;
-  vec3 w_normal = normalize(normal*sin(-20));
-  vec3 c_normal = normalize(calcTangent(normal, normal*sin(20)));
+  vec3 w_normal = calcNormal(normal,sin(-20));
+  vec3 c_normal = normalize(PN);
 
   hU = length(normal);
   hL = dot(w_normal, normal);
@@ -300,14 +316,28 @@ void main() {
   hD = hNoise / hU;
   float hN = (hU-hL)/hNoise;
 	float s = smoothstep(.4, 1., hN);
+
+  vec3 T1 = vec3(0.0,0.0,0.0);
+	T1.x = max(max(normal.x,normal.y),normal.z);
+	T1 = normalize(cross(T1,normal));
+	vec3 T2 = normalize(cross(T1,normal));
+	vec3 Tangent = vec3(T1.x,T2.x,1.0);
+
+
+	float angleDiff = abs(dot(normal, cross(PN,normalize(Tangent))));
+  float pureRock = 0.6;
+  float lerpRock = 0.7;
+  float coef = 1.0 - smoothstep(pureRock, lerpRock, angleDiff);
+
+
 	vec3 rock = mix(
 		c_rock, c_snow,
 		smoothstep(1. - .3*s, 1. - .2*s, hR*0.4));
-
 	vec3 grass = mix(
 		c_grass, rock,
 		smoothstep(l_grass, l_rock, hNoise));
 
+  grass = mix(grass, c_snow, coef/10);
 	vec3 shoreline = mix(
 		c_beach, grass,
 		smoothstep(l_shore, l_grass, hNoise));
@@ -439,6 +469,7 @@ void main() {
 //  noised = mix(fColor,noised,1);
 
   fColor *= 1.3f;
+
 }
 
 
