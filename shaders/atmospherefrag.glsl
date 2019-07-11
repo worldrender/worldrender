@@ -30,7 +30,7 @@ void main() {
   float sourceStrength = 1;
   vec3 ambient = sourceStrength * atmosphereColor;
   vec3 sunDir = normalize(sunRay*radius*scale*2.5 - vcPos);
-  float diff = max(dot(normal, sunDir), 0.0);
+  float diff = max(dot(normalize(normal), sunDir), 0.0);
   vec3 diffuse = diff * rayleighScattering;
 
 
@@ -41,7 +41,7 @@ void main() {
   fColor.a  *= (fColor.b);
   if(size!=0)
     fColor.a /= size;
-  fColor.a /= 2.f;
+  fColor.a /= 2.6667f;
 
   if(io)
   {

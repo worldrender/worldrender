@@ -249,20 +249,26 @@ void main(){
 //    float oise = smoothstep( -3, 3, vNoise );
 //    oise = mix(vNoise, oise, vNoise);
 //    vNoise -= oise/3;
-    if(vNoise>2.69)
+
+
+
+    if(vNoise>0)
     {
+      if(vNoise>2.69)
+      {
       vNoise += smoothing(mountains, f2);
+      }
+      f1 = fbm(vcPos, 16, 0.95f, 0.8f, 1.f, 1)/2;
+
+      vNoise = mix(vNoise, vNoise/2, -(f1+f2+f3))/2.888f;
     }
-
-
 
 //    float signal = 1;
 //    if(vNoise<0)
 //      signal = -1;
 //      vNoise += signal*(sin(vNoise));
-    mNoise = mix(vNoise, vNoise/2, -(f1+f2+f3))/2.5;
 
-    vcPos = vcPos + vcNormal * mNoise;
+    vcPos = vcPos + vcNormal * vNoise;
     vcNormal = normalize(vcPos);
     ///PASSAR O DELTA antes depois da normal
     vec4 c0 = gl_TessCoord.x * tcColor[0];

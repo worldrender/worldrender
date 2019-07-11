@@ -290,11 +290,7 @@ void main() {
   uv.s = 0.5 - 0.5 * atan( normal.x, -normal.z ) * kOneOverPi;
   uv.t = 1.0 - acos( normal.y ) * kOneOverPi;
 
-
-
   vec3 PN = perturb_normal(normal, vcPos, uv);
-
-
 
   float hL;
   float hR;
@@ -324,13 +320,15 @@ void main() {
   float lerpRock = 0.7;
   float coef = 1.0 - smoothstep(pureRock, lerpRock, angleDiff);
 
+  float d = dot(normalize(normal), lightDir*vNoise);
+  float cNoise = hNoise*d/8;
 
 	vec3 rock = mix(
 		c_rock, c_snow,
 		smoothstep(1. - .3*s, 1. - .2*s, hR/2));
 	vec3 grass = mix(
 		c_grass, rock,
-		smoothstep(l_grass, l_rock, hNoise));
+		smoothstep(l_grass-cNoise, l_rock+cNoise, hNoise));
 
   vec3 deviant = mix(
 		c_rock, c_snow,
@@ -390,24 +388,24 @@ void main() {
 	grain = normalize(grain);
 	fColor.rgb -= grain/5;
 
-  vec3 ref = reflect( viewPos, normal );
-  float fre = clamp( 1.0+dot(viewPos,normal), 0.0, 1.0 );
+  vec3 ref = reflect( viewPos, PN );
+  float fre = clamp( 1.0+dot(viewPos,PN), 0.0, 1.0 );
   vec3 hal = normalize(vNoise-lightDir-viewPos);
 //
   col = (vNoise*0.25+0.75)*0.9*mix( vec3(0.10,0.05,0.03), vec3(0.13,0.10,0.08), clamp(fNoise/200.0,0.0,1.0) );
-		col = mix( col, 0.17*vec3(0.5,.23,0.04)*(0.50+0.50*hD),smoothstep(0.70,0.9,vNoise-normal.y) );
-        col = mix( col, 0.10*vec3(0.2,.30,0.00)*(0.25+0.75*hD),smoothstep(0.95,1.0,vNoise-normal.y) );
+		col = mix( col, 0.17*vec3(0.5,.23,0.04)*(0.50+0.50*hD),smoothstep(0.70,0.9,vNoise-PN.y) );
+        col = mix( col, 0.10*vec3(0.2,.30,0.00)*(0.25+0.75*hD),smoothstep(0.95,1.0,vNoise-PN.y) );
 
   float h = smoothstep(55.0,80.0,vcPos.y/SC + 25.0*vNoise );
-  float e = smoothstep(1.0-0.5*h,1.0-0.1*h,hD-normal.y);
-  float o = 0.3 + 0.7*smoothstep(0.0,0.1,hD-normal.x+h*h);
+  float e = smoothstep(1.0-0.5*h,1.0-0.1*h,hD-PN.y);
+  float o = 0.3 + 0.7*smoothstep(0.0,0.1,hD-PN.x+h*h);
         s = h*e*o;
   col = mix( col, 0.29*vec3(0.62,0.65,0.7), smoothstep( 0.1, 0.9, s ) );
   col *= 1;
 
-  float amb = clamp(0.5+0.5*dot(ambient,normalize(normal*mNoise)),0.0,1.0);
-  float dif = clamp( dot( diffuse, normalize(normal*mNoise) ), 0.0, 1.0 );
-  float bac = clamp( 0.2 + 0.8*dot( normalize( vec3(-diffuse.x, 0.0, diffuse.z ) ), normal ), 0.0, 1.0 );
+  float amb = clamp(0.5+0.5*dot(ambient,normalize(PN*mNoise)),0.0,1.0);
+  float dif = clamp( dot( diffuse, normalize(PN*mNoise) ), 0.0, 1.0 );
+  float bac = clamp( 0.2 + 0.8*dot( normalize( vec3(-diffuse.x, 0.0, diffuse.z ) ), PN ), 0.0, 1.0 );
   float sh = 1.0;
 //
   vec3 lin  = vec3(0.0);
@@ -423,7 +421,6 @@ void main() {
 
   //fColor *= vec4(lin,1);
   fColor *= 1.77773;
-  float d = dot(normalize(normal), lightDir*vNoise);
 
   vec4 specular = vec4(1.0, 1.0, 1.0,  1.0);
   vec4 emissive = vec4(GetWaterColorAt(c_water, hNoise), 1.0);
@@ -436,7 +433,7 @@ void main() {
                vec4(diffuse,1.f) * diffuse_contribution * max(d, 0);
   vec3 toEye = normalize(vcPos - viewPos);
   vec3 lightVec = normalize(-lightDir*radius*scale);
-  vec3 reflection = -reflect(lightVec, normal);
+  vec3 reflection = -reflect(lightVec, normalize(vec3(tan(PN.x),tan(PN.y),tan(PN.z))));
 
   float shine = dot(normalize(reflection), normalize(vec3(MVP[0][2],MVP[1][2],MVP[2][2])));
 
@@ -451,24 +448,8 @@ void main() {
   fColor = mix(fColor, final/2, fColor.b);
   fColor = vec4(fColor.rgb,1.f);
 
-//  float x = smoothstep(0.2,0.5,fColor.x) - smoothstep(0.5,0.8,fColor.x);
-//  float y = smoothstep(0.2,0.5,fColor.y) - smoothstep(0.5,0.8,fColor.y);
-//  float z = smoothstep(0.2,0.5,fColor.z) - smoothstep(0.5,0.8,fColor.z);
-//  vec4 mixture = vec4(x,y,z,1);
-//  fColor = mix(fColor, mixture/2, fColor.r);
-//  fColor = mix(fColor, mixture/3, fColor.g);
-//  fColor = mix(fColor, mixture/4, fColor.b);
-
-//  float gauss2 = (fColor.b-fColor.g)/2;
-//  gauss2 *= gauss2;
-//  float gauss = pow(M_E,gauss2)/(fColor.r*sqrt(2*M_PI));
-//  gauss /= M_PI*M_E;
-//  noised = vec4(simplex3d_fractal(fColor.rgb * gauss));
-//  noised = fColor * gauss * noised;
-//  noised /= 10;
-//  noised = mix(fColor,noised,1);
-
   fColor *= 1.3f;
+
 
 }
 
