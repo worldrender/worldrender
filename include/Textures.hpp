@@ -1,14 +1,16 @@
 #include <stdlib.h>
 #include <vector>
-#define QTDTEXTURAS 3
 
 using namespace std;
 
-GLuint textures[QTDTEXTURAS];
+vector<GLuint> textures;
 
-const char* filenames[QTDTEXTURAS] = {"textures/planetTexture.png",
+const vector<string> filenames = {"textures/planetTexture.png",
                                       "textures/soilDetail.png",
-                                      "textures/normalmap.png"
+                                      "textures/normalmap.png",
+                                      "textures/grass.png",
+                                      "textures/soil.png",
+                                      "textures/snow.png"
                                      };
 
 const vector<std::string> skybox

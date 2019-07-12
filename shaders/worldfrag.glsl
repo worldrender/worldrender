@@ -22,14 +22,16 @@ in vec4 vcColor;
 in vec3 vcNormal;
 in vec3 vcPos;
 in float vNoise;
-//in float vertNoise;
 in float fNoise;
-in float mNoise;
 
-uniform float grid_size=25.f;
 uniform sampler2D pTexture;
 uniform sampler2D dTexture;
 uniform sampler2D nTexture;
+
+
+uniform sampler2D grasText;
+uniform sampler2D soilText;
+uniform sampler2D snowText;
 
 uniform float scale;
 uniform mat4 model;
@@ -129,48 +131,6 @@ float simplex3d_fractal(vec3 m) {
 			+0.0666667*simplex3d(8.0*m);
 }
 
-float lambertian(vec3 norm, vec3 lightDir)
-{
-  return max(dot(norm, -lightDir), 0);
-}
-vec3 dirLighting(vec3 dif, vec3 norm)
-{
-  vec3 diffuse = (dif) * lambertian(norm, lightDir);
-  //vec3 specular = (spec * light.Color) * Blinn(norm, light.Direction, viewDir, specPow);
-  return diffuse;// + specular;
-}
-float height(vec2 uv)
-{
-  return texture(pTexture, uv).r*maxHeight;
-}
-
-float map2( in vec3 p )
-{
-	float h = vNoise;
-
-
-	float ss = 0.03;
-	float hh = h*ss;
-	float fh = fract(hh);
-	float ih = floor(hh);
-	fh = mix( sqrt(fh), fh, smoothstep(50.0,140.0,h) );
-	h = (ih+fh)/ss;
-
-    return p.y - h;
-}
-
-vec3 calcNormal( in vec3 pos, float t )
-{
-	float e = 0.001;
-	e = 0.001*t;
-    vec3  eps = vec3(e,0.0,0.0);
-    vec3 nor;
-    nor.x = map2(pos+eps.xyy) - map2(pos-eps.xyy);
-    nor.y = map2(pos+eps.yxy) - map2(pos-eps.yxy);
-    nor.z = map2(pos+eps.yyx) - map2(pos-eps.yyx);
-    return normalize(nor);
-}
-
 vec2 sdf_terrain_map_detail(in vec3 pos)
 {
 	float h0 = (vNoise * 2.0987);
@@ -249,24 +209,24 @@ vec3 setup_lights(
 
 vec3 GetWaterColorAt(vec3 sourceColor, float depth)
 {
-float rIndex = 7.0f;
-float gIndex = 10.0f;
-float bIndex = 70.0f;
+  float rIndex = 7.0f;
+  float gIndex = 10.0f;
+  float bIndex = 70.0f;
 
-float sandRed = sourceColor.r;
-float sandGreen = sourceColor.g;
-float sandBlue = sourceColor.b;
+  float sandRed = sourceColor.r;
+  float sandGreen = sourceColor.g;
+  float sandBlue = sourceColor.b;
 
-float lostRed = (depth / rIndex) * (1.0f/3.0f);
-float lostGreen = (depth / gIndex) * (1.0f/3.0f);
-float lostBlue = (depth / bIndex) * (1.0f/3.0f);
+  float lostRed = (depth / rIndex) * (1.0f/3.0f);
+  float lostGreen = (depth / gIndex) * (1.0f/3.0f);
+  float lostBlue = (depth / bIndex) * (1.0f/3.0f);
 
-sandRed = sandRed - (sandRed * lostRed);
-sandGreen = sandGreen - (sandGreen * lostGreen);
-sandBlue = sandBlue - (sandBlue * lostBlue);
+  sandRed = sandRed - (sandRed * lostRed);
+  sandGreen = sandGreen - (sandGreen * lostGreen);
+  sandBlue = sandBlue - (sandBlue * lostBlue);
 
-vec3 sandColor = vec3(max(0, sandRed), max(0, sandGreen), max(0, sandBlue));
-return sandColor;
+  vec3 sandColor = vec3(max(0, sandRed), max(0, sandGreen), max(0, sandBlue));
+  return sandColor;
 }
 
 vec4 saturate(vec4 source)
@@ -279,7 +239,6 @@ void main() {
 	fColor = vec4(0.f, 0.f, 0.f, 1.f);
  	return;
   }
-
   float hNoise = (vNoise)/2;
   vec3 normal = normalize(vcNormal);
   vec3 fragPos = vec3(model*vec4(vcPos,1.0f));
@@ -298,11 +257,11 @@ void main() {
   float hU;
 
   vec3 col;
-  vec3 w_normal = calcNormal(normal,dot(normal,PN));
+//  vec3 w_normal = calcNormal(normal,dot(normal,PN));
   vec3 c_normal = sdf_terrain_normal(vcPos);
 
   hU = length(normal);
-  hL = dot(w_normal, normal);
+  hL = dot(c_normal, normal);
   hR = hNoise/length(normal);
   hD = hNoise / hU;
   float hN = (hU-hL)/hNoise;
@@ -323,15 +282,19 @@ void main() {
   float d = dot(normalize(normal), lightDir*vNoise);
   float cNoise = hNoise*d/8;
 
+  vec3 grassColor = texture( grasText, uv*scale*radius ).rgb*.09f;
+  vec3 snowColor  = texture( soilText, uv*scale ).rgb*.09f;
+  vec3 soilColor  = texture( snowText, uv*scale*2 ).rgb*.02f;
+
 	vec3 rock = mix(
-		c_rock, c_snow,
-		smoothstep(1. - .3*s, 1. - .2*s, hR/2));
+		soilColor+c_rock*hNoise, snowColor+c_snow*hNoise*0.3f,
+		smoothstep(1. - .3*s-cNoise*0.5f, 1. - .2*s, hR/2));
 	vec3 grass = mix(
-		c_grass, rock,
+		grassColor+c_grass, soilColor+rock*hNoise*0.3f,
 		smoothstep(l_grass-cNoise, l_rock+cNoise, hNoise));
 
   vec3 deviant = mix(
-		c_rock, c_snow,
+		c_rock, snowColor+c_snow,
 		smoothstep(1. - .3*s, 1. - .2*coef, hNoise));
 
 
@@ -379,7 +342,7 @@ void main() {
   fColor -= vec4(grain,1);
   vec3 normalNoise = normalize(vec3(sin(vNoise/4)/8,cos(vNoise/3)/6,sin(vNoise/4)/8));
   normalNoise = normalize(normalNoise);
-  fColor += sin(vNoise/4)/8;
+  fColor += sin(hNoise/4)/8;
   fColor.rgb -= reflect(cross(fColor.rgb,normalNoise),noised.rgb)/10;
 
   grain = random3(vec3(vNoise*8.0+8.0));
@@ -388,23 +351,24 @@ void main() {
 	grain = normalize(grain);
 	fColor.rgb -= grain/5;
 
-  vec3 ref = reflect( viewPos, PN );
-  float fre = clamp( 1.0+dot(viewPos,PN), 0.0, 1.0 );
+  vec3 ref = reflect( viewPos, c_normal );
+  float fre = clamp( 1.0+dot(viewPos,c_normal), 0.0, 1.0 );
   vec3 hal = normalize(vNoise-lightDir-viewPos);
 //
   col = (vNoise*0.25+0.75)*0.9*mix( vec3(0.10,0.05,0.03), vec3(0.13,0.10,0.08), clamp(fNoise/200.0,0.0,1.0) );
-		col = mix( col, 0.17*vec3(0.5,.23,0.04)*(0.50+0.50*hD),smoothstep(0.70,0.9,vNoise-PN.y) );
-        col = mix( col, 0.10*vec3(0.2,.30,0.00)*(0.25+0.75*hD),smoothstep(0.95,1.0,vNoise-PN.y) );
+		col = mix( col, 0.17*vec3(0.5,.23,0.04)*(0.50+0.50*hNoise),smoothstep(0.70,0.9,hNoise-PN.y) );
+        col = mix( col, 0.10*vec3(0.2,.30,0.00)*(0.25+0.75*hNoise),smoothstep(0.95,1.0,hNoise-PN.y) );
 
-  float h = smoothstep(55.0,80.0,vcPos.y/SC + 25.0*vNoise );
-  float e = smoothstep(1.0-0.5*h,1.0-0.1*h,hD-PN.y);
-  float o = 0.3 + 0.7*smoothstep(0.0,0.1,hD-PN.x+h*h);
-        s = h*e*o;
+  float h = smoothstep(55.0,80.0,vcPos.y/SC + 25.0*hNoise );
+  float e = smoothstep(1.0-0.5*h,1.0-0.1*h,hNoise-PN.y);
+  float o = 0.3 + 0.7*smoothstep(0.0,0.1,hNoise-PN.x+h*h);
+  float u = 0.2 + 0.2*smoothstep(0.5*h,0.1-0.2*h,hNoise-PN.z+h*h);
+        s = u*h*e*o;
   col = mix( col, 0.29*vec3(0.62,0.65,0.7), smoothstep( 0.1, 0.9, s ) );
   col *= 1;
 
-  float amb = clamp(0.5+0.5*dot(ambient,normalize(PN*mNoise)),0.0,1.0);
-  float dif = clamp( dot( diffuse, normalize(PN*mNoise) ), 0.0, 1.0 );
+  float amb = clamp(0.5+0.5*dot(ambient,normalize(PN*hNoise)),0.0,1.0);
+  float dif = clamp( dot( diffuse, normalize(PN*hNoise) ), 0.0, 1.0 );
   float bac = clamp( 0.2 + 0.8*dot( normalize( vec3(-diffuse.x, 0.0, diffuse.z ) ), PN ), 0.0, 1.0 );
   float sh = 1.0;
 //

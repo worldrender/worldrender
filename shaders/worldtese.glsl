@@ -25,12 +25,10 @@ in vec4 tcColor[];
 in float tNoise[];
 //in vec2 tcTexCoord[];
 
-out float p;
 out vec3 vcNormal;
-out vec4 vcColor;
 out float vNoise;
 out float fNoise;
-out float mNoise;
+
 //out vec2 vcTexCoord;
 
 out vec3 vcPos;
@@ -166,6 +164,24 @@ float ridgedNoise(in vec3 p, int octaves, float H, float gain, float amplitude, 
   return total;
 }
 
+float ridgeNoise(in vec3 p, int octaves, float exponent)
+{
+  float total = 0.f;
+  float amplitude = 32.f;
+  float frequency = 32.f;
+  const float gain = 2.f;
+  float persistence = 1;
+  for(int i=0;i<octaves;i++)
+  {
+    persistence *= amplitude * 2 * (0.5 - abs(0.5 - noise(p*frequency))) * persistence;
+    total += persistence;
+    amplitude /= gain;
+    frequency *= gain;
+  }
+
+  return pow(total, exponent);
+}
+
 float cubeVal(in float p)
 {
   return p*p*p;
@@ -211,77 +227,56 @@ float smoothing(float p1, float p2)
 }
 
 void main(){
-    vec3 tcPos0 = (tcPosition[0]);// tcPos0.y = iqfBm(tcPos0, 3, 8, 8)*radius;
-    vec3 tcPos1 = (tcPosition[1]);// tcPos1.y = iqfBm(tcPos1, 3, 8, 8)*radius;
-    vec3 tcPos2 = (tcPosition[2]);// tcPos2.y = iqfBm(tcPos2, 3, 8, 8)*radius;
+    vec3 tcPos0 = (tcPosition[0]);
+    vec3 tcPos1 = (tcPosition[1]);
+    vec3 tcPos2 = (tcPosition[2]);
 
     vec3 p0 = gl_TessCoord.x * tcPos0;
     vec3 p1 = gl_TessCoord.y * tcPos1;
     vec3 p2 = gl_TessCoord.z * tcPos2;
-    vcPos = (p0 + p1 + p2);
+    vec3 t = (p0 + p1 + p2);
+    vcPos = t;
     float vertexNoise = gl_TessCoord.x*tNoise[0]+gl_TessCoord.y*tNoise[1]+gl_TessCoord.z*tNoise[2];
     fNoise = vertexNoise;
-    //tePosition*= radius;
-    //tePosition.y = iqfBm(tePosition, 1,2,0.5);
 
     vec3 n0 = gl_TessCoord.x * tcNormal[0];
     vec3 n1 = gl_TessCoord.y * tcNormal[1];
     vec3 n2 = gl_TessCoord.z * tcNormal[2];
     vcNormal = normalize(n0 + n1 + n2);
     vcNormal = normalize(vcNormal);
-//    vNoise = vNoise*clamp(cubeNoise(vcPos),0,1);
-    vNoise = (fbm(vcPos*10f,16, 1.f, .93753125f, 1.f, 1))*0.4f;
-    vNoise *= sin(cubeVal(vNoise));
+
+    vNoise = sin(cubeVal(fbm(vcPos*10f,16, 0.55f, .93753125f, 1.f, 1)*0.5f));
+
     float mountains = (ridgedNoise(vcPos,11,.7f,.03f,1.f,.03f,.5f,.01f));
 
-//     float h1 = hyrbidMultifractal(p/8.0, H, lacunarity, octaves, offset, gain);
-//    float h2 = hyrbidMultifractal(p/3.0, H, lacunarity, octaves, offset, gain/2.0)*2.0;
-//    float h3 = hyrbidMultifractal(p*2.0, H, lacunarity, octaves, offset, gain)*0.3;
 
     float f1 = ridgedNoise(vcPos/8.f, 5, 0.7, 0.7f, 4.f, 0.03f, 0.5f, 0.05f);
     float f2 = ridgedNoise(vcPos/3.f, 5, 0.7, 0.4f, 4.f, 0.03f, 0.5f, 0.05f)*2.f;
     float f3 = ridgedNoise(vcPos/2.f, 5, 0.7, 0.4f, 4.f, 0.03f, 0.5f, 0.05f)*0.3f;
+    //float f4 = ridgeNoise(vcPos/2.f, 5, 8);
 
-
-    vNoise += cubeVal(mountains)*clamp((f1),-(GRANULARITY),GRANULARITY)+clamp((f2),-(GRANULARITY),GRANULARITY)+clamp((f3),-(GRANULARITY),GRANULARITY)-0.8;
+    vNoise += cubeVal(mountains)
+           *  clamp(f1,-(GRANULARITY),GRANULARITY)
+           +  clamp(f2,-(GRANULARITY),GRANULARITY)
+           +  clamp(f3,-(GRANULARITY),GRANULARITY) -0.8;
+    //vNoise *= clamp(f4,-(GRANULARITY),GRANULARITY)/2;
     vNoise += (vertexNoise);
     vNoise *= 1.1784f;
-//    float oise = smoothstep( -3, 3, vNoise );
-//    oise = mix(vNoise, oise, vNoise);
-//    vNoise -= oise/3;
-
-
 
     if(vNoise>0)
     {
       if(vNoise>2.69)
       {
-      vNoise += smoothing(mountains, f2);
+        vNoise += smoothing(mountains, f2);
       }
       f1 = fbm(vcPos, 16, 0.95f, 0.8f, 1.f, 1)/2;
 
       vNoise = mix(vNoise, vNoise/2, -(f1+f2+f3))/2.888f;
     }
-
-//    float signal = 1;
-//    if(vNoise<0)
-//      signal = -1;
-//      vNoise += signal*(sin(vNoise));
-
+    vcPos = t;
+//    vNoise = pow(2, vNoise)/4;
     vcPos = vcPos + vcNormal * vNoise;
     vcNormal = normalize(vcPos);
-    ///PASSAR O DELTA antes depois da normal
-    vec4 c0 = gl_TessCoord.x * tcColor[0];
-    vec4 c1 = gl_TessCoord.y * tcColor[1];
-    vec4 c2 = gl_TessCoord.z * tcColor[2];
-    vcColor = (c0 + c1 + c2);
-
-    /*vec2 t0 = gl_TessCoord.x * tcTexCoord[0];
-    vec2 t1 = gl_TessCoord.y * tcTexCoord[1];
-    vec2 t2 = gl_TessCoord.z * tcTexCoord[2];
-    vcTexCoord = (t0 + t1 + t2);
-*/
-    p = vcPos.y;
     gl_Position = MVP * vec4(vcPos, 1.0);
 }
 

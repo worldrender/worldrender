@@ -26,7 +26,7 @@ float fAbs(float t)
 
 void main() {
   vec3 normal = normalize(vcNormal);
-
+  normal = normalize(normal);
   float sourceStrength = 1;
   vec3 ambient = sourceStrength * atmosphereColor;
   vec3 sunDir = normalize(sunRay*radius*scale*2.5 - vcPos);

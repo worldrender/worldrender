@@ -84,7 +84,7 @@ int main(int argv, char ** argc) {
   while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
     glfwWindowShouldClose(window) == 0);
 
-  glDeleteTextures(2, textures);
+  glDeleteTextures(2, textures.data());
   deleteBuffers(buffers);
   deleteArrayBuffers(aob);
 
@@ -212,25 +212,26 @@ void updateBuffer() {
 }
 
 void applyingTextures() {
-  for (int i = 0; i < QTDTEXTURAS; i++) {
+  textures.resize(filenames.size(),0);
+  for (int i = 0; i < filenames.size(); i++) {
 
-    glGenTextures(1, & textures[i]);
+    glGenTextures(1, & textures.at(i));
 
     glUseProgram(Planet::shader);
 
     glActiveTexture(GL_TEXTURE0 + i);
 
-    glBindTexture(GL_TEXTURE_2D, textures[i]);
+    glBindTexture(GL_TEXTURE_2D, textures.at(i));
     int width, height, nrChannels;
-    unsigned char *textData = stbi_load(filenames[i], & width, & height, & nrChannels, STBI_rgb_alpha);
+    unsigned char *textData = stbi_load(filenames.at(i).c_str(), & width, & height, & nrChannels, STBI_rgb_alpha);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textData);
     stbi_image_free(textData);
-    glGenerateMipmap(GL_TEXTURE_2D);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glGenerateMipmap(GL_TEXTURE_2D);
   }
 }
 
@@ -258,6 +259,9 @@ void setUniforms() {
   glUniform1i(glGetUniformLocation(Planet::shader, "pTexture"), 0);
   glUniform1i(glGetUniformLocation(Planet::shader, "dTexture"), 1);
   glUniform1i(glGetUniformLocation(Planet::shader, "nTexture"), 2);
+  glUniform1i(glGetUniformLocation(Planet::shader, "grasText"), 3);
+  glUniform1i(glGetUniformLocation(Planet::shader, "snowText"), 4);
+  glUniform1i(glGetUniformLocation(Planet::shader, "soilText"), 5);
 }
 
 void draw() {
