@@ -6,8 +6,6 @@ out vec3 vPosition;
 out vec3 vNormal;
 
 void main() {
-
 	vPosition = position;
 	vNormal = normalize(vPosition);
-
 }

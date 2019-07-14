@@ -265,14 +265,15 @@ void main(){
 
     if(vNoise>0)
     {
-      if(vNoise>2.69)
-      {
-        vNoise += smoothing(mountains, f2);
-      }
+      
       f1 = fbm(vcPos, 16, 0.95f, 0.8f, 1.f, 1)/2;
 
       vNoise = mix(vNoise, vNoise/2, -(f1+f2+f3))/2.888f;
     }
+    if(vNoise>2.69)
+      {
+        vNoise += smoothing(mountains, f2);
+      }
     vcPos = t;
 //    vNoise = pow(2, vNoise)/4;
     vcPos = vcPos + vcNormal * vNoise;

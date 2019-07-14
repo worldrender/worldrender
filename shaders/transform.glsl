@@ -58,7 +58,9 @@ in vec3 vertex;
 
 
 void main() {
-  vec3 sphereCoord = normalize(vertex)*radius*scale;
+
+
+  vec3 sphereCoord = mix(vertex, normalize(vertex)*radius, 1)*scale;
 
   outValue.vertex = sphereCoord;
   outValue.noiseValue = fbm(sphereCoord,16, 1.f, .93753125f, .5f, 1);
