@@ -267,14 +267,17 @@ void main() {
   float hN = (hU-hL)/hNoise;
 	float s = smoothstep(.4, 1., hN);
 
-  vec3 T1 = vec3(0.0,0.0,0.0);
-	T1.x = max(max(normal.x,normal.y),normal.z);
-	T1 = normalize(cross(T1,normal));
-	vec3 T2 = normalize(cross(T1,c_normal));
-	vec3 Tangent = vec3(T1.x,T2.x,1.0);
+  vec3 Tangent;
+
+  vec3 c1 = cross(normal, vec3(0.0, 0.0, 1.0));
+  vec3 c2 = cross(normal, vec3(0.0, 1.0, 0.0));
+  if (length(c1) > length(c2))
+    Tangent = c1;
+  else
+    Tangent = c2;
 
 
-	float angleDiff = abs(dot(PN, Tangent));
+	float angleDiff = abs(dot(normal, Tangent));
   float pureRock = 0.6;
   float lerpRock = 0.7;
   float coef = 1.0 - smoothstep(pureRock, lerpRock, angleDiff);
@@ -282,12 +285,12 @@ void main() {
   float d = dot(normalize(normal), lightDir*vNoise);
   float cNoise = hNoise*d/8;
 
-  vec3 grassColor = texture( grasText, uv*scale*radius ).rgb*.09f;
-  vec3 snowColor  = texture( soilText, uv*scale ).rgb*.09f;
+  vec3 grassColor = texture( grasText, uv*scale*radius ).rgb*.1f;
+  vec3 snowColor  = texture( soilText, uv*scale ).rgb*.5f;
   vec3 soilColor  = texture( snowText, uv*scale*2 ).rgb*.02f;
 
 	vec3 rock = mix(
-		soilColor+c_rock*hNoise, snowColor+c_snow*hNoise*0.3f,
+		snowColor+c_rock*hNoise/2, snowColor+c_snow*hNoise*0.3f,
 		smoothstep(1. - .3*s-cNoise*0.5f, 1. - .2*s, hR/2));
 	vec3 grass = mix(
 		grassColor+c_grass, soilColor+rock*hNoise*0.3f,
@@ -295,12 +298,14 @@ void main() {
 
   vec3 deviant = mix(
 		c_rock, snowColor+c_snow,
-		smoothstep(1. - .3*s, 1. - .2*coef, hNoise));
+		smoothstep(1. - .3*s, 1. - .2*coef, hNoise*coef));
 
 
-  grass = mix(grass, deviant, coef/4);
+  coef = smoothstep(0.90, 0.98, angleDiff);
+
+  grass = mix(grass, deviant, coef);
 	vec3 shoreline = mix(
-		c_beach, grass,
+		soilColor+c_beach, grass,
 		smoothstep(l_shore, l_grass, hNoise));
 
 	vec3 water = mix(
@@ -311,7 +316,7 @@ void main() {
 	shoreline *= setup_lights(L, c_normal);
 	vec3 ocean = setup_lights(L, normal) * water;
 
-  col = mix(ocean, shoreline,	smoothstep(l_water, l_shore, hNoise));
+  col = mix(ocean, soilColor+shoreline,	smoothstep(l_water, l_shore, hNoise));
   col *= 1;
   fColor = vec4(col,1.f);
 
@@ -410,7 +415,7 @@ void main() {
   }
 
   fColor = mix(fColor, final/2, fColor.b);
-  fColor = vec4(fColor.rgb,1.f);
+  fColor = vec4(abs(sin(pow(M_E,fColor.r)))*fColor.r,abs(sin(pow(M_E,fColor.g)))*fColor.g,abs(sin(pow(M_E,fColor.b)))*fColor.b,1.f);
 
   fColor *= 1.3f;
 
