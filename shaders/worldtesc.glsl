@@ -1,5 +1,6 @@
 #version 430 core
 #define TESS_LEVEL 2
+#define M_PI 3.14159265358979323844f
 
 layout(vertices = 3) out;
 
@@ -29,12 +30,9 @@ uniform float scale;
 
 float LOD(vec3 posV, vec3 cam){
   float dist = distance(posV, cam);
-  if(dist<=radius*1.05*scale/5) return 32.0;
-  else if(dist>radius*1.05*scale/5 && dist<=radius*1.05*scale/4) return 16.0;
-  else if(dist>radius*1.05*scale/4 && dist<=radius*1.05*scale/3) return 8.0;
-  else if(dist>radius*1.05*scale/3 && dist<=radius*1.05*scale/2) return 4.0;
-  else if(dist>radius*1.05*scale/2 && dist<=radius*1.05*scale) return 2.0;
-  else if(dist>radius*1.05*scale) return 1.0;
+  float rsc  = radius*1.05f*scale/2;
+  float a = dist/rsc;
+  return 1+floor(4/a);
 }
 
 void main(){
