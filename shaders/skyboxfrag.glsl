@@ -11,9 +11,6 @@ void main()
   if(!wireframe){
     discard;
   }
-
-  else{
+  else
     FragColor = texture(skybox, TexCoords);
-    discard;
-  }
 }

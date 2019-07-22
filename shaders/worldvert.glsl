@@ -14,9 +14,9 @@ out float vertNoise;
 void main() {
 
 	vPosition = position;
-    gl_Position = vec4(position, 1.0);
+
 	vNormal = normalize(vPosition);
-    vertNoise = noise;
+  vertNoise = noise;
 	vPosition = vPosition;
 
   vColor = vec4(vNormal, 1.0);

@@ -7,9 +7,9 @@
 
 // materials
 	#define c_water vec3(.015, .110, .455)
-	#define c_grass vec3(.086, .132, .018)
-	#define c_beach vec3(.153, .172, .121)
-	#define c_rock  vec3(.080, .050, .030)
+	#define c_grass vec3(.086, .132, .018)*0.8
+	#define c_beach vec3(.153, .172, .121)*0.9
+	#define c_rock  vec3(.080, .050, .030)*1.5
 	#define c_snow  vec3(.30, .40, .550)
 
 	// limits
@@ -285,12 +285,12 @@ void main() {
   float d = dot(normalize(normal), lightDir*vNoise);
   float cNoise = hNoise*d/8;
 
-  vec3 grassColor = texture( grasText, uv*scale*radius ).rgb*.1f;
-  vec3 snowColor  = texture( soilText, uv*scale ).rgb*.5f;
-  vec3 soilColor  = texture( snowText, uv*scale*2 ).rgb*.02f;
+  vec3 grassColor = texture( grasText, uv*scale*radius ).rgb*.02f;
+  vec3 snowColor  = texture( soilText, uv*scale ).rgb*.15f;
+  vec3 soilColor  = texture( snowText, uv*scale*2 ).rgb*.025f;
 
 	vec3 rock = mix(
-		snowColor+c_rock*hNoise/2, snowColor+c_snow*hNoise*0.3f,
+		snowColor+c_rock*hNoise/2, snowColor/2+c_snow*hNoise*0.3f,
 		smoothstep(1. - .3*s-cNoise*0.5f, 1. - .2*s, hR/2));
 	vec3 grass = mix(
 		grassColor+c_grass, soilColor+rock*hNoise*0.3f,

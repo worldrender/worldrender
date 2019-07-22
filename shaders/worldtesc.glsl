@@ -24,76 +24,62 @@ uniform float dy;
 uniform float dz;
 uniform float radius;
 uniform float scale;
-uniform mat4 MVP;
-uniform mat4 M;
-uniform mat4 V;
-uniform mat4 P;
 
 #define ID gl_InvocationID
 
-//float LOD(vec3 posV, vec3 cam){
-//  float dist = distance(posV, cam);
-//  if(dist<=radius*1.05*scale/5) return 32.0;
-//  else if(dist>radius*1.05*scale/5 && dist<=radius*1.05*scale/4) return 16.0;
-//  else if(dist>radius*1.05*scale/4 && dist<=radius*1.05*scale/3) return 8.0;
-//  else if(dist>radius*1.05*scale/3 && dist<=radius*1.05*scale/2) return 4.0;
-//  else if(dist>radius*1.05*scale/2 && dist<=radius*1.05*scale) return 2.0;
-//  else if(dist>radius*1.05*scale) return 1.0;
-//}
-
-float dlodCameraDistance(vec3 p0, vec3 p1)
-{
-    vec4 p40 = V * vec4(p0,1);
-    vec4 p41 = V * vec4(p1,1);
-	float MinDepth = radius;
-	float MaxDepth = radius*scale*1.5;
-
-	float d0 = clamp( abs(p40.z - MinDepth)/ (MaxDepth - MinDepth), 0.0, 1.0);
-	float d1 = clamp( abs(p41.z - MinDepth)/ (MaxDepth - MinDepth), 0.0, 1.0);
-
-	float t = mix(16, 2, (d0 + d1) * 0.5);
-
-	if (t <= 2.0)
-	{
-		return 2.0;
-	}
-	if (t <= 4.0)
-	{
-		return 4.0;
-	}
-	if (t <= 8.0)
-	{
-		return 8.0;
-	}
-	return 16.0;
-
+float LOD(vec3 posV, vec3 cam){
+  float dist = distance(posV, cam);
+  if(dist<=radius*1.05*scale/5) return 32.0;
+  else if(dist>radius*1.05*scale/5 && dist<=radius*1.05*scale/4) return 16.0;
+  else if(dist>radius*1.05*scale/4 && dist<=radius*1.05*scale/3) return 8.0;
+  else if(dist>radius*1.05*scale/3 && dist<=radius*1.05*scale/2) return 4.0;
+  else if(dist>radius*1.05*scale/2 && dist<=radius*1.05*scale) return 2.0;
+  else if(dist>radius*1.05*scale) return 1.0;
 }
 
 void main(){
+  float TessLevelInner = 1;
+  float e0, e1, e2;
 
-    // tcTexCoord[ID]  = TexCoord[ID];
-    tcPosition[ID]  = vPosition[ID];
-    tcNormal[ID]    = vNormal[ID];
-    tcColor[ID]     = vColor[ID];
-    tNoise[ID]      = vertNoise[ID];
+  e0 = e1 = e2 = 1;
+  // tcTexCoord[ID]  = TexCoord[ID];
+  tcPosition[ID]  = vPosition[ID];
+  tcNormal[ID]    = vNormal[ID];
+  tcColor[ID]     = vColor[ID];
+  tNoise[ID]      = vertNoise[ID];
+  vec3 d1, d2, d3;
 
-    float e0, e1, e2;
-    vec3 d0, d1, d2;
+  if (ID == 0) {
+    vec3 bTriangulo = (vPosition[0] + vPosition[1]
+                     + vPosition[2])/3;
 
-    d0 = gl_in[1].gl_Position.xyz+(gl_in[2].gl_Position.xyz-gl_in[1].gl_Position.xyz)/2;
-    d1 = gl_in[0].gl_Position.xyz+(gl_in[2].gl_Position.xyz-gl_in[0].gl_Position.xyz)/2;
-    d2 = gl_in[0].gl_Position.xyz+(gl_in[1].gl_Position.xyz-gl_in[0].gl_Position.xyz)/2;
+    if(tess==0){
+      TessLevelInner = LOD(bTriangulo, viewPos);
 
-    e0 = dlodCameraDistance(d2, d0);
-    e1 = dlodCameraDistance(d0, d1);
-    e2 = dlodCameraDistance(d1, d2);
+      d1=vPosition[1]+(vPosition[2]-vPosition[1])/2;
+      d2=vPosition[0]+(vPosition[2]-vPosition[0])/2;
+      d3=vPosition[0]+(vPosition[1]-vPosition[0])/2;
 
-    float m = min(e0,min(e1,e2));
+      e0=LOD(d1,viewPos);
+      e1=LOD(d2,viewPos);
+      e2=LOD(d3,viewPos);
+    }
+    else if(tess == 1){
+      TessLevelInner = 1;
+    }
+    else if(tess == 2){
+      TessLevelInner = 2;
+    }
+    //TessLevelOuter = TessLevelInner;//dirLOD(vPos, px, py, pz);
 
-    gl_TessLevelOuter[0] = e0;
-    gl_TessLevelOuter[1] = e1;
-    gl_TessLevelOuter[2] = e2;
-    gl_TessLevelInner[0] = floor((min(e0,min(e1,e2))+max(e0,max(e1,e2)))/2);
+    gl_TessLevelInner[0] = TessLevelInner*TESS_LEVEL;
+    gl_TessLevelOuter[0] = e0*TESS_LEVEL;
+    gl_TessLevelOuter[1] = e1*TESS_LEVEL;
+    gl_TessLevelOuter[2] = e2*TESS_LEVEL;
+  }
+  if(TessLevelInner == 8.0 /*|| TessLevelOuter == 8.0*/){
+    tcColor[ID] == vec4(1.0, 1.0, 1.0, 1.0);
+  }
 
 }
 
