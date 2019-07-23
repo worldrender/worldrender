@@ -1,5 +1,5 @@
 #version 430 core
-#define TESS_LEVEL 2
+#define TESS_LEVEL 1
 #define M_PI 3.14159265358979323844f
 
 layout(vertices = 3) out;
@@ -32,7 +32,8 @@ float LOD(vec3 posV, vec3 cam){
   float dist = distance(posV, cam);
   float rsc  = radius*1.05f*scale/2;
   float a = dist/rsc;
-  return 1+floor(4/a);
+  a = floor(4/a);
+  return 1+a*a;
 }
 
 void main(){

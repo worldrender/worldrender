@@ -10,7 +10,8 @@ const vector<string> filenames = {"textures/planetTexture.png",
                                       "textures/normalmap.png",
                                       "textures/grass.png",
                                       "textures/soil.png",
-                                      "textures/snow.png"
+                                      "textures/snow.png",
+                                      "textures/mask.png"
                                      };
 
 const vector<std::string> skybox

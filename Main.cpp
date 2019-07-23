@@ -262,6 +262,7 @@ void setUniforms() {
   glUniform1i(glGetUniformLocation(Planet::shader, "grasText"), 3);
   glUniform1i(glGetUniformLocation(Planet::shader, "snowText"), 4);
   glUniform1i(glGetUniformLocation(Planet::shader, "soilText"), 5);
+  glUniform1i(glGetUniformLocation(Planet::shader, "maskText"), 6);
 }
 
 void draw() {

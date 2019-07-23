@@ -26,6 +26,7 @@ in float tNoise[];
 //in vec2 tcTexCoord[];
 
 out vec3 vcNormal;
+out vec3 tNormal;
 out float vNoise;
 out float fNoise;
 
@@ -244,7 +245,7 @@ void main(){
     vec3 n2 = gl_TessCoord.z * tcNormal[2];
     vcNormal = normalize(n0 + n1 + n2);
     vcNormal = normalize(vcNormal);
-
+    tNormal = vcNormal;
     vNoise = sin(cubeVal(fbm(vcPos*10f,16, 0.55f, .93753125f, 1.f, 1)*0.5f));
 
     float mountains = (ridgedNoise(vcPos,11,.7f,.03f,1.f,.03f,.5f,.01f));
@@ -265,7 +266,7 @@ void main(){
 
     if(vNoise>0)
     {
-      
+
       f1 = fbm(vcPos, 16, 0.95f, 0.8f, 1.f, 1)/2;
 
       vNoise = mix(vNoise, vNoise/2, -(f1+f2+f3))/2.888f;

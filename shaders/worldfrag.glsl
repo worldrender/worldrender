@@ -7,9 +7,9 @@
 
 // materials
 	#define c_water vec3(.015, .110, .455)
-	#define c_grass vec3(.086, .132, .018)*0.8
-	#define c_beach vec3(.153, .172, .121)*0.9
-	#define c_rock  vec3(.080, .050, .030)*1.5
+	#define c_grass vec3(.086, .132, .018)*0.8f
+	#define c_beach vec3(.153, .172, .121)*0.6f
+	#define c_rock  vec3(.080, .050, .030)*0.8f
 	#define c_snow  vec3(.30, .40, .550)
 
 	// limits
@@ -23,6 +23,7 @@ in vec3 vcNormal;
 in vec3 vcPos;
 in float vNoise;
 in float fNoise;
+in vec3 tNormal;
 
 uniform sampler2D pTexture;
 uniform sampler2D dTexture;
@@ -32,6 +33,7 @@ uniform sampler2D nTexture;
 uniform sampler2D grasText;
 uniform sampler2D soilText;
 uniform sampler2D snowText;
+uniform sampler2D maskText;
 
 uniform float scale;
 uniform mat4 model;
@@ -249,7 +251,7 @@ void main() {
   uv.s = 0.5 - 0.5 * atan( normal.x, -normal.z ) * kOneOverPi;
   uv.t = 1.0 - acos( normal.y ) * kOneOverPi;
 
-  vec3 PN = perturb_normal(normal, vcPos, uv);
+  vec3 PN = perturb_normal(normal, vcPos, uv*2);
 
   float hL;
   float hR;
@@ -269,13 +271,18 @@ void main() {
 
   vec3 Tangent;
 
-  vec3 c1 = cross(normal, vec3(0.0, 0.0, 1.0));
-  vec3 c2 = cross(normal, vec3(0.0, 1.0, 0.0));
+  vec3 c1 = cross(cross(normal,tNormal), vec3(0.0, 0.0, 1.0));
+  vec3 c2 = cross(cross(normal,tNormal), vec3(0.0, 1.0, 0.0));
+  vec3 c3 = cross(cross(normal,tNormal), vec3(1.0, 0.0, 0.0));
+  vec3 c4 = cross(cross(normal,tNormal), vec3(1.0, 1.0, 0.0));
   if (length(c1) > length(c2))
     Tangent = c1;
-  else
+  else if(length(c2) > length(c3))
     Tangent = c2;
-
+  else if(length(c3) > length(c4))
+    Tangent = c3;
+  else
+    Tangent = c4;
 
 	float angleDiff = abs(dot(normal, Tangent));
   float pureRock = 0.6;
@@ -285,10 +292,11 @@ void main() {
   float d = dot(normalize(normal), lightDir*vNoise);
   float cNoise = hNoise*d/8;
 
-  vec3 grassColor = texture( grasText, uv*scale*radius ).rgb*.02f;
+  vec3 grassColor = texture( grasText, uv*scale*radius ).rgb*.04f;
   vec3 snowColor  = texture( soilText, uv*scale ).rgb*.15f;
-  vec3 soilColor  = texture( snowText, uv*scale*2 ).rgb*.025f;
-
+  vec3 soilColor  = texture( snowText, uv*scale*2 ).rgb*.045f;
+  vec3 maskColor  = texture( maskText, 0.75+uv*scale*radius ).rgb*.055f;
+  //snowColor = mix(snowColor,maskColor,hNoise+maskColor.g);
 	vec3 rock = mix(
 		snowColor+c_rock*hNoise/2, snowColor/2+c_snow*hNoise*0.3f,
 		smoothstep(1. - .3*s-cNoise*0.5f, 1. - .2*s, hR/2));
@@ -415,6 +423,7 @@ void main() {
   }
 
   fColor = mix(fColor, final/2, fColor.b);
+
   fColor = vec4(abs(sin(pow(M_E,fColor.r)))*fColor.r,abs(sin(pow(M_E,fColor.g)))*fColor.g,abs(sin(pow(M_E,fColor.b)))*fColor.b,1.f);
 
   fColor *= 1.3f;
