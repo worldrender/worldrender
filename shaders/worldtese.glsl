@@ -254,13 +254,15 @@ void main(){
     float f1 = ridgedNoise(vcPos/8.f, 5, 0.7, 0.7f, 4.f, 0.03f, 0.5f, 0.05f);
     float f2 = ridgedNoise(vcPos/3.f, 5, 0.7, 0.4f, 4.f, 0.03f, 0.5f, 0.05f)*2.f;
     float f3 = ridgedNoise(vcPos/2.f, 5, 0.7, 0.4f, 4.f, 0.03f, 0.5f, 0.05f)*0.3f;
+
+    float f4 = fbm(vcPos, 5, 0.4f, 4.f, 0.03f, 1)*0.5;
     //float f4 = ridgeNoise(vcPos/2.f, 5, 8);
 
     vNoise += cubeVal(mountains)
            *  clamp(f1,-(GRANULARITY),GRANULARITY)
            +  clamp(f2,-(GRANULARITY),GRANULARITY)
            +  clamp(f3,-(GRANULARITY),GRANULARITY) -0.8;
-    //vNoise *= clamp(f4,-(GRANULARITY),GRANULARITY)/2;
+    vNoise += clamp(f4,0,GRANULARITY);
     vNoise += (vertexNoise);
     vNoise *= 1.1784f;
 

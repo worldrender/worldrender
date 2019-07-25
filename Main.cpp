@@ -320,7 +320,7 @@ void draw() {
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glFrontFace(GL_CW);
-      renderAtmosphere(Atmosphere::arrayIndex, 1, 0);
+      renderAtmosphere(Atmosphere::arrayIndex, 0, 0);
       glFrontFace(GL_CCW);
 
       for(GLuint i=0;i<Atmosphere::glow;i++)

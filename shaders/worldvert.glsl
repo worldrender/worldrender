@@ -5,6 +5,7 @@ layout(location = 1) in float noise;
 
 uniform float radius;
 uniform mat4 MVP;
+uniform vec3 viewPos;
 
 out vec3 vPosition;
 out vec3 vNormal;

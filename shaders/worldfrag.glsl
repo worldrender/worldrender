@@ -237,12 +237,17 @@ vec4 saturate(vec4 source)
 }
 
 void main() {
+
+  vec3 normal = normalize(vcNormal);
+  if(dot(vcPos-viewPos,normal)>=0)
+    discard;
+
   if(!wireframe){
 	fColor = vec4(0.f, 0.f, 0.f, 1.f);
  	return;
   }
   float hNoise = (vNoise)/2;
-  vec3 normal = normalize(vcNormal);
+
   vec3 fragPos = vec3(model*vec4(vcPos,1.0f));
 
   vec2 uv;
@@ -261,6 +266,7 @@ void main() {
   vec3 col;
 //  vec3 w_normal = calcNormal(normal,dot(normal,PN));
   vec3 c_normal = sdf_terrain_normal(vcPos);
+  vec3 w_normal = normalize(cross(normal,PN));
 
   hU = length(normal);
   hL = dot(c_normal, normal);
@@ -271,10 +277,10 @@ void main() {
 
   vec3 Tangent;
 
-  vec3 c1 = cross(cross(normal,tNormal), vec3(0.0, 0.0, 1.0));
-  vec3 c2 = cross(cross(normal,tNormal), vec3(0.0, 1.0, 0.0));
-  vec3 c3 = cross(cross(normal,tNormal), vec3(1.0, 0.0, 0.0));
-  vec3 c4 = cross(cross(normal,tNormal), vec3(1.0, 1.0, 0.0));
+  vec3 c1 = cross(w_normal, vec3(0.0, 0.0, 1.0));
+  vec3 c2 = cross(w_normal, vec3(0.0, 1.0, 0.0));
+  vec3 c3 = cross(w_normal, vec3(1.0, 0.0, 0.0));
+  vec3 c4 = cross(w_normal, vec3(1.0, 1.0, 0.0));
   if (length(c1) > length(c2))
     Tangent = c1;
   else if(length(c2) > length(c3))
@@ -305,13 +311,13 @@ void main() {
 		smoothstep(l_grass-cNoise, l_rock+cNoise, hNoise));
 
   vec3 deviant = mix(
-		c_rock, snowColor+c_snow,
-		smoothstep(1. - .3*s, 1. - .2*coef, hNoise*coef));
+		snowColor+c_rock*hNoise/2, snowColor/2+c_snow*hNoise*0.3f,
+		smoothstep(1. - .3*s, 1. - .2*coef, coef));
 
 
   coef = smoothstep(0.90, 0.98, angleDiff);
 
-  grass = mix(grass, deviant, coef);
+  grass = mix(grass, deviant, coef*0.5f);
 	vec3 shoreline = mix(
 		soilColor+c_beach, grass,
 		smoothstep(l_shore, l_grass, hNoise));

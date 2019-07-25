@@ -25,8 +25,13 @@ float fAbs(float t)
 }
 
 void main() {
+
   vec3 normal = normalize(vcNormal);
   normal = normalize(normal);
+
+  if(dot(vcPos-viewPos,normal)<=0)
+    discard;
+
   float sourceStrength = 1;
   vec3 ambient = sourceStrength * atmosphereColor;
   vec3 sunDir = normalize(sunRay*radius*scale*2.5 - vcPos);
@@ -42,6 +47,8 @@ void main() {
   if(size!=0)
     fColor.a /= size;
   fColor.a /= 2.6667f;
+  if(!io)
+    fColor.a += 0.05;
 
     fColor.rgb = vec3(0.3f, 0.4f, .8f);
 

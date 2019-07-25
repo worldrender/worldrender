@@ -33,7 +33,7 @@ float LOD(vec3 posV, vec3 cam){
   float rsc  = radius*1.05f*scale/2;
   float a = dist/rsc;
   a = floor(4/a);
-  return 1+a*a;
+  return 1+a*a*a/3;
 }
 
 void main(){
