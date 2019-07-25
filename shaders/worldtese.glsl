@@ -255,7 +255,7 @@ void main(){
     float f2 = ridgedNoise(vcPos/3.f, 5, 0.7, 0.4f, 4.f, 0.03f, 0.5f, 0.05f)*2.f;
     float f3 = ridgedNoise(vcPos/2.f, 5, 0.7, 0.4f, 4.f, 0.03f, 0.5f, 0.05f)*0.3f;
 
-    float f4 = fbm(vcPos, 5, 0.4f, 4.f, 0.03f, 1)*0.5;
+    float f4 = fbm(vcPos, 8, 1.f, 0.5f, 0.5, 1)*0.3f;
     //float f4 = ridgeNoise(vcPos/2.f, 5, 8);
 
     vNoise += cubeVal(mountains)
@@ -278,9 +278,10 @@ void main(){
         vNoise += smoothing(mountains, f2);
       }
     vcPos = t;
-//    vNoise = pow(2, vNoise)/4;
-    vcPos = vcPos + vcNormal * vNoise;
+
+    vcPos += vcNormal * vNoise;
     vcNormal = normalize(vcPos);
+    fNoise = f4;
     gl_Position = MVP * vec4(vcPos, 1.0);
 }
 

@@ -334,6 +334,8 @@ void main() {
   col *= 1;
   fColor = vec4(col,1.f);
 
+    fColor -= hNoise/20;
+
   float value;
   value = simplex3d_fractal(vcPos*8.0+8.0);
 	value = 0.5 + 0.5*value;
@@ -403,7 +405,7 @@ void main() {
   fColor = vec4(mix(col,fColor.rgb,0.3666f),1);
 
   //fColor *= vec4(lin,1);
-  fColor *= 1.77773;
+  fColor *= 1.77773-fNoise;
 
   vec4 specular = vec4(1.0, 1.0, 1.0,  1.0);
   vec4 emissive = vec4(GetWaterColorAt(c_water, hNoise), 1.0);
