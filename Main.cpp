@@ -64,18 +64,24 @@ int main(int argv, char ** argc) {
                        aob      = {Atmosphere::VAO, Planet::VAO, skyboxVAO, feedbackVAO};
   planetCamera.setPlanet(planet);
 
+  chrono::high_resolution_clock::time_point framerate = chrono::high_resolution_clock::now();
+
   do {
     // Clear the screen
     chrono::high_resolution_clock::time_point currentFrame = chrono::high_resolution_clock::now();
     chrono::duration < float > diff = currentFrame - planetCamera.lastFrame;
+    chrono::duration < float > fps = currentFrame - framerate;
     planetCamera.deltaTime = diff.count();
     planetCamera.lastFrame = currentFrame;
+
 
     planetCamera.pressButtons();
 
     setUniforms();
 //    planetCamera.calculateFrustum();
 //    updateBuffer();
+
+    framerate = chrono::high_resolution_clock::now();
     draw();
 
     swapBuffers();
@@ -213,7 +219,7 @@ void updateBuffer() {
 
 void applyingTextures() {
   textures.resize(filenames.size(),0);
-  for (int i = 0; i < filenames.size(); i++) {
+  for (GLuint i = 0; i < filenames.size(); i++) {
 
     glGenTextures(1, & textures.at(i));
 

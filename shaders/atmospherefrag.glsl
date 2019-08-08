@@ -48,7 +48,7 @@ void main() {
     fColor.a /= size;
   fColor.a /= 2.6667f;
   if(!io)
-    fColor.a += 0.05;
+    fColor.a += 0.1;
 
     fColor.rgb = vec3(0.3f, 0.4f, .8f);
 
