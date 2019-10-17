@@ -48,10 +48,12 @@ void main() {
     fColor.a /= size;
   fColor.a /= 2.6667f;
   if(!io)
-    fColor.a += 0.1;
-
-    fColor.rgb = vec3(0.3f, 0.4f, .8f);
-
+    fColor.a += 0.3;
+  float b = fColor.b;
+//  fColor.rgb = vec3(0.3f, 0.4f, .8f);
+  fColor.rgb = mix(vec3(0.3f, 0.4f, .8f),vec3(.9f,0.3f,0.2f),1-b*3);
+  fColor.rgb = mix(fColor.rgb,vec3(0.9,0.9,1),b);
+  fColor.rgb = mix(fColor.rgb,vec3(0.3f, 0.4f, .8f)*2,b/3)+vec3(0,0,1)*b;
+  fColor.a *= 0.95f;
 }
-
 

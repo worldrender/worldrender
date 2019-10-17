@@ -45,6 +45,12 @@ chrono::duration < double > diff;
 GLuint feedbackVAO, skyboxVAO, skyboxVBO, cubemapTexture;
 GLuint activeShader, skyboxShader, transformFeedbackShader;
 
+double previousTime1 = glfwGetTime();
+int frameCount1 = 0;
+float deltaTime1 = 0.0f;
+float lastFrame1 = 0.0f;
+
+
 Camera planetCamera(glm::vec3(-1800.f, 200.f, 200.0f));
 
 int main(int argv, char ** argc) {
@@ -74,6 +80,10 @@ int main(int argv, char ** argc) {
     planetCamera.deltaTime = diff.count();
     planetCamera.lastFrame = currentFrame;
 
+
+    float currentFrame1 = glfwGetTime();
+    deltaTime1 = currentFrame1 - lastFrame1;
+    lastFrame1= currentFrame1;
 
     planetCamera.pressButtons();
 
@@ -151,6 +161,7 @@ void init() {
   // Cull triangles which normal is not towards the camera
   gl::enableCullFace();
   gl::frontCullFace();
+  glLineWidth( 1);
 }
 
 void createProgram() {
@@ -272,8 +283,15 @@ void setUniforms() {
 }
 
 void draw() {
-
-    glBindVertexArray(Planet::VAO);
+  double currentTime1 = glfwGetTime();
+  frameCount1++;
+  if ( currentTime1 - previousTime1 >= 1.0 )
+  {
+        // Display the frame count here any way you want.
+        frameCount1 = 0;
+        previousTime1 = currentTime1;
+  }
+  glBindVertexArray(Planet::VAO);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glPatchParameteri(GL_PATCH_VERTICES, 3);

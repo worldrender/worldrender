@@ -239,8 +239,8 @@ vec4 saturate(vec4 source)
 void main() {
 
   vec3 normal = normalize(vcNormal);
-  if(dot(vcPos-viewPos,normal)>=0)
-    discard;
+//  if(dot(vcPos-viewPos,normal)>=0)
+//    discard;
 
   if(!wireframe){
 	fColor = vec4(0.f, 0.f, 0.f, 1.f);
@@ -433,7 +433,7 @@ void main() {
   fColor = mix(fColor, final/2, fColor.b);
 
   fColor = vec4(abs(sin(pow(M_E,fColor.r)))*fColor.r,abs(sin(pow(M_E,fColor.g)))*fColor.g,abs(sin(pow(M_E,fColor.b)))*fColor.b,1.f);
-
+  //fColor = vec4(hNoise,hNoise,hNoise,1.f);
   fColor *= 1.3f;
 
 
