@@ -6,6 +6,8 @@ uniform float radius;
 uniform float scale;
 uniform bool io;
 uniform int size;
+uniform float near;
+uniform float far;
 
 uniform vec3 viewPos;
 uniform vec3 atmosphereColor = vec3(0.1f, 0.1f, 0.2f);
@@ -16,6 +18,7 @@ uniform float time;
 
 in vec3 vcNormal;
 in vec3 vcPos;
+in float w;
 
 out vec4 fColor;
 
@@ -161,17 +164,17 @@ void main() {
     {
       fColor.a /= size;
       //fColor.a /= 2.6667f;
-      if(!io)
+
+    }
+          if(!io)
       {
         fColor.a += 0.3;
       }
-    }
     float b = fColor.b;
   //  fColor.rgb = vec3(0.3f, 0.4f, .8f);
     fColor.rgb = mix(vec3(0.3f, 0.4f, .8f),vec3(.9f,0.3f,0.2f),1-b*3)-fColor.rgb;
     fColor.rgb = mix(fColor.rgb,vec3(0.9,0.9,1),b);
     fColor.rgb = mix(fColor.rgb,vec3(0.3f, 0.4f, .8f)*2,b/3)+vec3(0,0,1)*b;
     fColor.a *= 0.95f;
-
 }
 

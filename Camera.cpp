@@ -48,7 +48,7 @@ glm::mat4 Camera::getProjectionMatrix(int SCR_WIDTH, int SCR_HEIGHT)
           fLength += fAbs(Position.z);
 
   fLength = glm::length(Position);
-  Far   = (fLength)*RADIUS/2;
+  Far   = fLength*RADIUS/std::log(fLength+1)*2;
 //  if(Far>RADIUS*80)
 //    Far *= RADIUS;
   Near  = 1/std::log(fLength);

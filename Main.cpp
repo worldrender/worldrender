@@ -50,13 +50,11 @@ int frameCount1 = 0;
 float deltaTime1 = 0.0f;
 float lastFrame1 = 0.0f;
 
-
 Camera planetCamera(glm::vec3(-1800.f, 200.f, 200.0f));
   auto t0=std::chrono::steady_clock::now(), t1=std::chrono::steady_clock::now();
   float global_time = 0;
+
 int main(int argv, char ** argc) {
-
-
 
   t0 = std::chrono::steady_clock::now();
 
@@ -125,7 +123,8 @@ void initGL() {
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
   glfwWindowHint(GLFW_DECORATED, GL_FALSE);
   glfwWindowHint(GLFW_SAMPLES, 4);
-  glfwWindowHint(GLFW_DEPTH_BITS, 32);
+  glfwWindowHint(GLFW_DEPTH_BITS, 24);
+
   glEnable(GL_MULTISAMPLE);
   window = glfwCreateWindow(WIDTH, HEIGHT, "World Renderer", NULL, NULL);
   if (window == NULL) {
@@ -149,7 +148,6 @@ void init() {
   initGL();
 
   gl::enableDepthTest();
-
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
   glfwSetCursorPosCallback(window, mouse_callback);
   glfwSetScrollCallback(window, scroll_callback);
@@ -423,9 +421,10 @@ void renderAtmosphere(const vector<GLuint>& w_indices, bool io, int size){
   glUniformMatrix4fv(glGetUniformLocation(Atmosphere::shader, "MVP"), 1, GL_FALSE, & MVP[0][0]);
   glUniform1f(glGetUniformLocation(Atmosphere::shader, "radius"), planet -> getRadius()*1.05);
   glUniform1f(glGetUniformLocation(Atmosphere::shader, "scale"), SCALE);
+  glUniform1f(glGetUniformLocation(Atmosphere::shader, "time"), global_time);
   glUniform1i(glGetUniformLocation(Atmosphere::shader, "io"), io);
   glUniform1i(glGetUniformLocation(Atmosphere::shader, "size"), size);
-  glUniform1f(glGetUniformLocation(Atmosphere::shader, "time"), global_time);
+
   glUniformMatrix4fv(glGetUniformLocation(Atmosphere::shader, "model"), 1, GL_FALSE, & ModelMatrix[0][0]);
 
   glEnableVertexAttribArray(0);
