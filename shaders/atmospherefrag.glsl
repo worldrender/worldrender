@@ -12,6 +12,7 @@ uniform vec3 atmosphereColor = vec3(0.1f, 0.1f, 0.2f);
 uniform vec3 mieScattering = vec3(0.5f, 0.6f, .9f);
 uniform vec3 rayleighScattering = vec3(0.4f, 0.5f, .9f);
 uniform vec3 sunRay = vec3(-1, -0.3, 1);
+uniform float time;
 
 in vec3 vcNormal;
 in vec3 vcPos;
@@ -76,6 +77,19 @@ float fAbs(float t)
   return t>0 ? t : -t;
 }
 
+mat4 rotationMatrix(vec3 axis, float angle)
+{
+    axis = normalize(axis);
+    float s = sin(angle);
+    float c = cos(angle);
+    float oc = 1.0 - c;
+
+    return mat4(oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
+                oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
+                oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
+                0.0,                                0.0,                                0.0,                                1.0);
+}
+
 void main() {
 
   vec3 normal = normalize(vcNormal);
@@ -92,35 +106,72 @@ void main() {
 
 
   vec3 result = (ambient + diffuse) * mieScattering;
-  if(size==10)
+  fColor.rgb = vec3(0);
+  fColor.a   = 1;
+  if(size==1||size==0)
   {
-    float sky = (fbm3(vcPos * 0.015));
-    float warpedx = fbm3(vec3(sin(vec3(vcPos.x/25,vcPos.y/30,vcPos.z/7)-0.55))+0.55);
-    float warpedy = fbm3(vec3(cos(vec3(vcPos.x/7,vcPos.y/25,vcPos.z/30)+0.55))-0.55);
-    sky -= warpedx*0.05;
-    sky -= warpedy*0.05;
-    sky -= sin(fbm(vcPos,16, 1.f, .93753125f, .5f, 1))*0.5;
-    fColor.rgb = vec3(1)*diff*1.2;
+    float len = length(vcPos);
+    float s = sin(len)*0.1;
+    float c = cos(len)*0.1;
+    float s2 = 2.0*s*c;
+    float c2 = 1.0-2.0*s*s;
+    float s3 = s2*c + c2*s;
 
-    fColor.a = sky*fColor.r+0.2;
+    vec3 offset   = vec3(6.0*sin(cos(len*1.1)), 3.0*cos(sin(len*1.1)),2*sin(cos(len*1.1)));
+    vec3 newPos   = vec3(vcPos.x*c2-vcPos.y*s2,vcPos.y*c2+vcPos.x*s2,vcPos.z*c2*s2);
+    newPos        = newPos*(1.0+0.2*s3) - offset;
+
+    float beta = sin(newPos.y*2.0 + len*8.0);
+    float betaz = cos(newPos.z*2.0 + len*8.0);
+    newPos.x = newPos.x + 0.4*beta;
+    newPos.y = newPos.y - 0.4*beta;
+    newPos.z = newPos.z + 0.4*beta;
+    //newPos = (vec4(newPos,1.f)*rotationMatrix(vec3(1.f,0.f,0.f),time)).xyz;
+    newPos -= time*0.00001;
+
+    vec3 pos = vcPos - time*0.00001;
+
+    float sky = (fbm3(newPos* 0.015));
+    float warp1 = fbm3(newPos*0.1+10)+0.1;
+
+    float warp  = fbm3(newPos*0.1+(fbm3(newPos*0.1+fbm3(newPos*0.1+fbm3(newPos*0.1)))));
+    float warp2 = fbm3(vcPos*0.1+(fbm3(vcPos*0.1+fbm3(vcPos*0.1+fbm3(vcPos*0.1)))));
+    float warp3 = fbm3(pos*0.1+(fbm3(pos*0.1+fbm3(pos*0.1+fbm3(pos*0.1)))));
+    float warpedx = fbm3(vec3(sin(vec3(newPos.x/25,newPos.y/30,newPos.z/7-tan(newPos.z))-0.55))+0.55);
+    float warpedy = fbm3(vec3(cos(vec3(newPos.x/7,newPos.y/25,newPos.z/30-tan(newPos.z))+0.55))-0.55);
+    sky -= warpedx*0.09;
+    sky -= warpedy*0.09;
+    sky += warp;
+    sky -= warp1;
+    sky -= warp2;
+    sky += warp3;
+    sky -= sin(fbm(newPos,16, 1.f, .93753125f, .5f, 1))*0.5;
+    fColor.rgb = vec3(1)*diff;
+    if(size!=0)
+      fColor.a = sky*fColor.r;
+    else
+      fColor.rgb *= sky*fColor.r+0.4;
 
   }
-  else
-  {
-    fColor.rgb = result;
-    fColor.a   = 0.5f;
+
+    fColor.rgb += result;
+    fColor.a   /= 2.f;
     fColor.a  *= (fColor.b);
-    if(size!=0)
+    if(size!=0&&size!=1)
+    {
       fColor.a /= size;
-    fColor.a /= 2.6667f;
-    if(!io)
-      fColor.a += 0.3;
+      //fColor.a /= 2.6667f;
+      if(!io)
+      {
+        fColor.a += 0.3;
+      }
+    }
     float b = fColor.b;
   //  fColor.rgb = vec3(0.3f, 0.4f, .8f);
     fColor.rgb = mix(vec3(0.3f, 0.4f, .8f),vec3(.9f,0.3f,0.2f),1-b*3)-fColor.rgb;
     fColor.rgb = mix(fColor.rgb,vec3(0.9,0.9,1),b);
     fColor.rgb = mix(fColor.rgb,vec3(0.3f, 0.4f, .8f)*2,b/3)+vec3(0,0,1)*b;
     fColor.a *= 0.95f;
-  }
+
 }
 

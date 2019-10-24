@@ -52,8 +52,14 @@ float lastFrame1 = 0.0f;
 
 
 Camera planetCamera(glm::vec3(-1800.f, 200.f, 200.0f));
-
+  auto t0=std::chrono::steady_clock::now(), t1=std::chrono::steady_clock::now();
+  float global_time = 0;
 int main(int argv, char ** argc) {
+
+
+
+  t0 = std::chrono::steady_clock::now();
+
   init();
 
   createProgram();
@@ -395,6 +401,10 @@ void bufferAtmosphere(){
 }
 
 void renderAtmosphere(const vector<GLuint>& w_indices, bool io, int size){
+  t1 = std::chrono::steady_clock::now();
+  auto dt = std::chrono::duration_cast<std::chrono::seconds>(t1 - t0);
+  global_time += dt.count();
+
 
   glm::mat4 ProjectionMatrix = planetCamera.getProjectionMatrix(WIDTH, HEIGHT);
   glm::mat4 ViewMatrix = planetCamera.getViewMatrix();
@@ -415,6 +425,7 @@ void renderAtmosphere(const vector<GLuint>& w_indices, bool io, int size){
   glUniform1f(glGetUniformLocation(Atmosphere::shader, "scale"), SCALE);
   glUniform1i(glGetUniformLocation(Atmosphere::shader, "io"), io);
   glUniform1i(glGetUniformLocation(Atmosphere::shader, "size"), size);
+  glUniform1f(glGetUniformLocation(Atmosphere::shader, "time"), global_time);
   glUniformMatrix4fv(glGetUniformLocation(Atmosphere::shader, "model"), 1, GL_FALSE, & ModelMatrix[0][0]);
 
   glEnableVertexAttribArray(0);
