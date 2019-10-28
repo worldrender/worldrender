@@ -45,9 +45,19 @@ chrono::duration < double > diff;
 GLuint feedbackVAO, skyboxVAO, skyboxVBO, cubemapTexture;
 GLuint activeShader, skyboxShader, transformFeedbackShader;
 
+double previousTime1 = glfwGetTime();
+int frameCount1 = 0;
+float deltaTime1 = 0.0f;
+float lastFrame1 = 0.0f;
+
 Camera planetCamera(glm::vec3(-1800.f, 200.f, 200.0f));
+  auto t0=std::chrono::steady_clock::now(), t1=std::chrono::steady_clock::now();
+  float global_time = 0;
 
 int main(int argv, char ** argc) {
+
+  t0 = std::chrono::steady_clock::now();
+
   init();
 
   createProgram();
@@ -64,18 +74,28 @@ int main(int argv, char ** argc) {
                        aob      = {Atmosphere::VAO, Planet::VAO, skyboxVAO, feedbackVAO};
   planetCamera.setPlanet(planet);
 
+  chrono::high_resolution_clock::time_point framerate = chrono::high_resolution_clock::now();
+
   do {
     // Clear the screen
     chrono::high_resolution_clock::time_point currentFrame = chrono::high_resolution_clock::now();
     chrono::duration < float > diff = currentFrame - planetCamera.lastFrame;
+    chrono::duration < float > fps = currentFrame - framerate;
     planetCamera.deltaTime = diff.count();
     planetCamera.lastFrame = currentFrame;
+
+
+    float currentFrame1 = glfwGetTime();
+    deltaTime1 = currentFrame1 - lastFrame1;
+    lastFrame1= currentFrame1;
 
     planetCamera.pressButtons();
 
     setUniforms();
 //    planetCamera.calculateFrustum();
 //    updateBuffer();
+
+    framerate = chrono::high_resolution_clock::now();
     draw();
 
     swapBuffers();
@@ -103,8 +123,9 @@ void initGL() {
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
   glfwWindowHint(GLFW_DECORATED, GL_FALSE);
   glfwWindowHint(GLFW_SAMPLES, 4);
-  glEnable(GL_MULTISAMPLE);
+  glfwWindowHint(GLFW_DEPTH_BITS, 24);
 
+  glEnable(GL_MULTISAMPLE);
   window = glfwCreateWindow(WIDTH, HEIGHT, "World Renderer", NULL, NULL);
   if (window == NULL) {
     cout << "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n";
@@ -127,7 +148,6 @@ void init() {
   initGL();
 
   gl::enableDepthTest();
-
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
   glfwSetCursorPosCallback(window, mouse_callback);
   glfwSetScrollCallback(window, scroll_callback);
@@ -145,6 +165,7 @@ void init() {
   // Cull triangles which normal is not towards the camera
   gl::enableCullFace();
   gl::frontCullFace();
+  glLineWidth( 1);
 }
 
 void createProgram() {
@@ -213,7 +234,7 @@ void updateBuffer() {
 
 void applyingTextures() {
   textures.resize(filenames.size(),0);
-  for (int i = 0; i < filenames.size(); i++) {
+  for (GLuint i = 0; i < filenames.size(); i++) {
 
     glGenTextures(1, & textures.at(i));
 
@@ -266,8 +287,15 @@ void setUniforms() {
 }
 
 void draw() {
-
-    glBindVertexArray(Planet::VAO);
+  double currentTime1 = glfwGetTime();
+  frameCount1++;
+  if ( currentTime1 - previousTime1 >= 1.0 )
+  {
+        // Display the frame count here any way you want.
+        frameCount1 = 0;
+        previousTime1 = currentTime1;
+  }
+  glBindVertexArray(Planet::VAO);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glPatchParameteri(GL_PATCH_VERTICES, 3);
@@ -371,6 +399,10 @@ void bufferAtmosphere(){
 }
 
 void renderAtmosphere(const vector<GLuint>& w_indices, bool io, int size){
+  t1 = std::chrono::steady_clock::now();
+  auto dt = std::chrono::duration_cast<std::chrono::seconds>(t1 - t0);
+  global_time += dt.count();
+
 
   glm::mat4 ProjectionMatrix = planetCamera.getProjectionMatrix(WIDTH, HEIGHT);
   glm::mat4 ViewMatrix = planetCamera.getViewMatrix();
@@ -389,8 +421,10 @@ void renderAtmosphere(const vector<GLuint>& w_indices, bool io, int size){
   glUniformMatrix4fv(glGetUniformLocation(Atmosphere::shader, "MVP"), 1, GL_FALSE, & MVP[0][0]);
   glUniform1f(glGetUniformLocation(Atmosphere::shader, "radius"), planet -> getRadius()*1.05);
   glUniform1f(glGetUniformLocation(Atmosphere::shader, "scale"), SCALE);
+  glUniform1f(glGetUniformLocation(Atmosphere::shader, "time"), global_time);
   glUniform1i(glGetUniformLocation(Atmosphere::shader, "io"), io);
   glUniform1i(glGetUniformLocation(Atmosphere::shader, "size"), size);
+
   glUniformMatrix4fv(glGetUniformLocation(Atmosphere::shader, "model"), 1, GL_FALSE, & ModelMatrix[0][0]);
 
   glEnableVertexAttribArray(0);

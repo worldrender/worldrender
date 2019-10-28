@@ -30,10 +30,10 @@ uniform float scale;
 
 float LOD(vec3 posV, vec3 cam){
   float dist = distance(posV, cam);
-  float rsc  = radius*1.05f*scale/2;
+  float rsc  = 0.55f*radius*scale;
   float a = dist/rsc;
   a = floor(4/a);
-  return 1+a*a*a/3;
+  return 1 + a;
 }
 
 void main(){

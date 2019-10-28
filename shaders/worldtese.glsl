@@ -159,7 +159,7 @@ float ridgedNoise(in vec3 p, int octaves, float H, float gain, float amplitude, 
   for(int i=0;i<octaves;i++)
   {
     total += offset-(((1.0 - abs(noise(p * frequency))) * 2.0 - 1.0) * amplitude*exponent);
-    frequency	*= 1.f;
+    frequency	*= gain;
     amplitude *= gain;
   }
   return total;
@@ -249,7 +249,7 @@ void main(){
     vNoise = sin(cubeVal(fbm(vcPos*10f,16, 0.55f, .93753125f, 1.f, 1)*0.5f));
 
     float mountains = (ridgedNoise(vcPos,11,.7f,.03f,1.f,.03f,.5f,.01f));
-
+//in vec3 p, int octaves, float H, float gain, float amplitude, float frequency, float persistence, float offset
 
     float f1 = ridgedNoise(vcPos/8.f, 5, 0.7, 0.7f, 4.f, 0.03f, 0.5f, 0.05f);
     float f2 = ridgedNoise(vcPos/3.f, 5, 0.7, 0.4f, 4.f, 0.03f, 0.5f, 0.05f)*2.f;

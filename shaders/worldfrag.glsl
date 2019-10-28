@@ -239,8 +239,8 @@ vec4 saturate(vec4 source)
 void main() {
 
   vec3 normal = normalize(vcNormal);
-  if(dot(vcPos-viewPos,normal)>=0)
-    discard;
+//  if(dot(vcPos-viewPos,normal)>=0)
+//    discard;
 
   if(!wireframe){
 	fColor = vec4(0.f, 0.f, 0.f, 1.f);
@@ -350,7 +350,7 @@ void main() {
   fColor -= noised/20;
 
   vec3 grain;
-  grain = random3(vcPos*8.0+8.0);
+  grain = random3(vcPos/8.0+0.4);
 	grain = 0.5 + 0.5*grain;
 	grain *= smoothstep(0.0, 0.005, abs(0.6-vcPos.x));
 
@@ -366,7 +366,7 @@ void main() {
   fColor += sin(hNoise/4)/8;
   fColor.rgb -= reflect(cross(fColor.rgb,normalNoise),noised.rgb)/10;
 
-  grain = random3(vec3(vNoise*8.0+8.0));
+  grain = random3(vec3(vNoise/4.0+8.0));
 	grain = 0.5 + 0.5*grain;
 	grain *= smoothstep(0.0, 0.005, abs(0.6-vcPos.x));
 	grain = normalize(grain);
@@ -433,8 +433,10 @@ void main() {
   fColor = mix(fColor, final/2, fColor.b);
 
   fColor = vec4(abs(sin(pow(M_E,fColor.r)))*fColor.r,abs(sin(pow(M_E,fColor.g)))*fColor.g,abs(sin(pow(M_E,fColor.b)))*fColor.b,1.f);
+  //fColor = vec4(hNoise,hNoise,hNoise,1.f);
 
-  fColor *= 1.3f;
+  fColor.rgb *= bac*bac;
+  fColor.rgb *= 2.3f;
 
 
 }
