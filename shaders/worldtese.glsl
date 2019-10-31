@@ -258,7 +258,7 @@ void main(){
     float f4 = fbm(vcPos/2, 8, 1.f, 0.5f, 0.5, 1)*0.3f;
     //float f4 = ridgeNoise(vcPos/2.f, 5, 8);
 
-    vNoise += cubeVal(mountains)
+    vNoise += cubeVal(mountains)*2
            *  clamp(f1,-(GRANULARITY),GRANULARITY)
            +  clamp(f2,-(GRANULARITY),GRANULARITY)
            +  clamp(f3,-(GRANULARITY),GRANULARITY) -0.8;

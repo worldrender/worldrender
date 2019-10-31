@@ -236,6 +236,11 @@ vec4 saturate(vec4 source)
   return clamp(source, 0.0, 1.0);
 }
 
+float saturateFloat(float source)
+{
+  return clamp(source, 0.0, 1.0);
+}
+
 void main() {
 
   vec3 normal = normalize(vcNormal);
@@ -281,14 +286,23 @@ void main() {
   vec3 c2 = cross(w_normal, vec3(0.0, 1.0, 0.0));
   vec3 c3 = cross(w_normal, vec3(1.0, 0.0, 0.0));
   vec3 c4 = cross(w_normal, vec3(1.0, 1.0, 0.0));
+  vec3 c5 = cross(w_normal, vec3(1.0, 0.0, 1.0));
+  vec3 c6 = cross(w_normal, vec3(0.0, 1.0, 1.0));
+  vec3 c7 = cross(w_normal, vec3(1.0, 1.0, 1.0));
   if (length(c1) > length(c2))
     Tangent = c1;
   else if(length(c2) > length(c3))
     Tangent = c2;
   else if(length(c3) > length(c4))
     Tangent = c3;
-  else
+  else if(length(c4) > length(c5))
     Tangent = c4;
+  else if(length(c5) > length(c6))
+    Tangent = c5;
+  else if(length(c6) > length(c7))
+    Tangent = c6;
+  else
+    Tangent = c7;
 
 	float angleDiff = abs(dot(normal, Tangent));
   float pureRock = 0.6;
@@ -298,8 +312,26 @@ void main() {
   float d = dot(normalize(normal), lightDir*vNoise);
   float cNoise = hNoise*d/8;
 
-  vec3 grassColor = texture( grasText, uv*scale*radius ).rgb*.04f;
+  vec3 snowAmbient = vec3(0.05f);
+  vec3 snowSpecular = vec3(1.f);
+
   vec3 snowColor  = texture( soilText, uv*scale ).rgb*.15f;
+
+
+
+//  float snowShininess
+//
+//  vec3 grassAmbient
+//  vec3 grassDiffuse
+//  vec3 grassSpecular
+//  float grassShininess
+//
+//  vec3 soilAmbient
+//  vec3 soilDiffuse
+//  vec3 soilSpecular
+//  float soilShininess
+
+  vec3 grassColor = texture( grasText, uv*scale*radius ).rgb*.04f;
   vec3 soilColor  = texture( snowText, uv*scale*2 ).rgb*.045f;
   vec3 maskColor  = texture( maskText, 0.75+uv*scale*radius ).rgb*.055f;
   //snowColor = mix(snowColor,maskColor,hNoise+maskColor.g);
@@ -336,42 +368,6 @@ void main() {
 
     fColor -= hNoise/20;
 
-  float value;
-  value = simplex3d_fractal(vcPos*8.0+8.0);
-	value = 0.5 + 0.5*value;
-	value *= smoothstep(0.0, 0.005, abs(0.6-vcPos.x));
-	vec4 noised = vec4(vec3(value),1.0);
-  fColor -= noised/10;
-
-  value = simplex3d_fractal(normal*8.0+8.0);
-	value = 0.5 + 0.5*value;
-	value *= smoothstep(0.0, 0.005, abs(0.6-normal.x));
-  vec4 map = mix(fColor, noised, smoothstep(-1.f,1.f, hNoise));
-  fColor -= noised/20;
-
-  vec3 grain;
-  grain = random3(vcPos/8.0+0.4);
-	grain = 0.5 + 0.5*grain;
-	grain *= smoothstep(0.0, 0.005, abs(0.6-vcPos.x));
-
-  vec3 T = normalize(vcPos*grain);
-  vec3 B = normalize(-normal*grain);
-  grain = normalize(cross((B*T)*vNoise,noised.rgb));
-  grain = vec3(simplex3d_fractal(grain*vNoise+vNoise));
-  grain *= 0.05;
-
-  fColor -= vec4(grain,1);
-  vec3 normalNoise = normalize(vec3(sin(vNoise/4)/8,cos(vNoise/3)/6,sin(vNoise/4)/8));
-  normalNoise = normalize(normalNoise);
-  fColor += sin(hNoise/4)/8;
-  fColor.rgb -= reflect(cross(fColor.rgb,normalNoise),noised.rgb)/10;
-
-  grain = random3(vec3(vNoise/4.0+8.0));
-	grain = 0.5 + 0.5*grain;
-	grain *= smoothstep(0.0, 0.005, abs(0.6-vcPos.x));
-	grain = normalize(grain);
-	fColor.rgb -= grain/5;
-
   vec3 ref = reflect( viewPos, c_normal );
   float fre = clamp( 1.0+dot(viewPos,c_normal), 0.0, 1.0 );
   vec3 hal = normalize(vNoise-lightDir-viewPos);
@@ -404,6 +400,11 @@ void main() {
   col *= col;
   fColor = vec4(mix(col,fColor.rgb,0.3666f),1);
 
+  vec3 textDiff = smoothstep(c_snow * fColor.rgb,snowColor,saturate(vec4(angleDiff)).rgb);
+  col = fColor.rgb * textDiff;
+  col *= fColor.rgb;
+  fColor.rgb -= col;
+
   //fColor *= vec4(lin,1);
   fColor *= 1.77773-(hNoise>0?fNoise:0);
 
@@ -433,6 +434,7 @@ void main() {
   fColor = mix(fColor, final/2, fColor.b);
 
   fColor = vec4(abs(sin(pow(M_E,fColor.r)))*fColor.r,abs(sin(pow(M_E,fColor.g)))*fColor.g,abs(sin(pow(M_E,fColor.b)))*fColor.b,1.f);
+
   //fColor = vec4(hNoise,hNoise,hNoise,1.f);
 
   fColor.rgb *= bac*bac;
