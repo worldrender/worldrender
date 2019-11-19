@@ -29,13 +29,21 @@ out vec3 vcNormal;
 out vec3 tNormal;
 out float vNoise;
 out float fNoise;
-
+out mat3 TBN;
 //out vec2 vcTexCoord;
 
 out vec3 vcPos;
 
 float hash(float n) { return fract(sin(n) * M_SEED1); }
 float hash(vec2 p) { return fract(M_SEED1 * sin(M_SEED2 * p.x + p.y * M_SEED3) * (M_SEED3 + abs(sin(p.y * 13.0 + p.x)))); }
+vec3 hash3( vec3 p ) // replace this by something better. really. do
+{
+	p = vec3( dot(p,vec3(127.1,311.7, 74.7)),
+			  dot(p,vec3(269.5,183.3,246.1)),
+			  dot(p,vec3(113.5,271.9,124.6)));
+
+	return -1.0 + 2.0*fract(sin(p)*43758.5453123);
+}
 
 float noise(vec3 x) {
 	const vec3 step = vec3(110, 241, 171);
@@ -48,6 +56,41 @@ float noise(vec3 x) {
 	vec3 u = f * f * (3.0 - 2.0 * f);
 	return mix(mix(mix( hash(n + dot(step, vec3(0, 0, 0))), hash(n + dot(step, vec3(1, 0, 0))), u.x), mix( hash(n + dot(step, vec3(0, 1, 0))), hash(n + dot(step, vec3(1, 1, 0))), u.x), u.y),
              mix(mix( hash(n + dot(step, vec3(0, 0, 1))), hash(n + dot(step, vec3(1, 0, 1))), u.x), mix( hash(n + dot(step, vec3(0, 1, 1))), hash(n + dot(step, vec3(1, 1, 1))), u.x), u.y), u.z);
+}
+
+vec4 gradient( in vec3 x )
+{
+    // grid
+    vec3 i = floor(x);
+    vec3 w = fract(x);
+
+    vec3 u = w*w*w*(w*(w*6.0-15.0)+10.0);
+    vec3 du = 30.0*w*w*(w*(w-2.0)+1.0);
+
+    // gradients
+    vec3 ga = hash3( i+vec3(0.0,0.0,0.0) );
+    vec3 gb = hash3( i+vec3(1.0,0.0,0.0) );
+    vec3 gc = hash3( i+vec3(0.0,1.0,0.0) );
+    vec3 gd = hash3( i+vec3(1.0,1.0,0.0) );
+    vec3 ge = hash3( i+vec3(0.0,0.0,1.0) );
+	  vec3 gf = hash3( i+vec3(1.0,0.0,1.0) );
+    vec3 gg = hash3( i+vec3(0.0,1.0,1.0) );
+    vec3 gh = hash3( i+vec3(1.0,1.0,1.0) );
+
+    // projections
+    float va = dot( ga, w-vec3(0.0,0.0,0.0) );
+    float vb = dot( gb, w-vec3(1.0,0.0,0.0) );
+    float vc = dot( gc, w-vec3(0.0,1.0,0.0) );
+    float vd = dot( gd, w-vec3(1.0,1.0,0.0) );
+    float ve = dot( ge, w-vec3(0.0,0.0,1.0) );
+    float vf = dot( gf, w-vec3(1.0,0.0,1.0) );
+    float vg = dot( gg, w-vec3(0.0,1.0,1.0) );
+    float vh = dot( gh, w-vec3(1.0,1.0,1.0) );
+
+    // interpolations
+    return vec4( va + u.x*(vb-va) + u.y*(vc-va) + u.z*(ve-va) + u.x*u.y*(va-vb-vc+vd) + u.y*u.z*(va-vc-ve+vg) + u.z*u.x*(va-vb-ve+vf) + (-va+vb+vc-vd+ve-vf-vg+vh)*u.x*u.y*u.z,    // value
+                 ga + u.x*(gb-ga) + u.y*(gc-ga) + u.z*(ge-ga) + u.x*u.y*(ga-gb-gc+gd) + u.y*u.z*(ga-gc-ge+gg) + u.z*u.x*(ga-gb-ge+gf) + (-ga+gb+gc-gd+ge-gf-gg+gh)*u.x*u.y*u.z +   // derivatives
+                 du * (vec3(vb,vc,ve) - va + u.yzx*vec3(va-vb-vc+vd,va-vc-ve+vg,va-vb-ve+vf) + u.zxy*vec3(va-vb-ve+vf,va-vb-vc+vd,va-vc-ve+vg) + u.yzx*u.zxy*(-va+vb+vc-vd+ve-vf-vg+vh) ));
 }
 
 float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
@@ -236,6 +279,7 @@ void main(){
     vec3 p1 = gl_TessCoord.y * tcPos1;
     vec3 p2 = gl_TessCoord.z * tcPos2;
     vec3 t = (p0 + p1 + p2);
+
     vcPos = t;
     float vertexNoise = gl_TessCoord.x*tNoise[0]+gl_TessCoord.y*tNoise[1]+gl_TessCoord.z*tNoise[2];
     fNoise = vertexNoise;
@@ -244,9 +288,10 @@ void main(){
     vec3 n1 = gl_TessCoord.y * tcNormal[1];
     vec3 n2 = gl_TessCoord.z * tcNormal[2];
     vcNormal = normalize(n0 + n1 + n2);
+
     vcNormal = normalize(vcNormal);
     tNormal = vcNormal;
-    vNoise = sin(cubeVal(fbm(vcPos*10f,16, 0.55f, .93753125f, 1.f, 1)*0.5f));
+    vNoise = sin(cubeVal(fbm(-vcPos*10f,16, 0.55f, .93753125f, 1.f, 1)*0.5f));
 
     float mountains = (ridgedNoise(vcPos,11,.7f,.03f,1.f,.03f,.5f,.01f));
 //in vec3 p, int octaves, float H, float gain, float amplitude, float frequency, float persistence, float offset
@@ -274,13 +319,27 @@ void main(){
       vNoise = mix(vNoise, vNoise/2, -(f1+f2+f3))/2.888f;
     }
     if(vNoise>2.69)
-      {
-        vNoise += smoothing(mountains, f2);
-      }
+    {
+      vNoise += smoothing(mountains, f2);
+    }
     vcPos = t;
 
     vcPos += vcNormal * vNoise;
     vcNormal = normalize(vcPos);
+    vec4 n = gradient( vcPos*0.5 );
+
+        vcNormal = vcNormal+0.25*n.yzw;
+
+    vec3 vecTangent = normalize(cross(vcPos, vec3(1.0, 0.0, 0.0))
+    + cross(vcPos, vec3(0.0, 1.0, 0.0)));
+    vec3 vecBitangent = normalize(cross(vecTangent, vcPos));
+    float theta = 0.000001;
+
+    TBN = transpose(mat3(vecTangent, vecBitangent, vcNormal));
+
+    vec3 ptTangentSample = normalize(vcPos + theta * normalize(vecTangent));
+    vec3 ptBitangentSample = normalize(vcPos + theta * normalize(vecBitangent));
+
     vNoise -= f4;
     fNoise = f4;
     gl_Position = MVP * vec4(vcPos, 1.0);

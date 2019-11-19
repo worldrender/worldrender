@@ -24,6 +24,7 @@ in vec3 vcPos;
 in float vNoise;
 in float fNoise;
 in vec3 tNormal;
+in mat3 TBN;
 
 uniform sampler2D pTexture;
 uniform sampler2D dTexture;
@@ -244,8 +245,7 @@ float saturateFloat(float source)
 void main() {
 
   vec3 normal = normalize(vcNormal);
-//  if(dot(vcPos-viewPos,normal)>=0)
-//    discard;
+
 
   if(!wireframe){
 	fColor = vec4(0.f, 0.f, 0.f, 1.f);
@@ -272,6 +272,9 @@ void main() {
 //  vec3 w_normal = calcNormal(normal,dot(normal,PN));
   vec3 c_normal = sdf_terrain_normal(vcPos);
   vec3 w_normal = normalize(cross(normal,PN));
+
+    if(dot(vcPos-viewPos,c_normal)>=0)
+    discard;
 
   hU = length(normal);
   hL = dot(c_normal, normal);
@@ -303,6 +306,8 @@ void main() {
     Tangent = c6;
   else
     Tangent = c7;
+
+
 
 	float angleDiff = abs(dot(normal, Tangent));
   float pureRock = 0.6;
@@ -370,7 +375,7 @@ void main() {
 
   vec3 ref = reflect( viewPos, c_normal );
   float fre = clamp( 1.0+dot(viewPos,c_normal), 0.0, 1.0 );
-  vec3 hal = normalize(vNoise-lightDir-viewPos);
+  vec3 hal = normalize(vNoise-TBN*normalize(lightDir-viewPos));
 //
   col = (vNoise*0.25+0.75)*0.9*mix( vec3(0.10,0.05,0.03), vec3(0.13,0.10,0.08), clamp(fNoise/200.0,0.0,1.0) );
 		col = mix( col, 0.17*vec3(0.5,.23,0.04)*(0.50+0.50*hNoise),smoothstep(0.70,0.9,hNoise-PN.y) );
@@ -419,7 +424,7 @@ void main() {
                vec4(diffuse,1.f) * diffuse_contribution * max(d, 0);
   vec3 toEye = normalize(vcPos - viewPos);
   vec3 lightVec = normalize(-lightDir*radius*scale);
-  vec3 reflection = -reflect(lightVec, normalize(vec3(tan(PN.x),tan(PN.y),tan(PN.z))));
+  vec3 reflection = -reflect(TBN*lightVec, normalize(vec3(tan(PN.x),tan(PN.y),tan(PN.z))));
 
   float shine = dot(normalize(reflection), normalize(vec3(MVP[0][2],MVP[1][2],MVP[2][2])));
 
@@ -439,7 +444,6 @@ void main() {
 
   fColor.rgb *= bac*bac;
   fColor.rgb *= 2.3f;
-
 
 }
 

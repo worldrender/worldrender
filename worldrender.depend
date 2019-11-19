@@ -2495,7 +2495,7 @@
 1571927367 source:/home/ricardo/worldrender/Camera.cpp
 	"include/Camera.hpp"
 
-1571928609 source:/home/ricardo/worldrender/Main.cpp
+1571929007 source:/home/ricardo/worldrender/Main.cpp
 	<iostream>
 	<string>
 	<cstdlib>
