@@ -246,7 +246,7 @@ void main(){
     vcNormal = normalize(n0 + n1 + n2);
     vcNormal = normalize(vcNormal);
     tNormal = vcNormal;
-    vNoise = sin(cubeVal(fbm(vcPos*10f,16, 0.55f, .93753125f, 1.f, 1)*0.5f));
+    vNoise = sin(cubeVal(fbm(vcPos*10.f,16, 0.55f, .93753125f, 1.f, 1)*0.5f));
 
     float mountains = (ridgedNoise(vcPos,11,.7f,.03f,1.f,.03f,.5f,.01f));
 //in vec3 p, int octaves, float H, float gain, float amplitude, float frequency, float persistence, float offset

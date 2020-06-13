@@ -37,6 +37,7 @@ uniform sampler2D maskText;
 
 uniform float scale;
 uniform mat4 model;
+uniform mat4 view;
 uniform mat4 MVP;
 uniform vec3 viewPos;
 uniform bool wireframe;
@@ -50,6 +51,14 @@ uniform vec3 ambient = vec3(0.05f, 0.05f, 0.08f);
 uniform float maxHeight = 10.7f;
 uniform vec3 texOffset = vec3(1.0f/8192.0f, 1.0f/4096.0f, 0.0f);
 mat2 m2 = mat2(1.6,-1.2,1.2,1.6);
+
+const mat3 m3  = mat3( 0.00,  0.80,  0.60,
+                      -0.80,  0.36, -0.48,
+                      -0.60, -0.48,  0.64 );
+const mat3 m3i = mat3( 0.00, -0.80, -0.60,
+                       0.80,  0.36, -0.48,
+                       0.60, -0.48,  0.64 );
+
 
 out vec4 fColor;
 
@@ -131,6 +140,20 @@ float simplex3d_fractal(vec3 m) {
 			+0.2666667*simplex3d(2.0*m*rot2)
 			+0.1333333*simplex3d(4.0*m*rot3)
 			+0.0666667*simplex3d(8.0*m);
+}
+
+float fbm( in vec3 p, int octaves, float gain, float amplitude, float frequency, float size){
+    float f = 0.0;
+    for(int i=0;i<octaves;i++)
+    {
+      f+=simplex3d(p)*frequency;
+      p = m3*p*(2.f+i/100.f);
+      frequency /= 2.f;
+    }
+
+    f *= size;
+
+    return f/amplitude;
 }
 
 vec2 sdf_terrain_map_detail(in vec3 pos)
@@ -436,7 +459,23 @@ void main() {
   //fColor = vec4(hNoise,hNoise,hNoise,1.f);
 
   fColor.rgb *= bac*bac;
+
+
+  vec3 noiselines;
+  noiselines.r = fbm(vcPos,16, 1.f, .93753125f, .5f, 1);
+  noiselines.g = fbm(-vcPos,16, 1.f, .93753125f, .5f, 1);
+  noiselines.b = fbm(vcPos+hNoise,16, 1.f, .93753125f, .5f, 1);
   fColor.rgb *= 2.3f;
+  noiselines = -reflect(fColor.rgb,normalize(noiselines));
+  noiselines = fColor.rgb * dot(normalize(noiselines), normalize(vec3(MVP[0][2],MVP[1][2],MVP[2][2])));
+  fColor.rgb = mix(fColor.rgb,noiselines,0.1f);
+
+
+  lin = lightDir*radius*scale;
+  float toLight = length(lin - vcPos);
+  lightVec = normalize(lin - vcPos);
+  diffuse_contribution = max(dot(normal, lightVec), 0.1);
+  diffuse_contribution = diffuse_contribution * (1.0 / (1.0 + (0.25 * toLight * toLight)));
 
 
 }
